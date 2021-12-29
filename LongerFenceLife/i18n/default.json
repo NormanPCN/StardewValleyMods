@@ -1,0 +1,12 @@
+{
+  "woodFence.Label": "Wood Fence",
+  "woodFence.Text": "The lifetime multiplier for wood fences",
+  "stoneFence.Label": "Stone Fence",
+  "stoneFence.Text": "The lifetime multiplier for stone fences",
+  "ironFence.Label": "Iron Fence",
+  "ironFence.Text": "The lifetime multiplier for iron fences",
+  "hardwoodFence.Label": "Hardwood Fence",
+  "hardwoodFence.Text": "The lifetime multiplier for hardwood fences",
+  "gate.Label": "Gates",
+  "gate.Text": "The lifetime multiplier for fence gates"
+}

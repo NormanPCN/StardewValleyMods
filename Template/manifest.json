@@ -1,0 +1,11 @@
+﻿{
+  "Name": "???",
+  "Author": "NormanPCN",
+  "Version": "1.0.0",
+  "Description": "???",
+  "UniqueID": "NormanPCN.???",
+  "EntryDll": "???.dll",
+  "MinimumApiVersion": "3.13.0",
+  "UpdateKeys": [],
+  "Dependencies": []
+}

@@ -1,0 +1,18 @@
+QualitySmash
+PlayerSprint
+Samples
+GenericModConfigMenu
+
+#build
+*.exe
+*.dll
+*.pdb
+
+#NuGet packages
+*.nupkg
+packages/
+
+#Misc
+*.zip
+*.lnk
+
