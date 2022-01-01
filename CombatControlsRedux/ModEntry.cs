@@ -47,12 +47,10 @@ namespace CombatControlsRedux
     {
         public ModConfig Config;
 
-        internal static ModEntry Instance;
-
         internal IModHelper MyHelper;
         //private IReflectedMethod PerformFireTool;
 
-        private static ITranslationHelper i18n => Instance.MyHelper.Translation;
+        internal ITranslationHelper i18n => MyHelper.Translation;
 
         private bool IsHoldingAttack;
 
@@ -68,7 +66,6 @@ namespace CombatControlsRedux
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            Instance = this;
             MyHelper = helper;
 
             //I18n.Init(helper.Translation);
@@ -152,39 +149,39 @@ namespace CombatControlsRedux
                                    () => Config.MouseFix,
                                    (bool value) => Config.MouseFix = value,
                                    () => i18n.Get("mouseFix.Label"),
-                                   () => i18n.Get("mouseFix.Text"));
+                                   () => i18n.Get("mouseFix.tooltip"));
                 gmcm.AddBoolOption(ModManifest,
                                    () => Config.AutoSwing,
                                    (bool value) => Config.AutoSwing = value,
                                    () => i18n.Get("autoSwing.Label"),
-                                   () => i18n.Get("autoSwing.Text"));
+                                   () => i18n.Get("autoSwing.tooltip"));
                 gmcm.AddBoolOption(ModManifest,
                                    () => Config.AutoSwingDagger,
                                    (bool value) => Config.AutoSwingDagger = value,
                                    () => i18n.Get("autoSwingDagger.Label"),
-                                   () => i18n.Get("autoSwingDagger.Text"));
+                                   () => i18n.Get("autoSwingDagger.tooltip"));
                 gmcm.AddBoolOption(ModManifest,
                                    () => Config.SlickMoves,
                                    (bool value) => Config.SlickMoves = value,
                                    () => i18n.Get("slickMoves.Label"),
-                                   () => i18n.Get("slickMoves.Text"));
+                                   () => i18n.Get("slickMoves.tooltip"));
                 gmcm.AddBoolOption(ModManifest,
                                    () => Config.SwordSpecialSlickMove,
                                    (bool value) => Config.SwordSpecialSlickMove = value,
                                    () => i18n.Get("swordSpecial.Label"),
-                                   () => i18n.Get("swordSpecial.Text"));
+                                   () => i18n.Get("swordSpecial.tooltip"));
                 gmcm.AddBoolOption(ModManifest,
                                    () => Config.ClubSpecialSlickMove,
                                    (bool value) => Config.ClubSpecialSlickMove = value,
                                    () => i18n.Get("clubSpecial.Label"),
-                                   () => i18n.Get("clubSpecial.Text"));
+                                   () => i18n.Get("clubSpecial.tooltip"));
 
 //#if MyTest
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.SlideVelocity,
                                      (float value) => Config.SlideVelocity = value,
                                      () => i18n.Get("slideVelocity.Label"),
-                                     () => i18n.Get("slideVelocity.Text"),
+                                     () => i18n.Get("slideVelocity.tooltip"),
                                      min: minSlideVelocity,
                                      max: maxSlideVelocity,
                                      interval: 0.1f);
@@ -192,7 +189,7 @@ namespace CombatControlsRedux
                                      () => Config.SpecialSlideVelocity,
                                      (float value) => Config.SpecialSlideVelocity = value,
                                      () => i18n.Get("specSlideVelocity.Label"),
-                                     () => i18n.Get("specSlideVelocity.Text"),
+                                     () => i18n.Get("specSlideVelocity.tooltip"),
                                      min: minSlideVelocity,
                                      max: maxSlideVelocity,
                                      interval: 0.1f);

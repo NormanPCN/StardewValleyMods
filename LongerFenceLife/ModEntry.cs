@@ -16,11 +16,9 @@ namespace LongerFenceLife
     {
         public ModConfig Config;
 
-        internal ModEntry Instance;
-
         internal IModHelper MyHelper;
 
-        internal ITranslationHelper i18n => Instance.MyHelper.Translation;
+        internal ITranslationHelper i18n => MyHelper.Translation;
 
         const float MinLife = 0.5f;
         const float MaxLife = 5.0f;
@@ -35,7 +33,6 @@ namespace LongerFenceLife
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            Instance = this;
             MyHelper = helper;
 
             MyHelper.Events.GameLoop.GameLaunched += OnGameLaunched;
@@ -103,7 +100,7 @@ namespace LongerFenceLife
                                      () => Config.WoodFenceLife,
                                      (float value) => Config.WoodFenceLife = value,
                                      () => i18n.Get("woodFence.Label"),
-                                     () => i18n.Get("woodFence.Text"),
+                                     () => i18n.Get("woodFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
                                      interval: 0.1f);
@@ -111,7 +108,7 @@ namespace LongerFenceLife
                                      () => Config.StoneFenceLife,
                                      (float value) => Config.StoneFenceLife = value,
                                      () => i18n.Get("stoneFence.Label"),
-                                     () => i18n.Get("stoneFence.Text"),
+                                     () => i18n.Get("stoneFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
                                      interval: 0.1f);
@@ -119,7 +116,7 @@ namespace LongerFenceLife
                                      () => Config.IronFenceLife,
                                      (float value) => Config.IronFenceLife = value,
                                      () => i18n.Get("ironFence.Label"),
-                                     () => i18n.Get("ironFence.Text"),
+                                     () => i18n.Get("ironFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
                                      interval: 0.1f);
@@ -127,7 +124,7 @@ namespace LongerFenceLife
                                      () => Config.HardwoodFenceLife,
                                      (float value) => Config.HardwoodFenceLife = value,
                                      () => i18n.Get("hardwoodFence.Label"),
-                                     () => i18n.Get("hardwoodFence.Text"),
+                                     () => i18n.Get("hardwoodFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
                                      interval: 0.1f);
@@ -135,7 +132,7 @@ namespace LongerFenceLife
                                      () => Config.GateLife,
                                      (float value) => Config.GateLife = value,
                                      () => i18n.Get("gate.Label"),
-                                     () => i18n.Get("gate.Text"),
+                                     () => i18n.Get("gate.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
                                      interval: 0.1f);
@@ -153,11 +150,12 @@ namespace LongerFenceLife
         /// <param name="e">The event arguments.</param>
 		private void Player_InventoryChanged(object sender, InventoryChangedEventArgs e)
         {
-            //Monitor.Log("Inventory Changed", LogLevel.Debug);
+#if MyTest
+            Monitor.Log("Inventory Changed", LogLevel.Debug);
+#endif
 
             Item grabbed = Game1.player.mostRecentlyGrabbedItem;
-
-            if (Context.IsPlayerFree && e.IsLocalPlayer && (grabbed != null))
+            if ((grabbed != null) && e.IsLocalPlayer && Context.IsPlayerFree)
             {
 #if MyTest
                 Monitor.Log("Fence Drop Test", LogLevel.Debug);
@@ -166,27 +164,27 @@ namespace LongerFenceLife
                 Vector2 tilePosition = Game1.currentCursorTile;
                 int idx = grabbed.ParentSheetIndex;
                 if (
-                    (
-                     (idx == WoodFence) ||
-                     (idx == StoneFence) ||
-                     (idx == IronFence) ||
-                     (idx == HwFence) ||
-                     (idx == Gate)
-                    )
-                    &&
+                    (((idx >= WoodFence) && (idx <= Gate)) || (idx == HwFence)) &&
+                    //(
+                    // (idx == WoodFence) ||
+                    // (idx == StoneFence) ||
+                    // (idx == HwFence) ||
+                    // (idx == IronFence) ||
+                    // (idx == Gate)
+                    //) &&
                     (e.QuantityChanged.FirstOrDefault(x => x.Item == grabbed) is ItemStackSizeChange item) &&
                     (item.NewSize+1 == item.OldSize) &&
                     Game1.currentLocation.Objects.ContainsKey(tilePosition) &&
                     (Game1.currentLocation.Objects[tilePosition] is StardewValley.Fence fence) &&
-                    (fence != null) &&
+                    //(fence != null) &&
                     (fence.GetItemParentSheetIndex() == idx)
                    )
                 {
                     // game has a bug where if a gate replaces an existing fence post the item id stays with the fence id
                     // and the gate keeps the fence life. it does not get the gate life.
-                    // by fence id I mean the converted negative values of placed/actual fence items.
-                    // i could detect and correct this, but the game is the game.
-                    // this mod just alters the life the game actually gives.
+                    // by fence id I mean the converted negative values of placed fence items.
+                    // we could detect and correct this, but the game is the game.
+                    // this mod just alters the life the game literally gives.
                     // fence.performObjectDropInAction()
 
                     // the game fence ResetHealth code takes a base health (which we cannot change) and multiplies it by 2.
@@ -197,21 +195,22 @@ namespace LongerFenceLife
 
                     // fence repair: the repaired post with updated health is dropped and that is what we see
 
-                    // the health and maxHealth fields are readonly, but the Value property within can be accessed.
+                    // the health and maxHealth fields are readonly, but the Value property can be accessed.
                     // using the API the game uses to set health (ResetHealth) seems best but we are taking knowledge of what the game
                     // does inside that method to properly use the available parameter.
-                    // we are using that param outside of its intended use
-                    // we just alter the health values directly. allows us to adjust gate life as well.
+                    // we would be using that param outside of its intended use. health variation.
 
-                    float before = fence.health.Value;// will have life variation
+                    // we just alter the health values directly. this allows us to adjust gate life.
+
+                    float before = fence.health.Value;
                     float baseHealth = before / 2.0f;
                     float mult = idx switch
                     {
                         WoodFence => Config.WoodFenceLife,
                         StoneFence => Config.StoneFenceLife,
                         IronFence => Config.IronFenceLife,
-                        HwFence => Config.HardwoodFenceLife,
                         Gate => Config.GateLife,
+                        HwFence => Config.HardwoodFenceLife,
                         _ => 1.0f,
                     };
 
@@ -219,8 +218,11 @@ namespace LongerFenceLife
                     fence.maxHealth.Value = fence.health.Value;
                     //fence.ResetHealth((baseHealth * mult) - baseHealth);
 
+                    Monitor.Log($"health after={fence.health.Value}, health before={before}, idx={idx},{fence.ParentSheetIndex}",
 #if MyTest
-                    Monitor.Log($"health after={fence.health.Value}, health before={before}, idx={idx},{fence.ParentSheetIndex}", LogLevel.Debug);
+                                LogLevel.Debug);
+#else
+                                LogLevel.Trace);
 #endif
                 }
             }

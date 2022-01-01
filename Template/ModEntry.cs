@@ -13,17 +13,14 @@ namespace TemplateMod
     {
         public ModConfig Config;
 
-        public static ModEntry Instance;
-
         internal IModHelper MyHelper;
 
-        internal static ITranslationHelper i18n => Instance.MyHelper.Translation;
+        internal ITranslationHelper i18n => MyHelper.Translation;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            Instance = this;
             MyHelper = helper;
 
             MyHelper.Events.GameLoop.GameLaunched += OnGameLaunched;
@@ -77,12 +74,12 @@ namespace TemplateMod
                                    () => Config.xxx,
                                    (bool value) => Config.xxx = value,
                                    () => i18n.Get("config.Label"),
-                                   () => i18n.Get("config.Text"));
+                                   () => i18n.Get("config.Tooltip"));
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.xxx,
                                      (float value) => Config.xxx = value,
                                      () => i18n.Get("config.Label"),
-                                     () => i18n.Get("config.Text"),
+                                     () => i18n.Get("config.tooltip"),
                                      min: 0.0f,
                                      max: 1.0f,
                                      interval: 0.1f);
