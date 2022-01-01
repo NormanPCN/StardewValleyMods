@@ -50,8 +50,6 @@ namespace CombatControlsRedux
         internal IModHelper MyHelper;
         //private IReflectedMethod PerformFireTool;
 
-        internal ITranslationHelper i18n => MyHelper.Translation;
-
         private bool IsHoldingAttack;
 
 #if FacingDirectionPostfix
@@ -84,6 +82,91 @@ namespace CombatControlsRedux
             MyHelper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
 
             //Monitor.Log($"MinGameVersion={Constants.MinimumGameVersion}, MaxGameVersion={Constants.MaximumGameVersion}", LogLevel.Debug);
+        }
+
+        public String I18nGet(String str)
+        {
+            return MyHelper.Translation.Get(str);
+        }
+
+        /// <summary>Raised after the game has loaded and all Mods are loaded. Here we load the config.json file and setup GMCM </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+            const float minSlideVelocity = 2.0f;
+            const float maxSlideVelocity = 10.0f;
+
+            Config = MyHelper.ReadConfig<ModConfig>();
+
+            // lets clamp the range of these values in case someone editing the config gives a value that may cause problems.
+
+            Config.SlideVelocity = Math.Min(maxSlideVelocity, Math.Max(minSlideVelocity, Config.SlideVelocity));
+            Config.SpecialSlideVelocity = Math.Min(maxSlideVelocity, Math.Max(minSlideVelocity, Config.SpecialSlideVelocity));
+
+            // use GMCM in an optional manner.
+
+            IGenericModConfigMenuApi gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (gmcm != null)
+            {
+                gmcm.Register(ModManifest,
+                              reset: () => Config = new ModConfig(),
+                              save: () => Helper.WriteConfig(Config));
+
+                gmcm.AddBoolOption(ModManifest,
+                                   () => Config.MouseFix,
+                                   (bool value) => Config.MouseFix = value,
+                                   () => I18nGet("mouseFix.Label"),
+                                   () => I18nGet("mouseFix.tooltip"));
+                gmcm.AddBoolOption(ModManifest,
+                                   () => Config.AutoSwing,
+                                   (bool value) => Config.AutoSwing = value,
+                                   () => I18nGet("autoSwing.Label"),
+                                   () => I18nGet("autoSwing.tooltip"));
+                gmcm.AddBoolOption(ModManifest,
+                                   () => Config.AutoSwingDagger,
+                                   (bool value) => Config.AutoSwingDagger = value,
+                                   () => I18nGet("autoSwingDagger.Label"),
+                                   () => I18nGet("autoSwingDagger.tooltip"));
+                gmcm.AddBoolOption(ModManifest,
+                                   () => Config.SlickMoves,
+                                   (bool value) => Config.SlickMoves = value,
+                                   () => I18nGet("slickMoves.Label"),
+                                   () => I18nGet("slickMoves.tooltip"));
+                gmcm.AddBoolOption(ModManifest,
+                                   () => Config.SwordSpecialSlickMove,
+                                   (bool value) => Config.SwordSpecialSlickMove = value,
+                                   () => I18nGet("swordSpecial.Label"),
+                                   () => I18nGet("swordSpecial.tooltip"));
+                gmcm.AddBoolOption(ModManifest,
+                                   () => Config.ClubSpecialSlickMove,
+                                   (bool value) => Config.ClubSpecialSlickMove = value,
+                                   () => I18nGet("clubSpecial.Label"),
+                                   () => I18nGet("clubSpecial.tooltip"));
+
+//#if MyTest
+                gmcm.AddNumberOption(ModManifest,
+                                     () => Config.SlideVelocity,
+                                     (float value) => Config.SlideVelocity = value,
+                                     () => I18nGet("slideVelocity.Label"),
+                                     () => I18nGet("slideVelocity.tooltip"),
+                                     min: minSlideVelocity,
+                                     max: maxSlideVelocity,
+                                     interval: 0.1f);
+                gmcm.AddNumberOption(ModManifest,
+                                     () => Config.SpecialSlideVelocity,
+                                     (float value) => Config.SpecialSlideVelocity = value,
+                                     () => I18nGet("specSlideVelocity.Label"),
+                                     () => I18nGet("specSlideVelocity.tooltip"),
+                                     min: minSlideVelocity,
+                                     max: maxSlideVelocity,
+                                     interval: 0.1f);
+//#endif
+            }
+            else
+            {
+                Monitor.LogOnce("Generic Mod Config Menu not available.", LogLevel.Info);
+            };
         }
 
         /// <summary>Raised after a game save is loaded. Here we hook into necessary events for gameplay.</summary>
@@ -119,86 +202,6 @@ namespace CombatControlsRedux
 #if FacingDirectionPostfix
             MyHelper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
 #endif
-        }
-
-        /// <summary>Raised after the game has loaded and all Mods are loaded. Here we load the config.json file and setup GMCM </summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
-        {
-            const float minSlideVelocity = 2.0f;
-            const float maxSlideVelocity = 10.0f;
-
-            Config = MyHelper.ReadConfig<ModConfig>();
-
-            // lets clamp the range of these values in case someone editing the config gives a value that may cause problems.
-
-            Config.SlideVelocity = Math.Min(maxSlideVelocity, Math.Max(minSlideVelocity, Config.SlideVelocity));
-            Config.SpecialSlideVelocity = Math.Min(maxSlideVelocity, Math.Max(minSlideVelocity, Config.SpecialSlideVelocity));
-
-            // use GMCM in an optional manner.
-
-            IGenericModConfigMenuApi gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (gmcm != null)
-            {
-                gmcm.Register(ModManifest,
-                              reset: () => Config = new ModConfig(),
-                              save: () => Helper.WriteConfig(Config));
-
-                gmcm.AddBoolOption(ModManifest,
-                                   () => Config.MouseFix,
-                                   (bool value) => Config.MouseFix = value,
-                                   () => i18n.Get("mouseFix.Label"),
-                                   () => i18n.Get("mouseFix.tooltip"));
-                gmcm.AddBoolOption(ModManifest,
-                                   () => Config.AutoSwing,
-                                   (bool value) => Config.AutoSwing = value,
-                                   () => i18n.Get("autoSwing.Label"),
-                                   () => i18n.Get("autoSwing.tooltip"));
-                gmcm.AddBoolOption(ModManifest,
-                                   () => Config.AutoSwingDagger,
-                                   (bool value) => Config.AutoSwingDagger = value,
-                                   () => i18n.Get("autoSwingDagger.Label"),
-                                   () => i18n.Get("autoSwingDagger.tooltip"));
-                gmcm.AddBoolOption(ModManifest,
-                                   () => Config.SlickMoves,
-                                   (bool value) => Config.SlickMoves = value,
-                                   () => i18n.Get("slickMoves.Label"),
-                                   () => i18n.Get("slickMoves.tooltip"));
-                gmcm.AddBoolOption(ModManifest,
-                                   () => Config.SwordSpecialSlickMove,
-                                   (bool value) => Config.SwordSpecialSlickMove = value,
-                                   () => i18n.Get("swordSpecial.Label"),
-                                   () => i18n.Get("swordSpecial.tooltip"));
-                gmcm.AddBoolOption(ModManifest,
-                                   () => Config.ClubSpecialSlickMove,
-                                   (bool value) => Config.ClubSpecialSlickMove = value,
-                                   () => i18n.Get("clubSpecial.Label"),
-                                   () => i18n.Get("clubSpecial.tooltip"));
-
-//#if MyTest
-                gmcm.AddNumberOption(ModManifest,
-                                     () => Config.SlideVelocity,
-                                     (float value) => Config.SlideVelocity = value,
-                                     () => i18n.Get("slideVelocity.Label"),
-                                     () => i18n.Get("slideVelocity.tooltip"),
-                                     min: minSlideVelocity,
-                                     max: maxSlideVelocity,
-                                     interval: 0.1f);
-                gmcm.AddNumberOption(ModManifest,
-                                     () => Config.SpecialSlideVelocity,
-                                     (float value) => Config.SpecialSlideVelocity = value,
-                                     () => i18n.Get("specSlideVelocity.Label"),
-                                     () => i18n.Get("specSlideVelocity.tooltip"),
-                                     min: minSlideVelocity,
-                                     max: maxSlideVelocity,
-                                     interval: 0.1f);
-//#endif
-            }
-            else
-            {
-                Monitor.LogOnce("Generic Mod Config Menu not available.", LogLevel.Info);
-            };
         }
 
         /// <summary>Raised after the player releases a button on the keyboard, controller, or mouse.</summary>

@@ -15,7 +15,10 @@ namespace TemplateMod
 
         internal IModHelper MyHelper;
 
-        internal ITranslationHelper i18n => MyHelper.Translation;
+        public String I18nGet(String str)
+        {
+            return MyHelper.Translation.Get(str);
+        }
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -28,30 +31,6 @@ namespace TemplateMod
             MyHelper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
 
             //Monitor.Log($"MinGameVersion={Constants.MinimumGameVersion}, MaxGameVersion={Constants.MaximumGameVersion}", LogLevel.Info);
-        }
-
-        /// <summary>Raised after a game save is loaded. Here we hook into necessary events for gameplay.</summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
-        {
-            MyHelper.Events.Input.ButtonPressed += Input_ButtonPressed;
-            MyHelper.Events.Input.ButtonReleased += Input_ButtonReleased;
-            MyHelper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
-            MyHelper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
-            MyHelper.Events.Player.InventoryChanged += Player_InventoryChanged;
-}
-
-        /// <summary>Raised after a game has exited a game/save to the title screen.  Here we unhook our gameplay events.</summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
-        {
-            MyHelper.Events.Input.ButtonPressed -= Input_ButtonPressed;
-            MyHelper.Events.Input.ButtonReleased -= Input_ButtonReleased;
-            MyHelper.Events.GameLoop.UpdateTicking -= GameLoop_UpdateTicking;
-            MyHelper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
-            MyHelper.Events.Player.InventoryChanged -= Player_InventoryChanged;
         }
 
         /// <summary>Raised after the game has loaded and all Mods are loaded. Here we load the config.json file and setup GMCM </summary>
@@ -73,13 +52,13 @@ namespace TemplateMod
                 gmcm.AddBoolOption(ModManifest,
                                    () => Config.xxx,
                                    (bool value) => Config.xxx = value,
-                                   () => i18n.Get("config.Label"),
-                                   () => i18n.Get("config.Tooltip"));
+                                   () => I18nGet("config.Label"),
+                                   () => I18nGet("config.Tooltip"));
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.xxx,
                                      (float value) => Config.xxx = value,
-                                     () => i18n.Get("config.Label"),
-                                     () => i18n.Get("config.tooltip"),
+                                     () => I18nGet("config.Label"),
+                                     () => I18nGet("config.tooltip"),
                                      min: 0.0f,
                                      max: 1.0f,
                                      interval: 0.1f);
@@ -88,6 +67,30 @@ namespace TemplateMod
             {
                 Monitor.LogOnce("Generic Mod Config Menu not available.", LogLevel.Info);
             };
+        }
+
+        /// <summary>Raised after a game save is loaded. Here we hook into necessary events for gameplay.</summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            MyHelper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            MyHelper.Events.Input.ButtonReleased += Input_ButtonReleased;
+            MyHelper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
+            MyHelper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+            MyHelper.Events.Player.InventoryChanged += Player_InventoryChanged;
+        }
+
+        /// <summary>Raised after a game has exited a game/save to the title screen.  Here we unhook our gameplay events.</summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+        {
+            MyHelper.Events.Input.ButtonPressed -= Input_ButtonPressed;
+            MyHelper.Events.Input.ButtonReleased -= Input_ButtonReleased;
+            MyHelper.Events.GameLoop.UpdateTicking -= GameLoop_UpdateTicking;
+            MyHelper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
+            MyHelper.Events.Player.InventoryChanged -= Player_InventoryChanged;
         }
 
         /// <summary>Raised after the player releases a button on the keyboard, controller, or mouse.</summary>

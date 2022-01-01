@@ -18,8 +18,6 @@ namespace LongerFenceLife
 
         internal IModHelper MyHelper;
 
-        internal ITranslationHelper i18n => MyHelper.Translation;
-
         const float MinLife = 0.5f;
         const float MaxLife = 5.0f;
 
@@ -28,6 +26,11 @@ namespace LongerFenceLife
         const int IronFence = 324;//-7 placed
         const int HwFence = 298;//-8 placed
         const int Gate = 325;//-9 placed
+
+        public String I18nGet(String str)
+        {
+            return MyHelper.Translation.Get(str);
+        }
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -99,40 +102,40 @@ namespace LongerFenceLife
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.WoodFenceLife,
                                      (float value) => Config.WoodFenceLife = value,
-                                     () => i18n.Get("woodFence.Label"),
-                                     () => i18n.Get("woodFence.tooltip"),
+                                     () => I18nGet("woodFence.Label"),
+                                     () => I18nGet("woodFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
                                      interval: 0.1f);
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.StoneFenceLife,
                                      (float value) => Config.StoneFenceLife = value,
-                                     () => i18n.Get("stoneFence.Label"),
-                                     () => i18n.Get("stoneFence.tooltip"),
+                                     () => I18nGet("stoneFence.Label"),
+                                     () => I18nGet("stoneFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
                                      interval: 0.1f);
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.IronFenceLife,
                                      (float value) => Config.IronFenceLife = value,
-                                     () => i18n.Get("ironFence.Label"),
-                                     () => i18n.Get("ironFence.tooltip"),
+                                     () => I18nGet("ironFence.Label"),
+                                     () => I18nGet("ironFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
                                      interval: 0.1f);
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.HardwoodFenceLife,
                                      (float value) => Config.HardwoodFenceLife = value,
-                                     () => i18n.Get("hardwoodFence.Label"),
-                                     () => i18n.Get("hardwoodFence.tooltip"),
+                                     () => I18nGet("hardwoodFence.Label"),
+                                     () => I18nGet("hardwoodFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
                                      interval: 0.1f);
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.GateLife,
                                      (float value) => Config.GateLife = value,
-                                     () => i18n.Get("gate.Label"),
-                                     () => i18n.Get("gate.tooltip"),
+                                     () => I18nGet("gate.Label"),
+                                     () => I18nGet("gate.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
                                      interval: 0.1f);
