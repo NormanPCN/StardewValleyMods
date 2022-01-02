@@ -27,6 +27,14 @@ namespace LongerFenceLife
         const int HwFence = 298;//-8 placed
         const int Gate = 325;//-9 placed
 
+        internal bool Debug;
+
+#if MyTest
+        const LogLevel LogType = LogLevel.Debug;
+#else
+        const LogLevel LogType = LogLevel.Trace;
+#endif
+
         public String I18nGet(String str)
         {
             return MyHelper.Translation.Get(str);
@@ -89,6 +97,11 @@ namespace LongerFenceLife
             Config.IronFenceLife = ClampRange(Config.IronFenceLife);
             Config.HardwoodFenceLife = ClampRange(Config.HardwoodFenceLife);
             Config.GateLife = ClampRange(Config.GateLife);
+            Debug = Config.Debug;
+
+#if MyTest
+            Debug = true;
+#endif
 
             // use GMCM in an optional manner.
 
@@ -153,28 +166,26 @@ namespace LongerFenceLife
         /// <param name="e">The event arguments.</param>
 		private void Player_InventoryChanged(object sender, InventoryChangedEventArgs e)
         {
-#if MyTest
-            Monitor.Log("Inventory Changed", LogLevel.Debug);
-#endif
-
             Item grabbed = Game1.player.mostRecentlyGrabbedItem;
-            if ((grabbed != null) && e.IsLocalPlayer && Context.IsPlayerFree)
-            {
-#if MyTest
-                Monitor.Log("Fence Drop Test", LogLevel.Debug);
-#endif
+            if (grabbed == null)
+                return;
 
+            int idx = grabbed.ParentSheetIndex;
+            if (
+                //e.IsLocalPlayer &&
+                Context.IsPlayerFree &&
+                (((idx >= WoodFence) && (idx <= Gate)) || (idx == HwFence))
+               //(
+               // (idx == WoodFence) ||
+               // (idx == StoneFence) ||
+               // (idx == HwFence) ||
+               // (idx == IronFence) ||
+               // (idx == Gate)
+               //) &&
+               )
+            {
                 Vector2 tilePosition = Game1.currentCursorTile;
-                int idx = grabbed.ParentSheetIndex;
                 if (
-                    (((idx >= WoodFence) && (idx <= Gate)) || (idx == HwFence)) &&
-                    //(
-                    // (idx == WoodFence) ||
-                    // (idx == StoneFence) ||
-                    // (idx == HwFence) ||
-                    // (idx == IronFence) ||
-                    // (idx == Gate)
-                    //) &&
                     (e.QuantityChanged.FirstOrDefault(x => x.Item == grabbed) is ItemStackSizeChange item) &&
                     (item.NewSize+1 == item.OldSize) &&
                     Game1.currentLocation.Objects.ContainsKey(tilePosition) &&
@@ -221,12 +232,24 @@ namespace LongerFenceLife
                     fence.maxHealth.Value = fence.health.Value;
                     //fence.ResetHealth((baseHealth * mult) - baseHealth);
 
-                    Monitor.Log($"health after={fence.health.Value}, health before={before}, idx={idx},{fence.ParentSheetIndex}",
-#if MyTest
-                                LogLevel.Debug);
-#else
-                                LogLevel.Trace);
-#endif
+                    if (Debug)
+                        Monitor.Log($"health after={fence.health.Value}, health before={before}, idx={idx},{fence.ParentSheetIndex}", LogType);
+                }
+                else if (Debug)
+                {
+                    if (e.QuantityChanged.FirstOrDefault(x => x.Item == grabbed) is ItemStackSizeChange itemD)
+                    {
+                        Monitor.Log($"item newSize={itemD.NewSize}, oldSize={itemD.OldSize}", LogType);
+                        if (Game1.currentLocation.Objects.ContainsKey(tilePosition))
+                        {
+                            if (Game1.currentLocation.Objects[tilePosition] is not StardewValley.Fence)
+                                Monitor.Log("Failing is Fence", LogType);
+                        }
+                        else
+                            Monitor.Log("Failing ContainsKey", LogType);
+                    }
+                    else
+                        Monitor.Log("Failing FirstOrDefault", LogType);
                 }
             }
         }

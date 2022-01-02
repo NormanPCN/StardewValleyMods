@@ -17,6 +17,7 @@ GlobalSuppressions.cs
 packages/
 
 #Misc
+nexus/
 *.zip
 *.lnk
 *.mp4

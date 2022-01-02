@@ -18,6 +18,7 @@ CombatControlsRedux.xml
 packages/
 
 #Misc
+nexus/
 *.zip
 *.lnk
 *.mp4

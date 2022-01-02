@@ -12,6 +12,18 @@ See the GNU General Public License for more details.
 I don't really care if you redistribute it or alter it or use it in compilations.
 I'd ask that you give credit to myself, that's all.
 
+Source code is available at
+https://github.com/NormanPCN/StardewValleyMods/tree/main/LongerFenceLife
+
+## Description
+
+### Fence Life
+Sets a multiplier for the default game fence life. 1.0 gives the vanilla game fence life.
+You can set the life anywhere from 0.5 to 5.0. Yes, you can make the life shorter should you so desire.
+
+This mod detects when you drop/place a fence from your inventory. At that time, it adjusts the health to the modified value.
+After this point, all game functions with respect to life/health function normally as in the vanilla game. This mod is hands off after placement.
+
 ## Config
 
 config.json is available to edit and configure the Mods functions.
@@ -25,20 +37,24 @@ You can configure from the game title screen and/or during the game.
 GMCM is available at https://www.nexusmods.com/stardewvalley/mods/5098
 The NexusMods page shows the locations of the GMCM config button(s).
 
-## Description
+### Config options
 
-### Fence Life
-Sets a multiplier for the default game fence life. 1.0 gives the vanilla fence life.
-You can set the life anywhere from 0.5 to 5.0.
-This mod detects when you drop/place a fence from your inventory. At that time it changes the health to the modified value.
-After this point, all game functions wiuth respect to life/health function normally as in the vanilla game. The mod is hands off in this regard.
-Wood Fence Life: Defualt = 2.0 (approx 1 year)
-Stone Fence Life: Default = 2.0 (approx 2 years)
-Iron Fence Life: Default = 1.3 (approx 3 years)
-Hardwood Fence Life: Default = 1.0 (approx 5 years)
-Gate Life: Default = 1.0 (approx 4 years)
+- Wood Fence Life: Default = 2.0 (approx 1 year)
+- Stone Fence Life: Default = 2.0 (approx 2 years)
+- Iron Fence Life: Default = 1.3 (approx 3 years)
+- Hardwood Fence Life: Default = 1.0 (approx 5 years)
+- Gate Life: Default = 1.0 (approx 4 years)
+
+
+## Fence Trivia
+If you remove an existing fence before it's life is less than half of it's starting life, then you get the fence item back into your inventory. 
+You can then place the fence again with full life. Doing this you can avoid fence decay forever. At the cost of a bit of labor.
+
+
+The game has what I would call a bug, where if a gate **replaces an existing** fence post, the gate keeps the fence post life. 
+The gate does not get the life for gates. Gates have a longer life than all fence types except hardwood fences.
 
 ## Changlog
 
-v1.0.0 (xx/xx/2021):  
+v1.0.0:  
  Initial release. 

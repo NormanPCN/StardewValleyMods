@@ -6,6 +6,6 @@
   "UniqueID": "NormanPCN.LongerFenceLife",
   "EntryDll": "LongerFenceLife.dll",
   "MinimumApiVersion": "3.13.0",
-  "UpdateKeys": [],
+  "UpdateKeys": ["Nexus:10498"],
   "Dependencies": []
 }

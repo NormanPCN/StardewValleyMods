@@ -7,6 +7,7 @@
         public float IronFenceLife = 1.3f;
         public float HardwoodFenceLife = 1.0f;
         public float GateLife = 1.0f;
+        public bool Debug = false;
     }
 }
 
