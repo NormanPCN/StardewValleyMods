@@ -19,7 +19,7 @@ https://github.com/NormanPCN/StardewValleyMods/tree/main/LongerFenceLife
 
 ### Fence Life
 Sets a multiplier for the default game fence life. 1.0 gives the vanilla game fence life.
-You can set the life anywhere from 0.5 to 5.0. Yes, you can make the life shorter should you so desire.
+You can set the life anywhere from less than the game base life to many times the base life. Yes, you can make the life shorter should you so desire.
 
 This mod detects when you drop/place a fence from your inventory. At that time, it adjusts the health to the modified value.
 After this point, all game functions with respect to life/health function normally as in the vanilla game. This mod is hands off after placement.
@@ -39,19 +39,31 @@ The NexusMods page shows the locations of the GMCM config button(s).
 
 ### Config options
 
-- Wood Fence Life: Default = 2.0 (approx 1 year)
-- Stone Fence Life: Default = 2.0 (approx 2 years)
-- Iron Fence Life: Default = 1.3 (approx 3 years)
-- Hardwood Fence Life: Default = 1.0 (approx 5 years)
-- Gate Life: Default = 1.0 (approx 4 years)
+- Wood Fence Life:  
+Base life is approximately 1/2 year.  
+A value of 2.0 will give a life of approximately 1 year.
+
+- Stone Fence Life:  
+Base life is approximately 1 year.  
+A value of 2.0 will give a life of approximately 2 years.
+
+- Iron Fence Life:  
+Base life is approximately 2.25 years.  
+A value of 1.3 will give a life of approximately 3 years.
+
+- Hardwood Fence Life:  
+Base life is approximately 5 years.
+
+- Gate Life:  
+Base life is approximately 4 years.
 
 
 ## Fence Trivia
 If you remove an existing fence before it's life is less than half of it's starting life, then you get the fence item back into your inventory. 
-You can then place the fence again with full life. Doing this you can avoid fence decay forever. At the cost of a bit of labor.
+You can then place the fence again with full life. By doing this you can avoid fence decay forever. At the cost of a bit of labor.
 
 
-The game has what I would call a bug, where if a gate **replaces an existing** fence post, the gate keeps the fence post life. 
+The game has what I would call a bug, where if a gate replaces an **existing** fence post, the gate keeps the fence post life. 
 The gate does not get the life for gates. Gates have a longer life than all fence types except hardwood fences.
 
 ## Changlog
