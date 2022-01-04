@@ -63,12 +63,12 @@ For swords and clubs.
 
 > ### Sword Secondary Attack Dash  
 > Config setting = SwordSpecialSlickMove. Default = true.  
-> A quick dash while using the secondary attack (right click). Use by hitting the use tool (attack) button immediately after the secondary attack and moving in the direction you want to dash. You can use this to close distance while blocking, or dash across a gap during the block.
+> A quick dash while using the secondary attack (right click). Use by hitting the use tool button (left click) immediately after the secondary attack and moving in the direction you want to dash. You can use this to close distance while blocking, or dash across a gap during the block.
 > Enabled for swords.
 
 > ### Club Special Slick Move  
 > Config setting = ClubSpecialSlickMove. Default = false.  
-> This allows the club special attack to do the sliding/dashing slick move. Use by hitting the use tool (attack) button immediately after the secondary attack.
+> This allows the club special attack to do the sliding/dashing slick move. Use by hitting the use tool button (left click) immediately after the secondary attack (right click).
 > One may not want the club special area attack to move the player during the attack. This can help you keep your distance from enemies. 
 
 > ### Slide Velocity  

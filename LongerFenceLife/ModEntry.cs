@@ -166,22 +166,15 @@ namespace LongerFenceLife
         /// <param name="e">The event arguments.</param>
 		private void Player_InventoryChanged(object sender, InventoryChangedEventArgs e)
         {
-            Item grabbed = Game1.player.mostRecentlyGrabbedItem;
+            Item grabbed = e.Player.mostRecentlyGrabbedItem;
             if (grabbed == null)
                 return;
 
             int idx = grabbed.ParentSheetIndex;
             if (
-                //e.IsLocalPlayer &&
+                (((idx >= WoodFence) && (idx <= Gate)) || (idx == HwFence)) &&
                 Context.IsPlayerFree &&
-                (((idx >= WoodFence) && (idx <= Gate)) || (idx == HwFence))
-               //(
-               // (idx == WoodFence) ||
-               // (idx == StoneFence) ||
-               // (idx == HwFence) ||
-               // (idx == IronFence) ||
-               // (idx == Gate)
-               //) &&
+                e.IsLocalPlayer
                )
             {
                 Vector2 tilePosition = Game1.currentCursorTile;
@@ -190,7 +183,6 @@ namespace LongerFenceLife
                     (item.NewSize+1 == item.OldSize) &&
                     Game1.currentLocation.Objects.ContainsKey(tilePosition) &&
                     (Game1.currentLocation.Objects[tilePosition] is StardewValley.Fence fence) &&
-                    //(fence != null) &&
                     (fence.GetItemParentSheetIndex() == idx)
                    )
                 {
@@ -272,7 +264,6 @@ namespace LongerFenceLife
                         if (e.Button == SButton.F6)
                             //set the life to a random few days
                             f.health.Value = Game1.random.Next(1, 5);
-                            //f.ResetHealth(Game1.random.Next(1, 4) - f.GetBaseHealthForType(f.whichType.Value));
                         else
                             f.minutesElapsed(1440, farm);//one day by fence.minutesElaspsed logic.
                     }
