@@ -19,7 +19,7 @@ namespace LongerFenceLife
         internal IModHelper MyHelper;
 
         const float MinLife = 0.5f;
-        const float MaxLife = 6.0f;
+        const float MaxLife = 10.0f;
 
         const int WoodFence = 322;//-5 placed
         const int StoneFence = 323;//-6 placed
