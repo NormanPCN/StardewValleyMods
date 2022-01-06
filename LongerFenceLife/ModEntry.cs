@@ -295,8 +295,8 @@ namespace LongerFenceLife
                         {
                             tile.Y = y;
                             if (
-                                Game1.currentLocation.Objects.ContainsKey(tile) &&
-                                (Game1.currentLocation.Objects[tile] is StardewValley.Fence fence1)
+                                location.Objects.ContainsKey(tile) &&
+                                (location.Objects[tile] is StardewValley.Fence fence1)
                                )
                             {
                                 float health = fence1.health.Value / fence1.maxHealth.Value;
@@ -316,8 +316,8 @@ namespace LongerFenceLife
 
                     tile = Game1.currentCursorTile;
                     if (
-                        Game1.currentLocation.Objects.ContainsKey(tile) &&
-                        (Game1.currentLocation.Objects[tile] is StardewValley.Fence fence2)
+                        location.Objects.ContainsKey(tile) &&
+                        (location.Objects[tile] is StardewValley.Fence fence2)
                        )
                     {
                         int daysLeft = (int)(fence2.health.Value * 1440f / 60 / 24);

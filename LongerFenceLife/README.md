@@ -69,3 +69,4 @@ v1.0.0:
 
  1.1.0
  Added a fence life display overlay and tooltip. Uses a keybind to activate.
+ Spanish translation added. Thanks. Yllelder B.
