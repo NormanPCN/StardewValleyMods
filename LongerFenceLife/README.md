@@ -57,6 +57,15 @@ Base life is approximately 5 years.
 - Gate Life:  
 Base life is approximately 4 years.
 
+- Fence life keybind
+The mod can also display the health/life status of your fences. 
+You do this by holding down a specific key. User configurable. 
+While the key is held down any fences visible on screen will have a Green, Yellow or Red overlay. 
+Green means life is greater than 66%. Yellow is 33% to 66% and red is remaining life is less than 33%. 
+This is the life relative to the maximum health of each specific fence post. 
+A tooltip is also shown if the mouse cursor is pointing at a fence post. 
+This will show the approximate number of days remaining fence life.
+
 
 ## Fence Trivia
 The game has what I would call a bug, where if a gate replaces an **existing** fence post, the gate keeps the fence post life. 
