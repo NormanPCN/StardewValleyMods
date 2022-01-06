@@ -59,10 +59,6 @@ Base life is approximately 4 years.
 
 
 ## Fence Trivia
-If you remove an existing fence before it's life is less than half of it's starting life, then you get the fence item back into your inventory. 
-You can then place the fence again with full life. By doing this you can avoid fence decay forever. At the cost of a bit of labor.
-
-
 The game has what I would call a bug, where if a gate replaces an **existing** fence post, the gate keeps the fence post life. 
 The gate does not get the life for gates. Gates have a longer life than all fence types except hardwood fences.
 
@@ -70,3 +66,6 @@ The gate does not get the life for gates. Gates have a longer life than all fenc
 
 v1.0.0:  
  Initial release. 
+
+ 1.1.0
+ Added a fence life display overlay and tooltip. Uses a keybind to activate.

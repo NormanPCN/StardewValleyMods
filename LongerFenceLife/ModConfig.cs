@@ -1,4 +1,6 @@
-﻿namespace LongerFenceLife
+﻿using StardewModdingAPI;
+
+namespace LongerFenceLife
 {
     public class ModConfig
     {
@@ -7,6 +9,7 @@
         public float IronFenceLife = 1.3f;
         public float HardwoodFenceLife = 1.0f;
         public float GateLife = 1.0f;
+        public SButton FenceLifeKeybind = SButton.OemPeriod;
         public bool Debug = false;
     }
 }

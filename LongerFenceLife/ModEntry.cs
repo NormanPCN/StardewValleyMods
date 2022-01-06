@@ -2,12 +2,14 @@
 using System.Linq;
 //using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 //using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-//using StardewValley.Tools;
+using StardewValley.Menus;
 using GenericModConfigMenu;
+//using xTile.Layers;
 
 
 namespace LongerFenceLife
@@ -26,6 +28,8 @@ namespace LongerFenceLife
         const int IronFence = 324;//-7 placed
         const int HwFence = 298;//-8 placed
         const int Gate = 325;//-9 placed
+
+        Texture2D Texture;
 
         internal bool Debug;
 
@@ -50,6 +54,14 @@ namespace LongerFenceLife
             MyHelper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
             MyHelper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
 
+            //Texture = new Texture2D(Game1.graphics.GraphicsDevice, Game1.tileSize, Game1.tileSize);
+            //Color[] arr = new Color[Game1.tileSize*Game1.tileSize];
+            //for (int i = 0; i < arr.Length; i++)
+            //    arr[i] = Color.White;
+            //Texture.SetData(arr);
+            Texture = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
+            Texture.SetData(new[] { Color.White });
+
             //Monitor.Log($"MinGameVersion={Constants.MinimumGameVersion}, MaxGameVersion={Constants.MaximumGameVersion}", LogLevel.Info);
         }
 
@@ -58,9 +70,8 @@ namespace LongerFenceLife
         /// <param name="e">The event arguments.</param>
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-#if MyTest
             MyHelper.Events.Input.ButtonPressed += Input_ButtonPressed;
-#endif
+            MyHelper.Events.Input.ButtonReleased += Input_ButtonReleased;
             MyHelper.Events.Player.InventoryChanged += Player_InventoryChanged;
         }
 
@@ -69,10 +80,10 @@ namespace LongerFenceLife
         /// <param name="e">The event arguments.</param>
         private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
-#if MyTest
             MyHelper.Events.Input.ButtonPressed -= Input_ButtonPressed;
-#endif
+            MyHelper.Events.Input.ButtonReleased -= Input_ButtonReleased;
             MyHelper.Events.Player.InventoryChanged -= Player_InventoryChanged;
+            MyHelper.Events.Display.RenderedWorld -= Display_OnRenderedWorld;
         }
 
         private static float ClampRange(float life)
@@ -152,6 +163,11 @@ namespace LongerFenceLife
                                      min: MinLife,
                                      max: MaxLife,
                                      interval: 0.1f);
+                gmcm.AddKeybind(ModManifest,
+                                () => Config.FenceLifeKeybind,
+                                (SButton value) => Config.FenceLifeKeybind = value,
+                                () => I18nGet("fenceLife.Label"),
+                                () => I18nGet("fenceLife.tooltip"));
             }
             else
             {
@@ -159,7 +175,7 @@ namespace LongerFenceLife
             };
         }
 
-        /// <summary>Called when the player inventory has changed
+        /// <summary>Called when the player inventory has changed.
         /// This method implements our detection of when a fence has been placed, and our resulting actions.
         /// </summary>
         /// <param name="sender">The event sender.</param>
@@ -246,33 +262,120 @@ namespace LongerFenceLife
             }
         }
 
-#if MyTest
+        public static Rectangle GetVisibleAreaInTiles(int expand = 0)
+        {
+            return new Rectangle(
+                x: (Game1.viewport.X / Game1.tileSize) - expand,
+                y: (Game1.viewport.Y / Game1.tileSize) - expand,
+                width: (int)Math.Ceiling(Game1.viewport.Width / (decimal)Game1.tileSize) + (expand * 2),
+                height: (int)Math.Ceiling(Game1.viewport.Height / (decimal)Game1.tileSize) + (expand * 2)
+            );
+        }
+
+        /// <summary>Raised after drawing the world to the sprite batch, but before it's rendered to the screen.
+        /// This method draws the fence display life overlay and tooltip.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private void Display_OnRenderedWorld(object sender, RenderedWorldEventArgs e)
+        {
+            if (MyHelper.Input.IsDown(Config.FenceLifeKeybind))
+            {
+                GameLocation location = Game1.currentLocation;
+                if (location != null)
+                {
+                    Vector2 view = new Vector2(Game1.viewport.X, Game1.viewport.Y);
+                    Vector2 tile = new Vector2(0, 0);
+
+                    Rectangle visibleArea = GetVisibleAreaInTiles(1);
+                    for (int x = visibleArea.X; x < visibleArea.X+visibleArea.Width; x++)
+                    {
+                        tile.X = x;
+                        for (int y = visibleArea.Y; y < visibleArea.Y+visibleArea.Height; y++)
+                        {
+                            tile.Y = y;
+                            if (
+                                Game1.currentLocation.Objects.ContainsKey(tile) &&
+                                (Game1.currentLocation.Objects[tile] is StardewValley.Fence fence1)
+                               )
+                            {
+                                float health = fence1.health.Value / fence1.maxHealth.Value;
+                                Color color = Color.Green;
+                                if (health <= 0.33)
+                                    color = Color.Red;
+                                else if (health <= 0.66)
+                                    color = Color.Yellow;
+
+                                Vector2 pixelPosition = tile * Game1.tileSize - view;
+                                e.SpriteBatch.Draw(Texture,
+                                                   new Rectangle((int)pixelPosition.X, (int)pixelPosition.Y, Game1.tileSize, Game1.tileSize),
+                                                   color * 0.3f);
+                            }
+                        }
+                    }
+
+                    tile = Game1.currentCursorTile;
+                    if (
+                        Game1.currentLocation.Objects.ContainsKey(tile) &&
+                        (Game1.currentLocation.Objects[tile] is StardewValley.Fence fence2)
+                       )
+                    {
+                        int daysLeft = (int)(fence2.health.Value * 1440f / 60 / 24);
+
+                        IClickableMenu.drawHoverText(e.SpriteBatch,
+                                                     MyHelper.Translation.Get("hover.tooltip", new { daysLeft = daysLeft.ToString() }),
+                                                     Game1.smallFont,
+                                                     0, 0);
+                    }
+                }
+            }
+        }
+
         /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.
-        /// This method implements an instant fence decay for testing purposes.
+        /// This method implements triggers the fence display life mechanism.///
+        /// It also implements an instant fence decay for testing purposes.
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (Context.IsPlayerFree && ((e.Button == SButton.F5) || (e.Button == SButton.F6)))
+            if (Context.IsPlayerFree)
             {
-                GameLocation farm = Game1.getLocationFromName("Farm");
-                foreach (StardewValley.Object obj in farm.objects.Values)
+                if (e.Button == Config.FenceLifeKeybind)
                 {
-                    if (obj is Fence f)
+                    MyHelper.Events.Display.RenderedWorld += Display_OnRenderedWorld;
+                }
+                else
+                {
+#if MyTest
+                    if ((e.Button == SButton.F5) || (e.Button == SButton.F6) || (e.Button == SButton.F7))
                     {
-                        if (e.Button == SButton.F6)
-                            //set the life to a random few days
-                            f.health.Value = Game1.random.Next(1, 5);
-                        else
-                            f.minutesElapsed(1440, farm);//one day by fence.minutesElaspsed logic.
+                        GameLocation farm = Game1.getLocationFromName("Farm");
+                        foreach (StardewValley.Object obj in farm.objects.Values)
+                        {
+                            if (obj is Fence f)
+                            {
+                                if (e.Button == SButton.F6)
+                                    f.health.Value = Game1.random.Next(1, 10);
+                                else if (e.Button == SButton.F7)
+                                    f.health.Value = f.maxHealth.Value * (float)Game1.random.NextDouble();
+                                else
+                                    f.minutesElapsed(1440, farm);//one day by fence.minutesElaspsed logic.
+                            }
+                        }
                     }
+#endif
                 }
             }
         }
-#endif
-
+        
+        private void Input_ButtonReleased(object sender, ButtonReleasedEventArgs e)
+        {
+            if (e.Button == Config.FenceLifeKeybind)
+            {
+                MyHelper.Events.Display.RenderedWorld -= Display_OnRenderedWorld;
+            }
+        }
     }
-
 }
 
