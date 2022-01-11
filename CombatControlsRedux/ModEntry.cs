@@ -104,7 +104,8 @@ namespace CombatControlsRedux
 
             // use GMCM in an optional manner.
 
-            IGenericModConfigMenuApi gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            //IGenericModConfigMenuApi gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            var gmcm = Helper.ModRegistry.GetGenericModConfigMenuApi(this.Monitor);
             if (gmcm != null)
             {
                 gmcm.Register(ModManifest,

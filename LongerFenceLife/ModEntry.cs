@@ -116,7 +116,8 @@ namespace LongerFenceLife
 
             // use GMCM in an optional manner.
 
-            IGenericModConfigMenuApi gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            //IGenericModConfigMenuApi gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            var gmcm = Helper.ModRegistry.GetGenericModConfigMenuApi(this.Monitor);
             if (gmcm != null)
             {
                 gmcm.Register(ModManifest,
@@ -299,11 +300,16 @@ namespace LongerFenceLife
                                 (location.Objects[tile] is StardewValley.Fence fence1)
                                )
                             {
-                                float health = fence1.health.Value / fence1.maxHealth.Value;
                                 Color color = Color.Green;
-                                if (health <= 0.33)
+                                //float health = fence1.health.Value / fence1.maxHealth.Value;
+                                //if (health <= 0.33)
+                                //    color = Color.Red;
+                                //else if (health <= 0.66)
+                                //    color = Color.Yellow;
+                                int daysLeft = (int)(fence1.health.Value * 1440f / 60 / 24);
+                                if (daysLeft <= 28)
                                     color = Color.Red;
-                                else if (health <= 0.66)
+                                else if (daysLeft <= 56)
                                     color = Color.Yellow;
 
                                 Vector2 pixelPosition = tile * Game1.tileSize - view;

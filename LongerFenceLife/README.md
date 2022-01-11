@@ -61,8 +61,7 @@ Base life is approximately 4 years.
 The mod can also display the health/life status of your fences. 
 You do this by holding down a specific key. User configurable. 
 While the key is held down any fences visible on screen will have a Green, Yellow or Red overlay. 
-Green means life is greater than 66%. Yellow is 33% to 66% and red is remaining life is less than 33%. 
-This is the life relative to the maximum health of each specific fence post. 
+Green means life is greater than 2 months. Yellow is greater than 1 month. Red is remaining life is less than one month. 
 A tooltip is also shown if the mouse cursor is pointing at a fence post. 
 This will show the approximate number of days remaining fence life.
 
