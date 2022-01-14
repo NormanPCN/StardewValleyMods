@@ -21,7 +21,6 @@ namespace GenericModConfigMenu
             IManifest manifest = modRegistry.Get(uniqueId)?.Manifest;
             if (manifest == null)
                 return null;
-            TInterface api = modRegistry.GetApi<TInterface>(uniqueId);
 
             // check version
             if (manifest.Version.IsOlderThan(minVersion))
@@ -30,7 +29,8 @@ namespace GenericModConfigMenu
                 return null;
             }
 
-            // check API
+            // fetch API
+            TInterface api = modRegistry.GetApi<TInterface>(uniqueId);
             if (api == null)
             {
                 monitor.Log($"Detected {label}, but couldn't fetch its API. Disabled integration with this mod.", LogLevel.Warn);
