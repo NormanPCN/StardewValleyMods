@@ -1,6 +1,8 @@
 {
   "mouseFix.label": "Mouse Fix",
-  "mouseFix.tooltip": "Turns the character in the general direction of your cursor click.",
+  "mouseFix.tooltip": "Turns the character in the general direction of your cursor click. (Mouse or Keyboard)",
+  "controllerFix.label": "Controller Fix",
+  "controllerFix.tooltip": "Like Mouse fix but for controller input. In split screen play, this allows the mouse player to have the fix and controller player to not have the fix.",
   "autoSwing.label": "Auto Swing",
   "autoSwing.tooltip": "This enables weapon auto swing for swords and clubs while the use tool button (left click) is held down.",
   "autoSwingDagger.label": "Auto Swing Dagger",

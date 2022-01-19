@@ -2,9 +2,8 @@
 {
     public class ModConfig
     {
-        public bool Debug = false;//undocumented, and unused right now.
-
         public bool MouseFix = true;
+        public bool ControllerFix = false;
 
         public bool AutoSwing = false;
         public bool AutoSwingDagger = true;
@@ -15,6 +14,10 @@
 
         public float SlideVelocity = 4f;
         public float SpecialSlideVelocity = 2.8f;
+
+        //undocumented options
+        public bool Debug = false;//unused right now.
+        public bool NearTileFacingFix = false;
     }
 }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Tools;
 using GenericModConfigMenu;
@@ -13,19 +14,21 @@ using GenericModConfigMenu;
     The NexusMods page lists permission as
     "You are allowed to modify my files and release bug fixes or improve on the features so long as you credit me as the original creator"
 
-    This source changes most things from the original but the core functions of the original Mod are unchanged. "how it works".
+    This source changes most things from the original source but the core functions of the original Mod are unchanged. "how it works".
         the facing direction change logic.
         the slick moves velocity tweaks logic.
 
     Additions/changes to the original Mod
         implemented config file support.
           added Generic Mod Config menu support with i18n internationalization support.
-        facing direction change (MouseFix) on melee weapons/tools only. (left-click, use tool button).
-        facing direction change for dagger special attack. (right-click, action button).
+        facing direction change (MouseFix) on melee weapons/tools only. (left-click, use tool button, controllers).
+           config to disable the direction fix for the controllers.
+        Split screen support 
+        facing direction change for dagger special attack. (right-click, action button, controllers).
         separate control for slick moves on sword and club.
         auto swing with separate control for sword/club and dagger.
         slick moves disabled for daggers and scythe. there were issues here anyway.
-        added slick move velocity config settings.
+        added slick move velocity config settings. separate velocity for special and not special slides.
         
 
     Combat Controls Redux is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  
@@ -43,28 +46,28 @@ namespace CombatControlsRedux
 {
     public class ModEntry : Mod
     {
+        private class PerScreenData
+        {
+            public int TickCountdown = 0;
+            public bool IsHoldingAttack = false;
+            public int MyFacingDirection = -1;
+        }
+
         public ModConfig Config;
 
         internal IModHelper MyHelper;
         //private IReflectedMethod PerformFireTool;
 
-        private bool IsHoldingAttack;
-
-#if FacingDirectionPostfix
-        private int MyFacingDirection;
-#endif
 
         private const int CountdownStart = 8;
         private const int CountdownRepeat = 4;
-        private int TickCountdown;
+        private readonly PerScreen<PerScreenData> ScreenData = new(createNewState: () => new PerScreenData());
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
             MyHelper = helper;
-
-            //I18n.Init(helper.Translation);
 
             // original Mod: all config load and event hooking was done on entry. no removal.
             // entry config loads don't work when using GMCM optional. GMCM may not have been loaded yet.
@@ -82,7 +85,7 @@ namespace CombatControlsRedux
             //Monitor.Log($"MinGameVersion={Constants.MinimumGameVersion}, MaxGameVersion={Constants.MaximumGameVersion}", LogLevel.Debug);
         }
 
-        public String I18nGet(String str)
+        internal String I18nGet(String str)
         {
             return MyHelper.Translation.Get(str);
         }
@@ -118,6 +121,11 @@ namespace CombatControlsRedux
                                    () => I18nGet("mouseFix.Label"),
                                    () => I18nGet("mouseFix.tooltip"));
                 gmcm.AddBoolOption(ModManifest,
+                                   () => Config.ControllerFix,
+                                   (bool value) => Config.ControllerFix = value,
+                                   () => I18nGet("controllerFix.Label"),
+                                   () => I18nGet("controllerFix.tooltip"));
+                gmcm.AddBoolOption(ModManifest,
                                    () => Config.AutoSwing,
                                    (bool value) => Config.AutoSwing = value,
                                    () => I18nGet("autoSwing.Label"),
@@ -143,7 +151,6 @@ namespace CombatControlsRedux
                                    () => I18nGet("clubSpecial.Label"),
                                    () => I18nGet("clubSpecial.tooltip"));
 
-//#if MyTest
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.SlideVelocity,
                                      (float value) => Config.SlideVelocity = value,
@@ -160,7 +167,13 @@ namespace CombatControlsRedux
                                      min: minSlideVelocity,
                                      max: maxSlideVelocity,
                                      interval: 0.1f);
-//#endif
+
+                //gmcm.SetTitleScreenOnlyForNextOptions(ModManifest, true);
+                //gmcm.AddBoolOption(ModManifest,
+                //                   () => Config.NearTileFacingFix,
+                //                   (bool value) => Config.NearTileFacingFix = value,
+                //                   () => "Near tile facing fix",
+                //                   () => "Near tile facing fix");
             }
             else
             {
@@ -173,19 +186,18 @@ namespace CombatControlsRedux
         /// <param name="e">The event arguments.</param>
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            TickCountdown = 0;
-            IsHoldingAttack = false;
-#if FacingDirectionPostfix
-            MyFacingDirection = -1;
-#endif
+            PerScreenData screen = ScreenData.Value;
+            screen.TickCountdown = 0;
+            screen.IsHoldingAttack = false;
+            screen.MyFacingDirection = -1;
+
             //PerformFireTool = MyHelper.Reflection.GetMethod(Game1.player, "performFireTool");
 
             MyHelper.Events.Input.ButtonPressed += Input_ButtonPressed;
             MyHelper.Events.Input.ButtonReleased += Input_ButtonReleased;
             MyHelper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
-#if FacingDirectionPostfix
-            MyHelper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
-#endif
+            if (Config.NearTileFacingFix)
+                MyHelper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
         }
 
         /// <summary>Raised after a game has exited a game/save to the title screen.  Here we unhook our gameplay events.</summary>
@@ -198,9 +210,8 @@ namespace CombatControlsRedux
             MyHelper.Events.Input.ButtonPressed -= Input_ButtonPressed;
             MyHelper.Events.Input.ButtonReleased -= Input_ButtonReleased;
             MyHelper.Events.GameLoop.UpdateTicking -= GameLoop_UpdateTicking;
-#if FacingDirectionPostfix
-            MyHelper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
-#endif
+            if (Config.NearTileFacingFix)
+                MyHelper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
         }
 
         /// <summary>Raised after the player releases a button on the keyboard, controller, or mouse.</summary>
@@ -208,9 +219,10 @@ namespace CombatControlsRedux
         /// <param name="e">The event arguments.</param>
         private void Input_ButtonReleased(object sender, ButtonReleasedEventArgs e)
         {
-            if (SButtonExtensions.IsUseToolButton(e.Button)) // (e.Button == SButton.MouseLeft)
+            if (SButtonExtensions.IsUseToolButton(e.Button))
             {
-                IsHoldingAttack = false;
+                PerScreenData screen = ScreenData.Value;
+                screen.IsHoldingAttack = false;
             }
         }
 
@@ -225,25 +237,24 @@ namespace CombatControlsRedux
             bool useToolButtonPressed = SButtonExtensions.IsUseToolButton(e.Button);
             bool actionButtonPressed = SButtonExtensions.IsActionButton(e.Button);
 
+            // note: the scythe identifies itself as a melee weapon
             if (
+                (who.CurrentTool is MeleeWeapon tool) &&
                 (useToolButtonPressed || actionButtonPressed) &&
-                (who.CurrentTool != null) &&
-                (who.CurrentTool is MeleeWeapon) &&
                 Context.IsPlayerFree
                )
             {
-                // note: the scythe identifies itself as a melee weapon
+                PerScreenData screen = ScreenData.Value;
 
                 if (useToolButtonPressed)
                 {
-                    IsHoldingAttack = true;
-                    TickCountdown = CountdownStart;
+                    screen.IsHoldingAttack = true;
+                    screen.TickCountdown = CountdownStart;
                 }
 
-                if (Config.MouseFix)
+                bool controller = (e.Button == SButton.ControllerX) || (e.Button == SButton.ControllerA);
+                if ((Config.MouseFix && !controller) || (controller && Config.ControllerFix))
                 {
-
-                    MeleeWeapon tool = who.CurrentTool as MeleeWeapon;
                     bool scythe = tool.isScythe();
                     bool dagger = (tool.type.Value == MeleeWeapon.dagger);
                     bool special = tool.isOnSpecial;
@@ -321,31 +332,23 @@ namespace CombatControlsRedux
                             if (mouseDirectionX < 0f)
                             {
                                 who.FacingDirection = Game1.left;
-#if FacingDirectionPostfix
-                                MyFacingDirection = Game1.left;
-#endif
+                                screen.MyFacingDirection = Game1.left;
                             }
                             else
                             {
                                 who.FacingDirection = Game1.right;
-#if FacingDirectionPostfix
-                                MyFacingDirection = Game1.right;
-#endif
+                                screen.MyFacingDirection = Game1.right;
                             }
                         }
                         else if (mouseDirectionY < 0f)
                         {
                             who.FacingDirection = Game1.up;
-#if FacingDirectionPostfix
-                            MyFacingDirection = Game1.up;
-#endif
+                            screen.MyFacingDirection = Game1.up;
                         }
                         else
                         {
                             who.FacingDirection = Game1.down;
-#if FacingDirectionPostfix
-                            MyFacingDirection = Game1.down;
-#endif
+                            screen.MyFacingDirection = Game1.down;
                         }
                     }
                 }
@@ -358,74 +361,71 @@ namespace CombatControlsRedux
         /// <param name="e">The event arguments.</param>
         private void GameLoop_UpdateTicking(object sender, EventArgs e)
         {
-            // Test IsHoldingAttack first. It is the main logic restricter here. IsPlayerFree has a bit of code.
+            // Test IsHoldingAttack first. It is the main logic restricter here.
 
-            if (IsHoldingAttack && Context.IsPlayerFree)
+            PerScreenData screen = ScreenData.Value;
+
+            if (screen.IsHoldingAttack && Context.IsPlayerFree)
             {
                 Farmer who = Game1.player;
 
                 // this auto swing code does not work for the Scythe.
                 // I am good with that. I explicitly disable the scythe anyway.
 
-                bool melee = who.CurrentTool is MeleeWeapon;
-                bool scythe = melee && (who.CurrentTool as MeleeWeapon).isScythe();
-                bool dagger = melee && ((who.CurrentTool as MeleeWeapon).type.Value == MeleeWeapon.dagger);
-
-                if (melee && (!scythe) && ((Config.AutoSwing && !dagger) || (Config.AutoSwingDagger && dagger)))
+                if (who.CurrentTool is MeleeWeapon tool)
                 {
-                    // spamming FireTool at every tick (60/s) seems excessive. at least to me.
-                    // it seems to work with spams. don't know the overhead.
-                    // i'll reduce to every N ticks. N must be small.
-                    // too big a number and auto swing just does not work at all.
-                    // the next fire may need to be set during a current fire/swing/something.
-                    // even a little reduction seems somehow "nicer". what the heck.
-                    if (TickCountdown > 0)
+                    bool dagger = (tool.type.Value == MeleeWeapon.dagger);
+                    if ((!tool.isScythe()) && ((Config.AutoSwing && !dagger) || (Config.AutoSwingDagger && dagger)))
                     {
-                        TickCountdown -= 1;
-                    }
-                    else
-                    {
-                        // which is "better" FireTool or (private internal) PerformFireTool
-                        // Looking at the Stardew code, Perform seems to be the implementation of Fire for NetEvent.
-                        // Farmer.FireTool is just a call to NetEvent.Fire
-                        // Fire clearly has a bit over minor checking/overhead before calling the implementation.
-                        // code that we should probably have execute.
-                        // i've seen some auto swing code use performFireTool. so I wondered the diff.
+                        // spamming FireTool at every tick (60/s) seems excessive. at least to me.
+                        // it seems to work with spams. don't know the exact overhead.
+                        // i'll reduce to every N ticks. N must be small.
+                        // too big a number and auto swing just does not work at all.
+                        // the next fire may need to be set during a current fire/swing/something.
+                        // even a little reduction seems somehow "nicer". what the heck.
+                        if (screen.TickCountdown > 0)
+                        {
+                            screen.TickCountdown -= 1;
+                        }
+                        else
+                        {
+                            // which is "better" FireTool or (private internal) PerformFireTool
+                            // Looking at the Stardew code, PerformFireTool seems to be the implementation of NetEvent.Fire.
+                            // Farmer.FireTool is just a call to NetEvent.Fire
+                            // Fire clearly has a bit over minor checking/overhead before calling the implementation.
+                            // code that we should probably have execute.
+                            // i've seen some auto swing code use performFireTool. so I wondered the diff.
 
-                        who.FireTool();
-                        //PerformFireTool.Invoke();
-                        TickCountdown = CountdownRepeat;
+                            who.FireTool();
+                            //PerformFireTool.Invoke();
+                            screen.TickCountdown = CountdownRepeat;
+                        }
                     }
                 }
             }
         }
 
-
-#if FacingDirectionPostfix
         /// <summary>Raised just after the game state is updated (≈60 times per second).
         /// This method implements facing direction change correction.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
         private void GameLoop_UpdateTicked(object sender, EventArgs e)
         {
-            if (MyFacingDirection >= 0)
+            PerScreenData screen = ScreenData.Value;
+            int facing = screen.MyFacingDirection;
+            if ((facing >= 0) && (facing != Game1.player.FacingDirection))
             {
-                int facing = MyFacingDirection;
-                MyFacingDirection = -1;
+                screen.MyFacingDirection = -1;
 
-                if ((facing >= 0) && (facing != Game1.player.FacingDirection))
-                {
-                    //the game changed the facing direction we selected. set it back.
-                    //this disagreement only happens in the 8 tiles surrounding the player where the game code may set the facing direction.
-                    //re-setting this here seems to work.
-                    //this change may be happening on the next game tick.
+                //the game changed the facing direction we selected. set it back.
+                //this disagreement only happens in the 8 tiles surrounding the player where the game code may set the facing direction.
+                //re-setting the direction here seems to work well enough. I've seen some animation quirks at times.
+                //this re-change may be happening on the next game tick.
                                         
-                    //Monitor.Log($"FacingDirection different me={facing} game={Game1.player.FacingDirection}", LogLevel.Debug);
-                    Game1.player.FacingDirection = facing;
-                }
+                //Monitor.Log($"FacingDirection different me={facing} game={Game1.player.FacingDirection}", LogLevel.Debug);
+                Game1.player.FacingDirection = facing;
             }
         }
-#endif
     }
 }
 

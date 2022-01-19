@@ -38,7 +38,7 @@ This Mod is intended to be used with a mouse. That is it's reason for existence.
 This Mod does support button remapping and thus other controller types. Control from other than a mouse has not been tested.
 
 ### Fixed Mouseclick. Character facing direction  
-Config setting = MouseFix. Default = true.  
+Config setting = MouseFix.  
 Turns the character in the direction of your mouse click. This functions with Swords, Clubs, Daggers and Scythe. 
 It also operates with the dagger special attack (right click).
 Tools like the pickaxe operate as they normally do in the game.
@@ -46,40 +46,48 @@ The game's normal functions for turning a character with mouse clicks check what
 requiring that the exact tile next to the character is clicked in order to turn the character towards it.
 This mod makes it so that clicking in the general direction of a tile is enough to turn the character.
 
+### Controler fix
+Config Setting = ControllerFix.  
+Like MouseFix but for controller inputs. Can be useful in split screen mode. For when the mouse user wants the MouseFix but the controller user does not what that fix.
+
 ### Auto Swing  
-Config setting = AutoSwing. Default = false.  
+Config setting = AutoSwing.  
 Holding the Use Tool button down (left click) will continuously swing the weapon. For swords and clubs.
 
 ### Auto Swing Dagger  
-Config setting = AutoSwingDagger. Default = true.  
+Config setting = AutoSwingDagger.  
 Holding the Use Tool button down (left click) will continuously attack with a dagger. Daggers attack very fast and auto swing can be very effective.
 
 ### Slick Moves!  
-Config setting = SlickMoves. Default = true.  
+Config setting = SlickMoves.  
 Slick Moves does not function unless Mouse Fix is also enabled (true).
 When running and attacking to the sides, the character will slide along the ground while swinging the weapon.
 For swords and clubs.
 
 
 > ### Sword Secondary Attack Dash  
-> Config setting = SwordSpecialSlickMove. Default = true.  
+> Config setting = SwordSpecialSlickMove.  
 > A quick dash while using the secondary attack (right click). Use by hitting the use tool button (left click) immediately after the secondary attack and moving in the direction you want to dash. You can use this to close distance while blocking, or dash across a gap during the block.
 > Enabled for swords.
 
 > ### Club Special Slick Move  
-> Config setting = ClubSpecialSlickMove. Default = false.  
+> Config setting = ClubSpecialSlickMove.  
 > This allows the club special attack to do the sliding/dashing slick move. Use by hitting the use tool button (left click) immediately after the secondary attack (right click).
 > One may not want the club special area attack to move the player during the attack. This can help you keep your distance from enemies. 
 
 > ### Slide Velocity  
-> Config setting = SlideVelocity. Default = 4.0
+> Config setting = SlideVelocity  
 > The movement velocity of the normal attack slick moves slide. Swords and clubs. Controls the speed and distance of the slide.
 
 > ### Special Slide Velocity  
-> Config setting = SpecialSlideVelocity. Default = 2.8
+> Config setting = SpecialSlideVelocity  
 > The movement velocity for special attack slick moves. Swords and clubs. Controls the speed and distance of the slide.
 
 ## Changlog
 
-v1.0.0:  
+ v1.1.0
+ Split screen support.
+ Added a config option for controller facing direction fix.
+
+ v1.0.0:  
  Initial release. 
