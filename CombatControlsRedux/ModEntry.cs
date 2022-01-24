@@ -59,8 +59,8 @@ namespace CombatControlsRedux
         //private IReflectedMethod PerformFireTool;
 
 
-        private const int CountdownStart = 8;
-        private const int CountdownRepeat = 4;
+        private const int CountdownStart = 6;
+        private const int CountdownRepeat = 1;
         private readonly PerScreen<PerScreenData> ScreenData = new(createNewState: () => new PerScreenData());
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -378,11 +378,12 @@ namespace CombatControlsRedux
                     if ((!tool.isScythe()) && ((Config.AutoSwing && !dagger) || (Config.AutoSwingDagger && dagger)))
                     {
                         // spamming FireTool at every tick (60/s) seems excessive. at least to me.
-                        // it seems to work with spams. don't know the exact overhead.
+                        // it seems to work with spams. i don't know the exact overhead.
                         // i'll reduce to every N ticks. N must be small.
                         // too big a number and auto swing just does not work at all.
                         // the next fire may need to be set during a current fire/swing/something.
                         // even a little reduction seems somehow "nicer". what the heck.
+                        // update: fast weapons + lots of speed buffs need a real repeat short delay. maybe dump this.
                         if (screen.TickCountdown > 0)
                         {
                             screen.TickCountdown -= 1;

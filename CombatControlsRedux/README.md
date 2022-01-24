@@ -20,10 +20,9 @@ Source code is available at
 https://github.com/NormanPCN/StardewValleyMods/tree/main/CombatControlsRedux
 
 ## Config
-
-config.json is available to edit and configure the Mods functions.
- After the first time the Mod is started it will create a default config.json file in the Mods folder.
- config.json is a simple text file and easy to edit. It might be hard to find the Mods folder for some.
+config.json is available to edit and configure the Mods functions.  
+After the first time the Mod is started it will create a default config.json file in the Mods folder.  
+config.json is a simple text file and easy to edit. It might be hard to find the Mods folder for some.  
 
 Combat Controls Redux also supports the Generic Mod Config Menu (GMCM) interface.
 GMCM is a much easier way to configure Combat Controls Redux.
@@ -84,10 +83,12 @@ For swords and clubs.
 > The movement velocity for special attack slick moves. Swords and clubs. Controls the speed and distance of the slide.
 
 ## Changlog
+v1.1.1
+Fixed auto swing bug with fast weapons (+4) and one or more speed buffs.
 
- v1.1.0
- Split screen support.
- Added a config option for controller facing direction fix.
+v1.1.0
+Split screen support.  
+Added a config option for controller facing direction fix.  
 
- v1.0.0:  
- Initial release. 
+v1.0.0:  
+Initial release. 
