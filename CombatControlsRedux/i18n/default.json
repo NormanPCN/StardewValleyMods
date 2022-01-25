@@ -3,6 +3,8 @@
   "mouseFix.tooltip": "Turns the character in the general direction of your cursor click. (Mouse or Keyboard)",
   "controllerFix.label": "Controller Fix",
   "controllerFix.tooltip": "Like Mouse fix but for controller input. In split screen play, this allows the mouse player to have the fix and controller player to not have the fix.",
+  "regularToolsFix.label": "Regular Tools Fix",
+  "regularToolsFix.tooltip": "If Mouse or Contrroller fix are enabled then regular tools will get the facing direction fix. You may not be able to hit diagonal tiles with this enabled.",
   "autoSwing.label": "Auto Swing",
   "autoSwing.tooltip": "This enables weapon auto swing for swords and clubs while the use tool button (left click) is held down.",
   "autoSwingDagger.label": "Auto Swing Dagger",

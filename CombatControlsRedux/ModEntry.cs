@@ -126,6 +126,11 @@ namespace CombatControlsRedux
                                    () => I18nGet("controllerFix.Label"),
                                    () => I18nGet("controllerFix.tooltip"));
                 gmcm.AddBoolOption(ModManifest,
+                                   () => Config.RegularToolsFix,
+                                   (bool value) => Config.RegularToolsFix = value,
+                                   () => I18nGet("regularToolsFix.Label"),
+                                   () => I18nGet("regularToolsFix.tooltip"));
+                gmcm.AddBoolOption(ModManifest,
                                    () => Config.AutoSwing,
                                    (bool value) => Config.AutoSwing = value,
                                    () => I18nGet("autoSwing.Label"),
@@ -237,31 +242,37 @@ namespace CombatControlsRedux
             bool useToolButtonPressed = SButtonExtensions.IsUseToolButton(e.Button);
             bool actionButtonPressed = SButtonExtensions.IsActionButton(e.Button);
 
-            // note: the scythe identifies itself as a melee weapon
             if (
-                (who.CurrentTool is MeleeWeapon tool) &&
+                (who.CurrentTool != null) &&
                 (useToolButtonPressed || actionButtonPressed) &&
                 Context.IsPlayerFree
                )
             {
                 PerScreenData screen = ScreenData.Value;
 
-                if (useToolButtonPressed)
+                // note: the scythe identifies itself as a melee weapon
+                MeleeWeapon tool = who.CurrentTool as MeleeWeapon;
+
+                if (useToolButtonPressed && (tool != null))
                 {
                     screen.IsHoldingAttack = true;
                     screen.TickCountdown = CountdownStart;
                 }
 
                 bool controller = (e.Button == SButton.ControllerX) || (e.Button == SButton.ControllerA);
-                if ((Config.MouseFix && !controller) || (controller && Config.ControllerFix))
+                if (
+                    ((Config.MouseFix && !controller) || (controller && Config.ControllerFix)) &&
+                    ((tool != null) || Config.RegularToolsFix)
+                   )
                 {
-                    bool scythe = tool.isScythe();
-                    bool dagger = (tool.type.Value == MeleeWeapon.dagger);
-                    bool special = tool.isOnSpecial;
-                    bool swordSpecial = special && (tool.type.Value == MeleeWeapon.defenseSword);
-                    bool clubSpecial = special && (tool.type.Value == MeleeWeapon.club);
+                    bool scythe = tool?.isScythe() == true;
+                    bool dagger = (tool?.type.Value == MeleeWeapon.dagger);
+                    bool special = tool?.isOnSpecial == true;
+                    bool swordSpecial = special && (tool?.type.Value == MeleeWeapon.defenseSword);
+                    bool clubSpecial = special && (tool?.type.Value == MeleeWeapon.club);
 
                     if (
+                        (tool != null) &&
                         useToolButtonPressed &&
                         (!dagger) &&
                         (!scythe) &&

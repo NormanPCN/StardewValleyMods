@@ -49,6 +49,10 @@ This mod makes it so that clicking in the general direction of a tile is enough 
 Config Setting = ControllerFix.  
 Like MouseFix but for controller inputs. Can be useful in split screen mode. For when the mouse user wants the MouseFix but the controller user does not what that fix.
 
+### Regular Tools fix
+Config Setting = RegularToolsFix.  
+If Mouse or Controller fix are enabled then regular tools will get the facing direction fix. You may not be able to hit diagonal tiles with this enabled.
+
 ### Auto Swing  
 Config setting = AutoSwing.  
 Holding the Use Tool button down (left click) will continuously swing the weapon. For swords and clubs.
@@ -83,12 +87,15 @@ For swords and clubs.
 > The movement velocity for special attack slick moves. Swords and clubs. Controls the speed and distance of the slide.
 
 ## Changlog
+v1.2.0
+* Added a config option to allow the facing direction fix on regular tools. Pickaxe, Hoe, etc.
+
 v1.1.1
-Fixed auto swing bug with fast weapons (+4) and one or more speed buffs.
+* Fixed auto swing bug with fast weapons (+4) and one or more speed buffs.
 
 v1.1.0
-Split screen support.  
-Added a config option for controller facing direction fix.  
+* Split screen support.  
+* Added a config option for controller facing direction fix.  
 
 v1.0.0:  
-Initial release. 
+* Initial release. 
