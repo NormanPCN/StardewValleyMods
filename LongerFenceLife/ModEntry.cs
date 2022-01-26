@@ -33,7 +33,7 @@ namespace LongerFenceLife
 
         internal bool Debug;
 
-#if MyTest
+#if Debug
         const LogLevel LogType = LogLevel.Debug;
 #else
         const LogLevel LogType = LogLevel.Trace;
@@ -110,7 +110,7 @@ namespace LongerFenceLife
             Config.GateLife = ClampRange(Config.GateLife);
             Debug = Config.Debug;
 
-#if MyTest
+#if Debug
             Debug = true;
 #endif
 
@@ -223,7 +223,7 @@ namespace LongerFenceLife
                     // does inside that method to properly use the available parameter.
                     // we would be using that param outside of its intended use. health variation.
 
-                    // we just alter the health values directly. this allows us to adjust gate life.
+                    // we just alter the health values directly. this also allows us to adjust gate life.
 
                     float before = fence.health.Value;
                     float baseHealth = before / 2.0f;
@@ -295,10 +295,7 @@ namespace LongerFenceLife
                         for (int y = visibleArea.Y; y < visibleArea.Y+visibleArea.Height; y++)
                         {
                             tile.Y = y;
-                            if (
-                                location.Objects.ContainsKey(tile) &&
-                                (location.Objects[tile] is StardewValley.Fence fence1)
-                               )
+                            if (location.Objects.ContainsKey(tile) && (location.Objects[tile] is StardewValley.Fence fence1))
                             {
                                 Color color = Color.Green;
                                 //float health = fence1.health.Value / fence1.maxHealth.Value;
@@ -321,10 +318,7 @@ namespace LongerFenceLife
                     }
 
                     tile = Game1.currentCursorTile;
-                    if (
-                        location.Objects.ContainsKey(tile) &&
-                        (location.Objects[tile] is StardewValley.Fence fence2)
-                       )
+                    if (location.Objects.ContainsKey(tile) && (location.Objects[tile] is StardewValley.Fence fence2))
                     {
                         int daysLeft = (int)(fence2.health.Value * 1440f / 60 / 24);
 
@@ -351,9 +345,8 @@ namespace LongerFenceLife
                 {
                     MyHelper.Events.Display.RenderedWorld += Display_OnRenderedWorld;
                 }
-                else
+                else if (Debug)
                 {
-#if MyTest
                     if ((e.Button == SButton.F5) || (e.Button == SButton.F6) || (e.Button == SButton.F7))
                     {
                         GameLocation farm = Game1.getLocationFromName("Farm");
@@ -370,7 +363,6 @@ namespace LongerFenceLife
                             }
                         }
                     }
-#endif
                 }
             }
         }
