@@ -7,5 +7,7 @@
   "EntryDll": "CombatControlsRedux.dll",
   "MinimumApiVersion": "3.13.0",
   "UpdateKeys": ["Nexus:10496"],
-  "Dependencies": []
+  "Dependencies": [
+    {"UniqueID": "spacechase0.GenericModConfigMenu", "IsRequired": false}
+  ]
 }

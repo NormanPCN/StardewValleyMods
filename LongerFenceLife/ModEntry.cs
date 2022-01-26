@@ -73,6 +73,7 @@ namespace LongerFenceLife
             MyHelper.Events.Input.ButtonPressed += Input_ButtonPressed;
             MyHelper.Events.Input.ButtonReleased += Input_ButtonReleased;
             MyHelper.Events.Player.InventoryChanged += Player_InventoryChanged;
+            //MyHelper.Events.World.ObjectListChanged += World_ObjectListChanged;
         }
 
         /// <summary>Raised after a game has exited a game/save to the title screen.  Here we unhook our gameplay events.</summary>
@@ -83,6 +84,7 @@ namespace LongerFenceLife
             MyHelper.Events.Input.ButtonPressed -= Input_ButtonPressed;
             MyHelper.Events.Input.ButtonReleased -= Input_ButtonReleased;
             MyHelper.Events.Player.InventoryChanged -= Player_InventoryChanged;
+            //MyHelper.Events.World.ObjectListChanged -= World_ObjectListChanged;
             MyHelper.Events.Display.RenderedWorld -= Display_OnRenderedWorld;
         }
 
@@ -176,12 +178,49 @@ namespace LongerFenceLife
             };
         }
 
+        //private void World_ObjectListChanged(object sender, ObjectListChangedEventArgs e)
+        //{
+        //    if (
+        //        Context.IsPlayerFree &&
+        //        e.IsCurrentLocation &&
+        //        (e.Added != null)
+        //       )
+        //    {
+        //        foreach (var item in e.Added)
+        //        {
+        //            if (item.Value is StardewValley.Fence fence)
+        //            {
+        //                float before = fence.health.Value;
+        //                float baseHealth = before / 2.0f;
+        //                int idx = fence.GetItemParentSheetIndex();
+        //                float mult = idx switch
+        //                {
+        //                    WoodFence => Config.WoodFenceLife,
+        //                    StoneFence => Config.StoneFenceLife,
+        //                    IronFence => Config.IronFenceLife,
+        //                    Gate => Config.GateLife,
+        //                    HwFence => Config.HardwoodFenceLife,
+        //                    _ => 1.0f,
+        //                };
+
+        //                fence.health.Value = before * mult;
+        //                fence.maxHealth.Value = fence.health.Value;
+        //                //fence.ResetHealth((baseHealth * mult) - baseHealth);
+
+        //                if (Debug)
+        //                    Monitor.Log($"health after={fence.health.Value}, health before={before}, idx={idx}", LogType);
+        //            }
+        //        }
+        //    }
+        //}
+
         /// <summary>Called when the player inventory has changed.
         /// This method implements our detection of when a fence has been placed, and our resulting actions.
+        /// We cannot use the ObjectListChanged event because in a fence repair situation we do not receive any event.
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-		private void Player_InventoryChanged(object sender, InventoryChangedEventArgs e)
+        private void Player_InventoryChanged(object sender, InventoryChangedEventArgs e)
         {
             Item grabbed = e.Player.mostRecentlyGrabbedItem;
             if (grabbed == null)
