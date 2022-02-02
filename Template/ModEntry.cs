@@ -29,8 +29,6 @@ namespace TemplateMod
             MyHelper.Events.GameLoop.GameLaunched += OnGameLaunched;
             MyHelper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
             MyHelper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
-
-            //Monitor.Log($"MinGameVersion={Constants.MinimumGameVersion}, MaxGameVersion={Constants.MaximumGameVersion}", LogLevel.Info);
         }
 
         /// <summary>Raised after the game has loaded and all Mods are loaded. Here we load the config.json file and setup GMCM </summary>
@@ -42,7 +40,8 @@ namespace TemplateMod
 
             // use GMCM in an optional manner.
 
-            IGenericModConfigMenuApi gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            //IGenericModConfigMenuApi gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            var gmcm = Helper.ModRegistry.GetGenericModConfigMenuApi(this.Monitor);
             if (gmcm != null)
             {
                 gmcm.Register(ModManifest,
@@ -132,7 +131,26 @@ namespace TemplateMod
 		{
         }
 
-        /// <summary>Raised when the game state is about to be updated (≈60 times per second).
+        /// <summary>Called when the an object has been added/removed from a game location/,map
+        /// This method implements...
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>        
+        private void World_ObjectListChanged(object sender, ObjectListChangedEventArgs e)
+        {
+           if (
+               Context.IsPlayerFree &&
+               e.IsCurrentLocation &&
+               (e.Added != null)
+              )
+           {
+               foreach (var item in e.Added)
+               {
+               }
+           }
+        }
+
+                /// <summary>Raised when the game state is about to be updated (≈60 times per second).
         /// This method implements... </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
