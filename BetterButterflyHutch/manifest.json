@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Better Butterfly Hutch",
+  "Author": "NormanPCN",
+  "Version": "1.0.0",
+  "Description": "Control the number of butterflies spawned by the butterfly hutch",
+  "UniqueID": "NormanPCN.BetterButterflyHutch",
+  "EntryDll": "BetterButterflyHutch.dll",
+  "MinimumApiVersion": "3.13.0",
+  "UpdateKeys": [ "Nexus:11166" ],
+  "Dependencies": [
+    {
+      "UniqueID": "spacechase0.GenericModConfigMenu",
+      "IsRequired": false
+    }
+  ]
+}

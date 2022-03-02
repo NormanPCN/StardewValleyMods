@@ -1,0 +1,12 @@
+{
+  "minIndoors.Label": "Minimum indoors",
+  "minIndoors.tooltip": "The minimum number of butterflies to spawn in the hutch location. A value of zero disables the mod.",
+  "maxIndoors.Label": "Maximum indoors",
+  "maxIndoors.tooltip": "The maximum number of butterflies to spawn in the hutch location.",
+  "minOutdoors.Label": "Minimum outdoors",
+  "minOutdoors.tooltip": "The minimum number of butterflies to spawn in the hutch location. A value of zero disables the mod.",
+  "maxOutdoors.Label": "Maximum outdoors",
+  "maxOutdoors.tooltip": "The maximum number of butterflies to spawn in the hutch location.",
+  "numBatWings.Label": "Bat Wings to trade",
+  "numBatWings.tooltip": "Number of Bat Wings to trade for the Butterfly Hutch at the Desert Trader. Vanilla default is 200."
+}
