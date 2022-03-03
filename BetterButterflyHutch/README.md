@@ -19,11 +19,14 @@ https://github.com/NormanPCN/StardewValleyMods/tree/main/BetterButterflyHutch
 
 I like to put a Butterfly Hutch in the Greenhouse. The butterfly hutch in the game all too often spawns very few butterflies. I got tired of this so I wrote this mod.
 
-This mod lets you specify a range for the number of butterflies to spawn in the location of the hutch. You can specify different ranges for indoor and outdoor locations. This mod also lets you set the number of Bat Wings required in trade for a hutch at the Desert Trader. The Vanilla value is quite high given that the Hutch really does nothing functional.
+This mod lets you specify a range for the number of butterflies to spawn in the location of the hutch.  
+You can specify different ranges for indoor and outdoor locations.  
+This mod also lets you set the number of Bat Wings required in trade for a hutch at the Desert Trader.  
+The Vanilla value is quite high given that the Hutch really does nothing functional.
 
 ### Placing a butterfly hutch outdoors.
 The game code for the Butterfly Hutch will spawn butterflies in the rain, snow or wind with debris. That is a bit silly.  
-The Hutch game code will spawn butterflies after dark.
+The Hutch game code will spawn butterflies after dark.  
 Ambient butterflies do not spawn in those conditions.  
 This mod will not spawn butterfies in those conditions and will remove hutch butterflies spawned in those conditions.
 
