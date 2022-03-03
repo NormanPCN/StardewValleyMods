@@ -8,24 +8,27 @@ using StardewValley.BellsAndWhistles;
 using GenericModConfigMenu;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
+using Helpers;
 
 namespace BetterButterflyHutch
 {
     public class ModEntry : Mod
     {
-        public static ModEntry Instance;
-        public static ModConfig Config;
+        internal static ModConfig Config;
+        internal static bool Debug;
+        internal static Logger Log;
+
         public const int MaxMaxButterflies = 64;
         public const int MaxMinButterflies = MaxMaxButterflies;
         public const int MinBatWings = 10;
         public const int MaxBatWings = 200;
         public const int HutchIdx = 1971;
 
-        private Random Rand;
+        internal static Random Rand;
 
         internal IModHelper MyHelper;
 
-        public String I18nGet(String str)
+        internal String I18nGet(String str)
         {
             return MyHelper.Translation.Get(str);
         }
@@ -35,7 +38,8 @@ namespace BetterButterflyHutch
         public override void Entry(IModHelper helper)
         {
             MyHelper = helper;
-            Instance = this;
+            Log = new Logger(this.Monitor);
+
 
             MyHelper.Events.GameLoop.GameLaunched += OnGameLaunched;
             MyHelper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
@@ -69,8 +73,10 @@ namespace BetterButterflyHutch
             Config.MaxOutdoors = Clamp(Config.MaxOutdoors, 1, MaxMaxButterflies);
             NormalizeMinMax();
             Config.NumBatWings = Math.Min(MaxBatWings, Math.Max(MinBatWings, Config.NumBatWings));
+
+            Debug = Config.Debug;
 #if DEBUG
-            Config.Debug = true;
+            Debug = true;
 #endif
 
             var harmony = new Harmony(this.ModManifest.UniqueID);
@@ -93,7 +99,7 @@ namespace BetterButterflyHutch
                 }
                 catch (Exception ex)
                 {
-                    ModEntry.Instance.Monitor.Log($"Failed Harmony Furniture Patches:\n{ex}", LogLevel.Error);
+                    Log.Error($"Failed Harmony Furniture Patches:\n{ex}");
                     Config.UseHarmony = false;
                 }
             }
@@ -119,7 +125,7 @@ namespace BetterButterflyHutch
                                      () => Config.MaxIndoors,
                                      (int value) => { Config.MaxIndoors = value; NormalizeMinMax(); },
                                      () => I18nGet("maxIndoors.Label"),
-                                     () => I18nGet("maxIntdoors.Tooltip"),
+                                     () => I18nGet("maxIndoors.Tooltip"),
                                      min: 1,
                                      max: MaxMaxButterflies);
                 gmcm.AddNumberOption(ModManifest,
@@ -152,7 +158,7 @@ namespace BetterButterflyHutch
             }
             else
             {
-                Monitor.LogOnce("Generic Mod Config Menu not available.", LogLevel.Info);
+                Log.LogOnce("Generic Mod Config Menu not available.");
             };
         }
 
@@ -174,7 +180,7 @@ namespace BetterButterflyHutch
                 MyHelper.Events.Player.Warped -= Player_Warped;
         }
 
-        internal static int CountButterflies(GameLocation loc)
+        private static int CountButterflies(GameLocation loc)
         {
             int count = 0;
             if (loc.critters != null)
@@ -188,7 +194,7 @@ namespace BetterButterflyHutch
             return count;
         }
 
-        internal static void SpawnButterflies(GameLocation loc, int hutchCount, Rectangle? boundingBox)
+        private static void SpawnButterflies(GameLocation loc, int hutchCount, Rectangle? boundingBox)
         {
             // if the hutch did not spawn anything, then we will not
             if (hutchCount > 0)
@@ -233,14 +239,14 @@ namespace BetterButterflyHutch
                             // the game will not spawn ambient butterfies in these conditions.
                             // so just remove all butterflies
 
-                            if (Config.Debug)
-                                Instance.Monitor.Log($"Remove Butterflies. critters={loc.critters.Count}", LogLevel.Debug);
+                            if (Debug)
+                                Log.Debug($"Remove Butterflies. critters={loc.critters.Count}");
                             for (int i = loc.critters.Count - 1; i >= 0; i--)
                             {
                                 if (loc.critters[i] is Butterfly)
                                 {
-                                    if (Config.Debug)
-                                        Instance.Monitor.Log($"    Remove Butterfly idx={i}", LogLevel.Debug);
+                                    if (Debug)
+                                        Log.Debug($"    Remove Butterfly idx={i}");
                                     loc.critters.RemoveAt(i);
                                 }
                             }
@@ -251,8 +257,8 @@ namespace BetterButterflyHutch
 
                 if (max > 0)
                 {
-                    int spawn = Instance.Rand.Next(min, max + 1);//result always < upper value.
-                    if (Config.Debug)
+                    int spawn = Rand.Next(min, max + 1);//result always < upper value.
+                    if (Debug)
                     {
                         int x = -1;
                         int y = -1;
@@ -261,7 +267,7 @@ namespace BetterButterflyHutch
                             x = boundingBox.Value.X / Game1.tileSize;
                             y = boundingBox.Value.Y / Game1.tileSize;
                         }
-                        Instance.Monitor.Log($"Butterfly spawns={spawn}, hutchSpawned={hutchCount}, HutchAt={x},{y}", LogLevel.Debug);
+                        Log.Debug($"Butterfly spawns={spawn}, hutchSpawned={hutchCount}, HutchAt={x},{y}");
                     }
 
                     for (int i = 0; i < spawn; i++)
@@ -272,8 +278,8 @@ namespace BetterButterflyHutch
             }
             //else
             //{
-            //    if (Config.Debug)
-            //        Instance.Monitor.Log("Hutch did not spawn butterflies", LogLevel.Debug);
+            //    if (Debug)
+            //        Log.Debug("Hutch did not spawn butterflies");
             //}
         }
 
@@ -292,8 +298,8 @@ namespace BetterButterflyHutch
                     {
                         // we can't distinguish from ambient and hutch spawns. only matters outdoors.
                         int count = CountButterflies(loc);
-                        if (Config.Debug)
-                            Monitor.Log($"Found Hutch at {loc.Name}, Outdoors={loc.IsOutdoors}, Game Butterflies={count}", LogLevel.Debug);
+                        if (Debug)
+                            Log.Debug($"Found Hutch at {loc.Name}, Outdoors={loc.IsOutdoors}, Game Butterflies={count}");
 
                         SpawnButterflies(loc, count, null);
                         return;
@@ -318,9 +324,9 @@ namespace BetterButterflyHutch
                         Before = CountButterflies(environment);
                     return true;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    ModEntry.Instance.Monitor.Log($"Failed in {nameof(resetOnPlayerEntry_Prefix)}:\n{e}", LogLevel.Error);
+                    Log.Error($"Failed in {nameof(resetOnPlayerEntry_Prefix)}:\n{ex}");
                     return true;
                 }
             }
@@ -335,9 +341,9 @@ namespace BetterButterflyHutch
                     if ((__instance.ParentSheetIndex == HutchIdx) && !dropDown)
                         SpawnButterflies(environment, CountButterflies(environment) - Before, __instance.boundingBox.Value);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    ModEntry.Instance.Monitor.Log($"Failed in {nameof(resetOnPlayerEntry_Postfix)}:\n{e}", LogLevel.Error);
+                    Log.Error($"Failed in {nameof(resetOnPlayerEntry_Postfix)}:\n{ex}");
                 }
             }
         }
@@ -361,9 +367,9 @@ namespace BetterButterflyHutch
                         }
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    ModEntry.Instance.Monitor.Log($"Failed in {nameof(getDesertMerchantTradeStock_Postfix)}:\n{e}", LogLevel.Error);
+                    Log.Error($"Failed in {nameof(getDesertMerchantTradeStock_Postfix)}:\n{ex}");
                 }
             }
         }

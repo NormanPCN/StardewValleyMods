@@ -10,6 +10,7 @@ using StardewValley;
 using StardewValley.Menus;
 using GenericModConfigMenu;
 //using xTile.Layers;
+using Helpers;
 
 
 namespace LongerFenceLife
@@ -17,8 +18,8 @@ namespace LongerFenceLife
     public class ModEntry : Mod
     {
         public ModConfig Config;
-
         internal IModHelper MyHelper;
+        internal static Logger Log;
 
         const float MinLife = 0.5f;
         const float MaxLife = 10.0f;
@@ -33,12 +34,6 @@ namespace LongerFenceLife
 
         internal bool Debug;
 
-#if Debug
-        const LogLevel LogType = LogLevel.Debug;
-#else
-        const LogLevel LogType = LogLevel.Trace;
-#endif
-
         public String I18nGet(String str)
         {
             return MyHelper.Translation.Get(str);
@@ -49,6 +44,7 @@ namespace LongerFenceLife
         public override void Entry(IModHelper helper)
         {
             MyHelper = helper;
+            Log = new Logger(this.Monitor);
 
             MyHelper.Events.GameLoop.GameLaunched += OnGameLaunched;
             MyHelper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
@@ -109,8 +105,7 @@ namespace LongerFenceLife
             Config.HardwoodFenceLife = ClampRange(Config.HardwoodFenceLife);
             Config.GateLife = ClampRange(Config.GateLife);
             Debug = Config.Debug;
-
-#if Debug
+#if DEBUG
             Debug = true;
 #endif
 
@@ -172,7 +167,7 @@ namespace LongerFenceLife
             }
             else
             {
-                Monitor.LogOnce("Generic Mod Config Menu not available.", LogLevel.Info);
+                Log.LogOnce("Generic Mod Config Menu not available.");
             };
         }
 
@@ -206,7 +201,7 @@ namespace LongerFenceLife
         //                //fence.ResetHealth((baseHealth * mult) - baseHealth);
 
         //                if (Debug)
-        //                    Monitor.Log($"health after={fence.health.Value}, health before={before}, idx={idx}", LogType);
+        //                    Log.Debug($"health after={fence.health.Value}, health before={before}, idx={idx}");
         //            }
         //        }
         //    }
@@ -279,23 +274,23 @@ namespace LongerFenceLife
                     //fence.ResetHealth((baseHealth * mult) - baseHealth);
 
                     if (Debug)
-                        Monitor.Log($"health after={fence.health.Value}, health before={before}, idx={idx},{fence.ParentSheetIndex}", LogType);
+                        Log.Debug($"health after={fence.health.Value}, health before={before}, idx={idx},{fence.ParentSheetIndex}");
                 }
                 else if (Debug)
                 {
                     if (e.QuantityChanged.FirstOrDefault(x => x.Item == grabbed) is ItemStackSizeChange itemD)
                     {
-                        Monitor.Log($"item newSize={itemD.NewSize}, oldSize={itemD.OldSize}", LogType);
+                        Log.Debug($"item newSize={itemD.NewSize}, oldSize={itemD.OldSize}");
                         if (Game1.currentLocation.Objects.ContainsKey(tilePosition))
                         {
                             if (Game1.currentLocation.Objects[tilePosition] is not StardewValley.Fence)
-                                Monitor.Log("Failing is Fence", LogType);
+                                Log.Debug("Failing is Fence");
                         }
                         else
-                            Monitor.Log("Failing ContainsKey", LogType);
+                            Log.Debug("Failing ContainsKey");
                     }
                     else
-                        Monitor.Log("Failing FirstOrDefault", LogType);
+                        Log.Debug("Failing FirstOrDefault");
                 }
             }
         }
