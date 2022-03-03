@@ -233,12 +233,14 @@ namespace BetterButterflyHutch
                             // the game will not spawn ambient butterfies in these conditions.
                             // so just remove all butterflies
 
-                            //Instance.Monitor.Log($"Remove Butterflies critters={count}", LogLevel.Debug);
+                            if (Config.Debug)
+                                Instance.Monitor.Log($"Remove Butterflies. critters={loc.critters.Count}", LogLevel.Debug);
                             for (int i = loc.critters.Count - 1; i >= 0; i--)
                             {
                                 if (loc.critters[i] is Butterfly)
                                 {
-                                    //Instance.Monitor.Log($"Remove Butterfly idx={i}", LogLevel.Debug);
+                                    if (Config.Debug)
+                                        Instance.Monitor.Log($"    Remove Butterfly idx={i}", LogLevel.Debug);
                                     loc.critters.RemoveAt(i);
                                 }
                             }
