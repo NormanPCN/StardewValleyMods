@@ -2,10 +2,10 @@
 
 ## Permissions
 
-Template is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+Better Butterfly Hutch is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-The Template mod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+The Better Butterfly Hutch mod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
 
@@ -17,8 +17,12 @@ https://github.com/NormanPCN/StardewValleyMods/tree/main/BetterButterflyHutch
 
 ## Description
 
-This is a very simple mod. I allows you to specify a range from a minimum to a maximum number of butterflies to spawn in the location the butterfly hutch is placed.  
-It also allows you to change the nnhumber of Bat Wings you trade to obtain the Hutch.
+I like to put a Butterfly Hutch in the Greenhouse. The butterfly hutch in the game all too often spawns very few butterflies. I got tired of this so I wrote this mod.
+
+This mod lets you specify a range for the number of butterflies to spawn in the location of the hutch. You can specify different ranges for indoor and outdoor locations. This mod also lets you set the number of Bat Wings required in trade for a hutch at the Desert Trader. The Vanilla value is quite high given that the Hutch really does nothing functional.
+
+### Placing a butterfly hutch outdoors.
+The game code for the Butterfly Hutch will spawn butterflies in the rain, snow or wind with debris. That is a bit silly, a bug IMO, and this mod does not spawn additional butterflies outdoors in those conditions. In good weather, butterflies will be spawned in all seasons.
 
 ## Config
 
@@ -39,18 +43,23 @@ The NexusMods page shows the locations of the GMCM config button(s).
 The minimum number of butterflies to spawn indoors.  A value of zero disables the mod for indoors.
 
 - Maximum Indoors:  
-The maximum number of butterflies to spawn indoors.  
+The maximum number of butterflies to spawn indoors. If minimum is greater than maximum, then minimum is assigned to maximum.  
 
 - Minimum Outdoors:  
 The minimum number of butterflies to spawn outdoors.  A value of zero disables the mod for outdoors.
 
 - Maximum Outdoors:  
-The maximum number of butterflies to spawn outdoors.  
+The maximum number of butterflies to spawn outdoors. If minimum is greater than maximum, then minimum is assigned to maximum.  
 
 - Num Bat Wings:  
 The number of Bat Wings used to trade for the Hutch at the Desert Trader. Vanilla default is 200.  
 
 ## Changlog
 
-v1.0.0:  
+v1.0.1:  
  Initial release. 
+
+ v1.0.2
+ Added minimum/maximum normalization.
+ Update to GMCM v1.8
+
