@@ -51,10 +51,10 @@ namespace BetterButterflyHutch
 
         private static void NormalizeMinMax()
         {
-            Config.MinIndoors = Math.Min(Config.MinIndoors, Config.MaxIndoors);
-            Config.MaxIndoors = Math.Max(Config.MinIndoors, Config.MaxIndoors);
-            Config.MinOutdoors = Math.Min(Config.MinOutdoors, Config.MaxOutdoors);
-            Config.MaxOutdoors = Math.Max(Config.MinOutdoors, Config.MaxOutdoors);
+            if (Config.MinIndoors > Config.MaxIndoors)
+                Config.MaxIndoors = Config.MinIndoors;
+            if (Config.MinOutdoors > Config.MaxOutdoors)
+                Config.MaxOutdoors = Config.MinOutdoors;
         }
 
         /// <summary>Raised after the game has loaded and all Mods are loaded. Here we load the config.json file and setup GMCM </summary>
