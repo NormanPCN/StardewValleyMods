@@ -49,6 +49,14 @@ namespace BetterButterflyHutch
             return Math.Max(min, Math.Min(max, value));
         }
 
+        private static void NormalizeMinMax()
+        {
+            Config.MinIndoors = Math.Min(Config.MinIndoors, Config.MaxIndoors);
+            Config.MaxIndoors = Math.Max(Config.MinIndoors, Config.MaxIndoors);
+            Config.MinOutdoors = Math.Min(Config.MinOutdoors, Config.MaxOutdoors);
+            Config.MaxOutdoors = Math.Max(Config.MinOutdoors, Config.MaxOutdoors);
+        }
+
         /// <summary>Raised after the game has loaded and all Mods are loaded. Here we load the config.json file and setup GMCM </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
@@ -59,10 +67,7 @@ namespace BetterButterflyHutch
             Config.MaxIndoors = Clamp(Config.MaxIndoors, 1, MaxMaxButterflies);
             Config.MinOutdoors = Clamp(Config.MinOutdoors, 0, MaxMinButterflies);
             Config.MaxOutdoors = Clamp(Config.MaxOutdoors, 1, MaxMaxButterflies);
-            Config.MinIndoors = Math.Min(Config.MinIndoors, Config.MaxIndoors);
-            Config.MaxIndoors = Math.Max(Config.MinIndoors, Config.MaxIndoors);
-            Config.MinOutdoors = Math.Min(Config.MinOutdoors, Config.MaxOutdoors);
-            Config.MaxOutdoors = Math.Max(Config.MinOutdoors, Config.MaxOutdoors);
+            NormalizeMinMax();
             Config.NumBatWings = Math.Min(MaxBatWings, Math.Max(MinBatWings, Config.NumBatWings));
 #if DEBUG
             Config.Debug = true;
@@ -105,28 +110,28 @@ namespace BetterButterflyHutch
 
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.MinIndoors,
-                                     (int value) => Config.MinIndoors = value,
+                                     (int value) => { Config.MinIndoors = value; NormalizeMinMax(); },
                                      () => I18nGet("minIndoors.Label"),
                                      () => I18nGet("minIndoors.Tooltip"),
                                      min: 0,
                                      max: MaxMinButterflies);
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.MaxIndoors,
-                                     (int value) => Config.MaxIndoors = value,
+                                     (int value) => { Config.MaxIndoors = value; NormalizeMinMax(); },
                                      () => I18nGet("maxIndoors.Label"),
                                      () => I18nGet("maxIntdoors.Tooltip"),
                                      min: 1,
                                      max: MaxMaxButterflies);
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.MinOutdoors,
-                                     (int value) => Config.MinOutdoors = value,
+                                     (int value) => { Config.MinOutdoors = value; NormalizeMinMax(); },
                                      () => I18nGet("minOutdoors.Label"),
                                      () => I18nGet("minOutdoors.Tooltip"),
                                      min: 0,
                                      max: MaxMinButterflies);
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.MaxOutdoors,
-                                     (int value) => Config.MaxOutdoors = value,
+                                     (int value) => { Config.MaxOutdoors = value; NormalizeMinMax(); },
                                      () => I18nGet("maxOutdoors.Label"),
                                      () => I18nGet("maxOutdoors.Tooltip"),
                                      min: 1,
