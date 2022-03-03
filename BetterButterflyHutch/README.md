@@ -22,7 +22,10 @@ I like to put a Butterfly Hutch in the Greenhouse. The butterfly hutch in the ga
 This mod lets you specify a range for the number of butterflies to spawn in the location of the hutch. You can specify different ranges for indoor and outdoor locations. This mod also lets you set the number of Bat Wings required in trade for a hutch at the Desert Trader. The Vanilla value is quite high given that the Hutch really does nothing functional.
 
 ### Placing a butterfly hutch outdoors.
-The game code for the Butterfly Hutch will spawn butterflies in the rain, snow or wind with debris. That is a bit silly, a bug IMO, and this mod does not spawn additional butterflies outdoors in those conditions. In good weather, butterflies will be spawned in all seasons.
+The game code for the Butterfly Hutch will spawn butterflies in the rain, snow or wind with debris. That is a bit silly.  
+The Hutch game code will spawn butterflies after dark.
+Ambient butterflies do not spawn in those conditions.  
+This mod will not spawn butterfies in those conditions and will remove hutch butterflies spawned in those conditions.
 
 ## Config
 
@@ -59,7 +62,9 @@ The number of Bat Wings used to trade for the Hutch at the Desert Trader. Vanill
 v1.0.1:  
  Initial release. 
 
- v1.0.2
- Added minimum/maximum normalization.
+ v1.1.0
+ No longer spawn butterflies outdoors in winter or after dark.
+ Remove game spawned hutch butterflies in conditions this mod would not spawn butterfiles. Rain/dark/season.
+ Added minimum/maximum normalization in GMCM interface.
  Update to GMCM v1.8
 

@@ -8,5 +8,7 @@
   "maxOutdoors.Label": "Maximum outdoors",
   "maxOutdoors.tooltip": "The maximum number of butterflies to spawn in the hutch location. If minimum is greater than maximum, then minimum is assigned to maximum.",
   "numBatWings.Label": "Bat Wings to trade",
-  "numBatWings.tooltip": "Number of Bat Wings to trade for the Butterfly Hutch at the Desert Trader. Vanilla default is 200."
+  "numBatWings.tooltip": "Number of Bat Wings to trade for the Butterfly Hutch at the Desert Trader. Vanilla default is 200.",
+  "winterButterflies.Label": "Winter Butterflies",
+  "winterButterflies.tooltip":  "Spawn butterflies outdoors in winter."
 }

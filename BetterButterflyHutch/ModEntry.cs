@@ -144,6 +144,11 @@ namespace BetterButterflyHutch
                                      min: MinBatWings,
                                      max: MaxBatWings,
                                      interval: 10);
+                gmcm.AddBoolOption(ModManifest,
+                                   () => Config.WinterButterflies,
+                                   (bool value) => Config.WinterButterflies = value,
+                                   () => I18nGet("winterButterflies.Label"),
+                                   () => I18nGet("winterButterflies.Tooltip"));
             }
             else
             {
@@ -169,6 +174,20 @@ namespace BetterButterflyHutch
                 MyHelper.Events.Player.Warped -= Player_Warped;
         }
 
+        internal static int CountButterflies(GameLocation loc)
+        {
+            int count = 0;
+            if (loc.critters != null)
+            {
+                for (int i = 0; i < loc.critters.Count; i++)
+                {
+                    if (loc.critters[i] is Butterfly)
+                        count++;
+                }
+            }
+            return count;
+        }
+
         internal static void SpawnButterflies(GameLocation loc, int hutchCount, Rectangle? boundingBox)
         {
             // if the hutch did not spawn anything, then we will not
@@ -190,18 +209,40 @@ namespace BetterButterflyHutch
                 else
                 {
                     // the game hutch code can spawn butterfies in the rain or snow or wind debris. i don't do that.
-                    // Is...Here returns true for the Desert when it is raining/etc in the town, because the Desert LocationContext is the same as the Town.
-                    // really only two context. town and island.
+                    // don't spawn in winter in the valley. desert and island okay.
+                    // Is...Here returns true for the Desert when it is raining/etc in sdv, because the Desert LocationContext is the same as sdv.
+                    // really only two contexts. sdv and island.
 
                     bool desert = loc.Name.Equals("Desert", StringComparison.Ordinal);
-                    bool spawn = true;//island || desert || !Game1.currentSeason.Equals("winter", StringComparison.Ordinal);
-                    spawn = spawn && (desert || !(Game1.IsRainingHere(loc) || Game1.IsSnowingHere(loc) || Game1.IsDebrisWeatherHere(loc)));
+                    bool isClear = !(Game1.IsRainingHere(loc) || Game1.IsLightningHere(loc) || Game1.IsSnowingHere(loc) || Game1.IsDebrisWeatherHere(loc));
+                    bool spawn = island || desert || (!Game1.currentSeason.Equals("winter", StringComparison.Ordinal) || Config.WinterButterflies);
+                    spawn = spawn && (isClear || desert);
+                    spawn = spawn && !Game1.isDarkOut();
 
-                    if ((Config.MinOutdoors > 0) && spawn)
+                    if (Config.MinOutdoors > 0)
                     {
-                        if (hutchCount < Config.MinOutdoors)
-                            min = Config.MinOutdoors - hutchCount;
-                        max = Config.MaxOutdoors - hutchCount;
+                        if (spawn)
+                        {
+                            if (hutchCount < Config.MinOutdoors)
+                                min = Config.MinOutdoors - hutchCount;
+                            max = Config.MaxOutdoors - hutchCount;
+                        }
+                        else
+                        {
+                            // remove hutch spawned butterflies in instances we think they should not spawn
+                            // the game will not spawn ambient butterfies in these conditions.
+                            // so just remove all butterflies
+
+                            //Instance.Monitor.Log($"Remove Butterflies critters={count}", LogLevel.Debug);
+                            for (int i = loc.critters.Count - 1; i >= 0; i--)
+                            {
+                                if (loc.critters[i] is Butterfly)
+                                {
+                                    //Instance.Monitor.Log($"Remove Butterfly idx={i}", LogLevel.Debug);
+                                    loc.critters.RemoveAt(i);
+                                }
+                            }
+                        }
                     }
                 }
                 max = Math.Max(min, max);// possible for max to go <= 0 if the game spawns a ton of butterflies
@@ -232,20 +273,6 @@ namespace BetterButterflyHutch
             //    if (Config.Debug)
             //        Instance.Monitor.Log("Hutch did not spawn butterflies", LogLevel.Debug);
             //}
-        }
-
-        internal static int CountButterflies(GameLocation loc)
-        {
-            int count = 0;
-            if (loc.critters != null)
-            {
-                for (int i = 0; i < loc.critters.Count; i++)
-                {
-                    if (loc.critters[i] is Butterfly)
-                        count++;
-                }
-            }
-            return count;
         }
 
         /// <summary>Raised just after the player changes location. Here we spawn our Butterflies.
