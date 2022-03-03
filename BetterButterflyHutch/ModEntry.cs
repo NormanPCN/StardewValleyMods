@@ -1,6 +1,4 @@
-﻿#define UseHarmony
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -9,6 +7,7 @@ using StardewValley.Tools;
 using StardewValley.BellsAndWhistles;
 using GenericModConfigMenu;
 using HarmonyLib;
+using Microsoft.Xna.Framework;
 
 namespace BetterButterflyHutch
 {
@@ -20,6 +19,7 @@ namespace BetterButterflyHutch
         public const int MaxMinButterflies = MaxMaxButterflies;
         public const int MinBatWings = 10;
         public const int MaxBatWings = 200;
+        public const int HutchIdx = 1971;
 
         private Random Rand;
 
@@ -164,11 +164,12 @@ namespace BetterButterflyHutch
                 MyHelper.Events.Player.Warped -= Player_Warped;
         }
 
-        internal static void SpawnButterflies(GameLocation loc, int hutchCount)
+        internal static void SpawnButterflies(GameLocation loc, int hutchCount, Rectangle? boundingBox)
         {
             // if the hutch did not spawn anything, then we will not
             if (hutchCount > 0)
             {
+                bool island = loc.GetLocationContext() == StardewValley.GameLocation.LocationContext.Island;
                 int min = 0;
                 int max = 0;
 
@@ -178,31 +179,54 @@ namespace BetterButterflyHutch
                     {
                         if (hutchCount < Config.MinIndoors)
                             min = Config.MinIndoors - hutchCount;
-                        max = Config.MaxIndoors - (hutchCount + min);
+                        max = Config.MaxIndoors - hutchCount;
                     }
                 }
                 else
                 {
-                    // looks like the game hutch will spawn butterflies outdoors when raining.
-                    // i'll just stay out of that.
-                    if ((Config.MinOutdoors > 0) && !Game1.IsRainingHere(loc))
+                    // the game hutch code can spawn butterfies in the rain or snow or wind debris. i don't do that.
+                    // Is...Here returns true for the Desert when it is raining/etc in the town, because the Desert LocationContext is the same as the Town.
+                    // really only two context. town and island.
+
+                    bool desert = loc.Name.Equals("Desert", StringComparison.Ordinal);
+                    bool spawn = true;//island || desert || !Game1.currentSeason.Equals("winter", StringComparison.Ordinal);
+                    spawn = spawn && (desert || !(Game1.IsRainingHere(loc) || Game1.IsSnowingHere(loc) || Game1.IsDebrisWeatherHere(loc)));
+
+                    if ((Config.MinOutdoors > 0) && spawn)
                     {
                         if (hutchCount < Config.MinOutdoors)
                             min = Config.MinOutdoors - hutchCount;
-                        max = Config.MaxOutdoors - (hutchCount + min);
+                        max = Config.MaxOutdoors - hutchCount;
                     }
                 }
+                max = Math.Max(min, max);// possible for max to go <= 0 if the game spawns a ton of butterflies
 
-                int spawn = Instance.Rand.Next(min, min + max + 1);//result always < upper value.
-                if (Config.Debug)
-                    Instance.Monitor.Log($"Butterfly spawns={spawn}, hutchCount={hutchCount}", LogLevel.Debug);
-
-                bool island = loc.GetLocationContext() == StardewValley.GameLocation.LocationContext.Island;
-                for (int i = 0; i < spawn; i++)
+                if (max > 0)
                 {
-                    loc.addCritter(new Butterfly(loc.getRandomTile(), island).setStayInbounds(stayInbounds: true));
+                    int spawn = Instance.Rand.Next(min, max + 1);//result always < upper value.
+                    if (Config.Debug)
+                    {
+                        int x = -1;
+                        int y = -1;
+                        if (boundingBox.HasValue)
+                        {
+                            x = boundingBox.Value.X / Game1.tileSize;
+                            y = boundingBox.Value.Y / Game1.tileSize;
+                        }
+                        Instance.Monitor.Log($"Butterfly spawns={spawn}, hutchSpawned={hutchCount}, HutchAt={x},{y}", LogLevel.Debug);
+                    }
+
+                    for (int i = 0; i < spawn; i++)
+                    {
+                        loc.addCritter(new Butterfly(loc.getRandomTile(), island).setStayInbounds(stayInbounds: true));
+                    }
                 }
             }
+            //else
+            //{
+            //    if (Config.Debug)
+            //        Instance.Monitor.Log("Hutch did not spawn butterflies", LogLevel.Debug);
+            //}
         }
 
         internal static int CountButterflies(GameLocation loc)
@@ -230,14 +254,14 @@ namespace BetterButterflyHutch
 
                 foreach (StardewValley.Object obj in loc.furniture)
                 {
-                    if (obj.ParentSheetIndex == 1971)//butterfly hutch
+                    if (obj.ParentSheetIndex == HutchIdx)//butterfly hutch
                     {
                         // we can't distinguish from ambient and hutch spawns. only matters outdoors.
                         int count = CountButterflies(loc);
                         if (Config.Debug)
                             Monitor.Log($"Found Hutch at {loc.Name}, Outdoors={loc.IsOutdoors}, Game Butterflies={count}", LogLevel.Debug);
 
-                        SpawnButterflies(loc, count);
+                        SpawnButterflies(loc, count, null);
                         return;
                     }
                 }
@@ -256,7 +280,8 @@ namespace BetterButterflyHutch
             {
                 try
                 {
-                    Before = CountButterflies(environment);
+                    if ((__instance.ParentSheetIndex == HutchIdx) && !dropDown)
+                        Before = CountButterflies(environment);
                     return true;
                 }
                 catch (Exception e)
@@ -273,8 +298,8 @@ namespace BetterButterflyHutch
             {
                 try
                 {
-                    int hutchCount = CountButterflies(environment) - Before;
-                    SpawnButterflies(environment, hutchCount);
+                    if ((__instance.ParentSheetIndex == HutchIdx) && !dropDown)
+                        SpawnButterflies(environment, CountButterflies(environment) - Before, __instance.boundingBox.Value);
                 }
                 catch (Exception e)
                 {

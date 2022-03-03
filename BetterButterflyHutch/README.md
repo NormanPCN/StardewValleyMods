@@ -13,6 +13,7 @@ I don't really care if you redistribute it or alter it or use it in compilations
 I'd ask that you give credit to myself, that's all.
 
 Source code is available at
+https://github.com/NormanPCN/StardewValleyMods/tree/main/BetterButterflyHutch
 
 ## Description
 
