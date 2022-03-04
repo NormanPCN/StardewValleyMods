@@ -12,7 +12,9 @@ namespace Helpers
 		public Logger(IMonitor monitor, LogLevel level = LogLevel.Trace, string prefix = "")
 		{
 			this.Monitor = monitor;
-			this.Prefix = prefix + " ";
+			this.Prefix = prefix;
+			if (this.Prefix != "")
+				this.Prefix = this.Prefix + " ";
 			this.Level = level;
 		}
 

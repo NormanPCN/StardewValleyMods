@@ -214,13 +214,17 @@ namespace BetterButterflyHutch
                 }
                 else
                 {
-                    // the game hutch code can spawn butterfies in the rain or snow or wind debris. i don't do that.
-                    // don't spawn in winter in the valley. desert and island okay.
-                    // Is...Here returns true for the Desert when it is raining/etc in sdv, because the Desert LocationContext is the same as sdv.
-                    // really only two contexts. sdv and island.
+                    // the game hutch code will
+                    //     spawn butterfies in the rain or snow or wind debris.
+                    //     spawn after dark
+                    //     spawn any season
+                    // Is...Here method return true for the Desert when it is raining/etc in the valley/town.
+                    // the Desert LocationContext is the same as valley/town. there are really only two contexts. valley/town and island.
+                    // we spawn in more sensible conditions.
 
                     bool desert = loc.Name.Equals("Desert", StringComparison.Ordinal);
                     bool isClear = !(Game1.IsRainingHere(loc) || Game1.IsLightningHere(loc) || Game1.IsSnowingHere(loc) || Game1.IsDebrisWeatherHere(loc));
+
                     bool spawn = island || desert || (!Game1.currentSeason.Equals("winter", StringComparison.Ordinal) || Config.WinterButterflies);
                     spawn = spawn && (isClear || desert);
                     spawn = spawn && !Game1.isDarkOut();
@@ -241,23 +245,24 @@ namespace BetterButterflyHutch
 
                             if (Debug)
                                 Log.Debug($"Remove Butterflies. critters={loc.critters.Count}");
+
                             for (int i = loc.critters.Count - 1; i >= 0; i--)
                             {
                                 if (loc.critters[i] is Butterfly)
                                 {
+                                    loc.critters.RemoveAt(i);
                                     if (Debug)
                                         Log.Debug($"    Remove Butterfly idx={i}");
-                                    loc.critters.RemoveAt(i);
                                 }
                             }
                         }
                     }
                 }
-                max = Math.Max(min, max);// possible for max to go <= 0 if the game spawns a ton of butterflies
+                max = Math.Max(max, 0);// possible for max to go <= 0 if the game spawns a ton of butterflies
 
                 if (max > 0)
                 {
-                    int spawn = Rand.Next(min, max + 1);//result always < upper value.
+                    int spawnCount = Rand.Next(min, max + 1);//result always < upper value.
                     if (Debug)
                     {
                         int x = -1;
@@ -267,13 +272,11 @@ namespace BetterButterflyHutch
                             x = boundingBox.Value.X / Game1.tileSize;
                             y = boundingBox.Value.Y / Game1.tileSize;
                         }
-                        Log.Debug($"Butterfly spawns={spawn}, hutchSpawned={hutchCount}, HutchAt={x},{y}");
+                        Log.Debug($"Butterfly spawns={spawnCount}, hutchSpawned={hutchCount}, HutchAt={x},{y}");
                     }
 
-                    for (int i = 0; i < spawn; i++)
-                    {
+                    for (int i = 0; i < spawnCount; i++)
                         loc.addCritter(new Butterfly(loc.getRandomTile(), island).setStayInbounds(stayInbounds: true));
-                    }
                 }
             }
             //else

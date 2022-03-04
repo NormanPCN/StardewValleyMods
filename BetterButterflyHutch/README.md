@@ -28,7 +28,7 @@ The Vanilla value is quite high given that the Hutch really does nothing functio
 The game code for the Butterfly Hutch will spawn butterflies in the rain, snow or wind with debris. That is a bit silly.  
 The Hutch game code will spawn butterflies after dark.  
 Ambient butterflies do not spawn in those conditions.  
-This mod will not spawn butterfies in those conditions and will remove hutch butterflies spawned in those conditions.
+This mod will not spawn butterflies in those conditions and will remove hutch butterflies spawned in those conditions.
 
 ## Config
 
@@ -60,14 +60,17 @@ The maximum number of butterflies to spawn outdoors. If minimum is greater than 
 - Num Bat Wings:  
 The number of Bat Wings used to trade for the Hutch at the Desert Trader. Vanilla default is 200.  
 
+- Winter butterflies:  
+Spawn butterflies outdoors in winter.  
+
 ## Changlog
 
 v1.0.1:  
  Initial release. 
 
  v1.1.0
- No longer spawn butterflies outdoors in winter or after dark.
- Remove game spawned hutch butterflies in conditions this mod would not spawn butterfiles. Rain/dark/season.
- Added minimum/maximum normalization in GMCM interface.
- Update to GMCM v1.8
+ No longer spawn butterflies outdoors in winter or after dark.  
+ Remove game spawned hutch butterflies in conditions this mod would not spawn butterflies. Rain/dark/season.  
+ Added minimum/maximum normalization in GMCM interface.  
+ Update to GMCM v1.8  
 
