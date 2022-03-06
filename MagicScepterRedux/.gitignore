@@ -1,0 +1,28 @@
+#Visual Studio metadata
+.vs/
+GlobalSuppressions.cs
+CombatControlsRedux.xml
+
+#Autosave files
+*~
+
+#build
+[Oo]bj/
+[Bb]in/
+*.exe
+*.dll
+*.pdb
+
+#NuGet packages
+*.nupkg
+packages/
+
+#Misc
+nexus/
+*.zip
+*.lnk
+*.mp4
+
+#ReSharper
+*_Resharper.*
+*.Resharper

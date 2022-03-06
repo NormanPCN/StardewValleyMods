@@ -1,0 +1,10 @@
+﻿{
+  "Name": "MagicScepterRedux",
+  "Author": "NormanPCN",
+  "Version": "1.0.0",
+  "Description": "Makes your Return Scepter worth its price",
+  "UniqueID": "NormanPCN.MagicScepter",
+  "EntryDll": "MagicScepterRedux.dll",
+  "MinimumApiVersion": "3.13.0",
+  "UpdateKeys": [ "Nexus:00000" ]
+}
