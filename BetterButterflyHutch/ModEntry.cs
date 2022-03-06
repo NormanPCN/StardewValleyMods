@@ -227,7 +227,7 @@ namespace BetterButterflyHutch
 
                     bool spawn = island || desert || (!Game1.currentSeason.Equals("winter", StringComparison.Ordinal) || Config.WinterButterflies);
                     spawn = spawn && (isClear || desert);
-                    spawn = spawn && !Game1.isDarkOut();
+                    spawn = spawn && !Game1.isStartingToGetDarkOut();
 
                     if (Config.MinOutdoors > 0)
                     {
