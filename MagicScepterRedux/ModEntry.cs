@@ -15,7 +15,7 @@ namespace MagicScepterRedux
 	{
 		private List<Building> buildings;
 
-		private List<MiniObeliskObject> miniObelisks;
+//		private List<MiniObeliskObject> miniObelisks;
 
 		public override void Entry(IModHelper helper)
 		{
@@ -61,8 +61,8 @@ namespace MagicScepterRedux
 		private void ChooseWarpLocation()
 		{
 			buildings = new List<Building>();
-			miniObelisks = new List<MiniObeliskObject>();
 			List<Response> responses = new List<Response>();
+
 			responses.Add(new Response(WarpLocationChoice.Farm.ToString(), "Farm"));
 			foreach (Building building in Game1.getFarm().buildings)
 			{
@@ -94,7 +94,30 @@ namespace MagicScepterRedux
 					break;
 				}
 			}
-			responses.Add(new Response(WarpLocationChoice.None.ToString(), "Cancel"));
+
+			//Vector2 obelisk1 = Vector2.Zero;
+			//Vector2 obelisk2 = Vector2.Zero;
+			//foreach (KeyValuePair<Vector2, StardewValley.Object> obj in Game1.player.currentLocation.objects.Pairs)
+			//{
+			//	if (obj.Value.bigCraftable.Value && (obj.Value.ParentSheetIndex == 238))
+			//	{
+			//		if (obelisk1.Equals(Vector2.Zero))
+			//		{
+			//			obelisk1 = obj.Key;
+			//		}
+			//		else if (obelisk2.Equals(Vector2.Zero))
+			//		{
+			//			obelisk2 = obj.Key;
+			//			break;
+			//		}
+			//	}
+			//}
+			//if (!obelisk2.Equals(Vector2.Zero))
+			//{
+			//}
+
+		    responses.Add(new Response(WarpLocationChoice.None.ToString(), "Cancel"));
+
 			if (responses.Count == 2)
 			{
 				WarpLocation to = WarpLocations.GetWarpLocation(WarpLocationChoice.Farm);
@@ -119,22 +142,22 @@ namespace MagicScepterRedux
 				WarpPlayerTo(wlocation);
 				return;
 			}
-			Building building = buildings.FirstOrDefault((Building b) => GetWarpLocationChoiceForBuildingType(b.buildingType) == choice);
+			Building building = buildings.FirstOrDefault((Building b) => GetWarpLocationChoiceForBuildingType(b.buildingType.Value) == choice);
 			building?.doAction(new Vector2((int)building.tileX.Value, (int)building.tileY.Value), farmer);
 		}
 
-		private void MiniObeliskAnswer(Farmer farmer, string answer)
-		{
-			MiniObeliskObject miniObelisk = miniObelisks.First((MiniObeliskObject o) => o.Name.Equals(answer));
-			Vector2? warpLocationCoords = GetValidWarpTile(Game1.getFarm(), miniObelisk.CoordX, miniObelisk.CoordY);
-			if (!warpLocationCoords.HasValue)
-			{
-				Game1.showRedMessage("Invalid Mini-Obelisk Warp Target Location");
-				return;
-			}
-			WarpLocation warpLocation = new WarpLocation("Farm", (int)warpLocationCoords.Value.X, (int)warpLocationCoords.Value.Y);
-			WarpPlayerTo(warpLocation);
-		}
+		//private void MiniObeliskAnswer(Farmer farmer, string answer)
+		//{
+		//	MiniObeliskObject miniObelisk = miniObelisks.First((MiniObeliskObject o) => o.Name.Equals(answer));
+		//	Vector2? warpLocationCoords = GetValidWarpTile(Game1.getFarm(), miniObelisk.CoordX, miniObelisk.CoordY);
+		//	if (!warpLocationCoords.HasValue)
+		//	{
+		//		Game1.showRedMessage("Invalid Mini-Obelisk Warp Target Location");
+		//		return;
+		//	}
+		//	WarpLocation warpLocation = new WarpLocation("Farm", (int)warpLocationCoords.Value.X, (int)warpLocationCoords.Value.Y);
+		//	WarpPlayerTo(warpLocation);
+		//}
 
 		private void WarpPlayerTo(WarpLocation warpLocation)
 		{
