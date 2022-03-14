@@ -3,7 +3,7 @@
     public class ModConfig
     {
         public int MinIndoors = 4;
-        public int MaxIndoors = 8;
+        public int MaxIndoors = 6;
         public int MinOutdoors = 16;
         public int MaxOutdoors = 24;
         public int NumBatWings = 100;
