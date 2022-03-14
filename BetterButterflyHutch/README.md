@@ -63,6 +63,9 @@ The number of Bat Wings used to trade for the Hutch at the Desert Trader. Vanill
 - Winter butterflies:  
 Spawn butterflies outdoors in winter.  
 
+- Island Butterflies
+Spawn Ginger Island butterflies indoors on the mainland.
+
 ## Changlog
 
 v1.0.1:  
