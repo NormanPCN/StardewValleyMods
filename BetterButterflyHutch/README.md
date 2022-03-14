@@ -78,6 +78,6 @@ v1.0.1:
  Update to GMCM v1.8
  
  v1.2.0
- Added config option to spawn Island butterfies indoors on the mainland.
+ Added config option to spawn Island butterflies indoors on the mainland.
  Adjusted the "dark" time to stop spawning butterflies outdoors.
 
