@@ -8,6 +8,7 @@
         public int MaxOutdoors = 24;
         public int NumBatWings = 100;
         public bool WinterButterflies = false;
+        public bool IslandButterflies = false;
         public bool UseHarmony = true;
         public bool Debug = false;
     }

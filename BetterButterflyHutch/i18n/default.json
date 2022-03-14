@@ -10,5 +10,7 @@
   "numBatWings.Label": "Bat Wings to trade",
   "numBatWings.tooltip": "Number of Bat Wings to trade for the Butterfly Hutch at the Desert Trader. Vanilla default is 200.",
   "winterButterflies.Label": "Winter Butterflies",
-  "winterButterflies.tooltip":  "Spawn butterflies outdoors in winter."
+  "winterButterflies.tooltip": "Spawn butterflies outdoors in winter.",
+  "islandButterflies.Label": "Island Butterflies",
+  "islandButterflies.tooltip": "Spawn island butterflies indoors on the mainland."
 }

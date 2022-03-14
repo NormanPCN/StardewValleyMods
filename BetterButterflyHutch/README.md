@@ -72,5 +72,9 @@ v1.0.1:
  No longer spawn butterflies outdoors in winter or after dark.  
  Remove game spawned hutch butterflies in conditions this mod would not spawn butterflies. Rain/dark/season.  
  Added minimum/maximum normalization in GMCM interface.  
- Update to GMCM v1.8  
+ Update to GMCM v1.8
+ 
+ v1.2.0
+ Added config option to spawn Island butterfies indoors on the mainland.
+ Adjusted the "dark" time to stop spawning butterflies outdoors.
 

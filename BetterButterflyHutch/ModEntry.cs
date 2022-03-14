@@ -155,6 +155,11 @@ namespace BetterButterflyHutch
                                    (bool value) => Config.WinterButterflies = value,
                                    () => I18nGet("winterButterflies.Label"),
                                    () => I18nGet("winterButterflies.Tooltip"));
+                gmcm.AddBoolOption(ModManifest,
+                                   () => Config.IslandButterflies,
+                                   (bool value) => Config.IslandButterflies = value,
+                                   () => I18nGet("islandButterflies.Label"),
+                                   () => I18nGet("islandButterflies.Tooltip"));
             }
             else
             {
@@ -210,6 +215,8 @@ namespace BetterButterflyHutch
                         if (hutchCount < Config.MinIndoors)
                             min = Config.MinIndoors - hutchCount;
                         max = Config.MaxIndoors - hutchCount;
+                        if (Config.IslandButterflies)
+                            island = true;
                     }
                 }
                 else
