@@ -78,3 +78,7 @@ v1.0.0:
  1.1.0
  Added a fence life display overlay and tooltip. Uses a keybind to activate.
  Spanish translation added. Thanks. Yllelder B.
+
+ 1.2.0
+ Now compatible with spouse fence repair.
+ Now compatible with the Smart Building Mod.
