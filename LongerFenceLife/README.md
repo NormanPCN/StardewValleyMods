@@ -87,3 +87,6 @@ v1.0.0:
 
  1.3.0
  GMCM interface now displays game years for config.
+
+ 1.3.1
+ Added vanilla life to GMCM interface as a reference.

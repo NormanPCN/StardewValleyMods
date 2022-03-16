@@ -101,44 +101,56 @@ namespace LongerFenceLife
             return life;
         }
 
-        private string FenceYears(int fenceType, float value)
+        private static int VanillaFenceDays(int fenceType)
         {
-            float baseLife = fenceType switch
+            int baseLife = fenceType switch
             {
-                WoodFence => 28*2,
-                StoneFence => 60*2,
-                IronFence => 125*2,
-                Gate => 100*2*2,
-                HwFence => 280*2,
-                _ => 100*2
+                WoodFence => 28 * 2,
+                StoneFence => 60 * 2,
+                IronFence => 125 * 2,
+                Gate => 100 * 2 * 2,
+                HwFence => 280 * 2,
+                _ => 100 * 2
             };
+            return baseLife;
+        }
+
+        private static string FenceYears(int fenceType, float value)
+        {
+            float baseLife = (float) VanillaFenceDays(fenceType);
             value = value * baseLife / 112f;
             return value.ToString("F1");
         }
 
-        private string WoodFenceYears(float value)
+        private static string WoodFenceYears(float value)
         {
             return FenceYears(WoodFence, value);
         }
 
-        private string StoneFenceYears(float value)
+        private static string StoneFenceYears(float value)
         {
             return FenceYears(StoneFence, value);
         }
 
-        private string IronFenceYears(float value)
+        private static string IronFenceYears(float value)
         {
             return FenceYears(IronFence, value);
         }
 
-        private string GateYears(float value)
+        private static string GateYears(float value)
         {
             return FenceYears(Gate, value);
         }
 
-        private string HwFenceYears(float value)
+        private static string HwFenceYears(float value)
         {
             return FenceYears(HwFence, value);
+        }
+
+        private string VanillaLife(int FenceType)
+        {
+            float years = VanillaFenceDays((int)FenceType) / 112f;
+            return MyHelper.Translation.Get("VanillaLife", new { years = years.ToString("F1") });
         }
 
         /// <summary>Raised after the game has loaded and all Mods are loaded. Here we load the config.json file and setup GMCM </summary>
@@ -189,6 +201,7 @@ namespace LongerFenceLife
                               save: () => Helper.WriteConfig(Config));
 
                 gmcm.AddParagraph(ModManifest, () => I18nGet("LifeYears"));
+
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.WoodFenceLife,
                                      (float value) => Config.WoodFenceLife = value,
@@ -198,6 +211,8 @@ namespace LongerFenceLife
                                      max: MaxLife,
                                      interval: 0.1f,
                                      formatValue: WoodFenceYears);
+                gmcm.AddParagraph(ModManifest, () => VanillaLife(WoodFence));
+
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.StoneFenceLife,
                                      (float value) => Config.StoneFenceLife = value,
@@ -207,6 +222,8 @@ namespace LongerFenceLife
                                      max: MaxLife,
                                      interval: 0.1f,
                                      formatValue: StoneFenceYears);
+                gmcm.AddParagraph(ModManifest, () => VanillaLife(StoneFence));
+
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.IronFenceLife,
                                      (float value) => Config.IronFenceLife = value,
@@ -216,6 +233,8 @@ namespace LongerFenceLife
                                      max: MaxLife,
                                      interval: 0.1f,
                                      formatValue: IronFenceYears);
+                gmcm.AddParagraph(ModManifest, () => VanillaLife(IronFence));
+
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.HardwoodFenceLife,
                                      (float value) => Config.HardwoodFenceLife = value,
@@ -225,6 +244,8 @@ namespace LongerFenceLife
                                      max: MaxLife,
                                      interval: 0.1f,
                                      formatValue: HwFenceYears);
+                gmcm.AddParagraph(ModManifest, () => VanillaLife(HwFence));
+
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.GateLife,
                                      (float value) => Config.GateLife = value,
@@ -234,6 +255,8 @@ namespace LongerFenceLife
                                      max: MaxLife,
                                      interval: 0.1f,
                                      formatValue: GateYears);
+                gmcm.AddParagraph(ModManifest, () => VanillaLife(Gate));
+
                 gmcm.AddKeybind(ModManifest,
                                 () => Config.FenceLifeKeybind,
                                 (SButton value) => Config.FenceLifeKeybind = value,
