@@ -101,6 +101,46 @@ namespace LongerFenceLife
             return life;
         }
 
+        private string FenceYears(int fenceType, float value)
+        {
+            float baseLife = fenceType switch
+            {
+                WoodFence => 28*2,
+                StoneFence => 60*2,
+                IronFence => 125*2,
+                Gate => 100*2*2,
+                HwFence => 280*2,
+                _ => 100*2
+            };
+            value = value * baseLife / 112f;
+            return value.ToString("F1");
+        }
+
+        private string WoodFenceYears(float value)
+        {
+            return FenceYears(WoodFence, value);
+        }
+
+        private string StoneFenceYears(float value)
+        {
+            return FenceYears(StoneFence, value);
+        }
+
+        private string IronFenceYears(float value)
+        {
+            return FenceYears(IronFence, value);
+        }
+
+        private string GateYears(float value)
+        {
+            return FenceYears(Gate, value);
+        }
+
+        private string HwFenceYears(float value)
+        {
+            return FenceYears(HwFence, value);
+        }
+
         /// <summary>Raised after the game has loaded and all Mods are loaded. Here we load the config.json file and setup GMCM </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
@@ -148,6 +188,7 @@ namespace LongerFenceLife
                               reset: () => Config = new ModConfig(),
                               save: () => Helper.WriteConfig(Config));
 
+                gmcm.AddParagraph(ModManifest, () => I18nGet("LifeYears"));
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.WoodFenceLife,
                                      (float value) => Config.WoodFenceLife = value,
@@ -155,7 +196,8 @@ namespace LongerFenceLife
                                      () => I18nGet("woodFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
-                                     interval: 0.1f);
+                                     interval: 0.1f,
+                                     formatValue: WoodFenceYears);
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.StoneFenceLife,
                                      (float value) => Config.StoneFenceLife = value,
@@ -163,7 +205,8 @@ namespace LongerFenceLife
                                      () => I18nGet("stoneFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
-                                     interval: 0.1f);
+                                     interval: 0.1f,
+                                     formatValue: StoneFenceYears);
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.IronFenceLife,
                                      (float value) => Config.IronFenceLife = value,
@@ -171,7 +214,8 @@ namespace LongerFenceLife
                                      () => I18nGet("ironFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
-                                     interval: 0.1f);
+                                     interval: 0.1f,
+                                     formatValue: IronFenceYears);
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.HardwoodFenceLife,
                                      (float value) => Config.HardwoodFenceLife = value,
@@ -179,7 +223,8 @@ namespace LongerFenceLife
                                      () => I18nGet("hardwoodFence.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
-                                     interval: 0.1f);
+                                     interval: 0.1f,
+                                     formatValue: HwFenceYears);
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.GateLife,
                                      (float value) => Config.GateLife = value,
@@ -187,7 +232,8 @@ namespace LongerFenceLife
                                      () => I18nGet("gate.tooltip"),
                                      min: MinLife,
                                      max: MaxLife,
-                                     interval: 0.1f);
+                                     interval: 0.1f,
+                                     formatValue: GateYears);
                 gmcm.AddKeybind(ModManifest,
                                 () => Config.FenceLifeKeybind,
                                 (SButton value) => Config.FenceLifeKeybind = value,
