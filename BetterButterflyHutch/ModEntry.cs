@@ -184,7 +184,7 @@ namespace BetterButterflyHutch
         /// <param name="e">The event arguments.</param>
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            MyHelper.Events.Input.ButtonPressed += OnButtonPressed;
+            MyHelper.Events.Input.ButtonPressed += Input_ButtonPressed;
             if (!Config.UseHarmony)
                 MyHelper.Events.Player.Warped += Player_Warped;
         }
@@ -194,7 +194,7 @@ namespace BetterButterflyHutch
         /// <param name="e">The event arguments.</param>
         private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
-            MyHelper.Events.Input.ButtonPressed -= OnButtonPressed;
+            MyHelper.Events.Input.ButtonPressed -= Input_ButtonPressed;
             if (!Config.UseHarmony)
                 MyHelper.Events.Player.Warped -= Player_Warped;
         }
@@ -243,7 +243,7 @@ namespace BetterButterflyHutch
             return true;
         }
 
-        private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
+        private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
             Vector2 tile = e.Cursor.GrabTile;
             GameLocation location = Game1.currentLocation;
@@ -251,21 +251,24 @@ namespace BetterButterflyHutch
             if (
                 Context.IsPlayerFree &&
                 SButtonExtensions.IsActionButton(e.Button) &&
-                IsHutchHere(location, tile) &&
-                CanSpawn(location)
+                (location.furniture.Count > 0) &&
+                IsHutchHere(location, tile)
                 )
             {
                 location.playSound("leafrustle");
 
-                bool island = location.GetLocationContext() == GameLocation.LocationContext.Island;
-                if (!location.IsOutdoors && Config.IslandButterflies)
-                    island = true;
-
-                do
+                if (CanSpawn(location))
                 {
-                    location.addCritter(new Butterfly(new Vector2(tile.X + (float)Game1.random.Next(1, 3), tile.Y - 2f + (float)Game1.random.Next(-1, 2)),
-                                        island));
-                } while (Game1.random.NextDouble() < 0.8);
+                    bool island = location.GetLocationContext() == GameLocation.LocationContext.Island;
+                    if (!location.IsOutdoors && Config.IslandButterflies)
+                        island = true;
+
+                    do
+                    {
+                        location.addCritter(new Butterfly(new Vector2(tile.X + (float)Game1.random.Next(1, 3), tile.Y - 2f + (float)Game1.random.Next(-1, 2)),
+                                            island));
+                    } while (Game1.random.NextDouble() < 0.8);
+                }
             }
         }
 
