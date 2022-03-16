@@ -469,9 +469,20 @@ namespace LongerFenceLife
         {
             if (Context.IsPlayerFree)
             {
+                GameLocation location = Game1.currentLocation;
+
                 if (e.Button == Config.FenceLifeKeybind)
                 {
                     MyHelper.Events.Display.RenderedWorld += Display_OnRenderedWorld;
+                }
+                else if ((e.Button == SButton.MouseLeft) &&
+                         MyHelper.Input.IsDown(Config.FenceLifeKeybind) &&
+                         location.Objects.ContainsKey(Game1.currentCursorTile) &&
+                         (location.Objects[Game1.currentCursorTile] is StardewValley.Fence fence)
+                        )
+                {
+                    fence.repair();
+                    Helper.Input.Suppress(SButton.MouseLeft);
                 }
                 else if (Debug)
                 {

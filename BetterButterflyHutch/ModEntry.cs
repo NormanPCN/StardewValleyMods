@@ -121,6 +121,7 @@ namespace BetterButterflyHutch
                                      () => I18nGet("minIndoors.Tooltip"),
                                      min: 0,
                                      max: MaxMinButterflies);
+
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.MaxIndoors,
                                      (int value) => { Config.MaxIndoors = value; NormalizeMinMax(); },
@@ -128,6 +129,7 @@ namespace BetterButterflyHutch
                                      () => I18nGet("maxIndoors.Tooltip"),
                                      min: 1,
                                      max: MaxMaxButterflies);
+
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.MinOutdoors,
                                      (int value) => { Config.MinOutdoors = value; NormalizeMinMax(); },
@@ -135,6 +137,7 @@ namespace BetterButterflyHutch
                                      () => I18nGet("minOutdoors.Tooltip"),
                                      min: 0,
                                      max: MaxMinButterflies);
+
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.MaxOutdoors,
                                      (int value) => { Config.MaxOutdoors = value; NormalizeMinMax(); },
@@ -142,6 +145,7 @@ namespace BetterButterflyHutch
                                      () => I18nGet("maxOutdoors.Tooltip"),
                                      min: 1,
                                      max: MaxMaxButterflies);
+
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.NumBatWings,
                                      (int value) => Config.NumBatWings = value,
@@ -150,16 +154,24 @@ namespace BetterButterflyHutch
                                      min: MinBatWings,
                                      max: MaxBatWings,
                                      interval: 10);
+
                 gmcm.AddBoolOption(ModManifest,
                                    () => Config.WinterButterflies,
                                    (bool value) => Config.WinterButterflies = value,
                                    () => I18nGet("winterButterflies.Label"),
                                    () => I18nGet("winterButterflies.Tooltip"));
+
                 gmcm.AddBoolOption(ModManifest,
                                    () => Config.IslandButterflies,
                                    (bool value) => Config.IslandButterflies = value,
                                    () => I18nGet("islandButterflies.Label"),
                                    () => I18nGet("islandButterflies.Tooltip"));
+
+                gmcm.AddBoolOption(ModManifest,
+                                   () => Config.ShakeHutch,
+                                   (bool value) => Config.ShakeHutch = value,
+                                   () => I18nGet("shakeHutch.Label"),
+                                   () => I18nGet("shakeHutch.Tooltip"));
             }
             else
             {
@@ -172,6 +184,7 @@ namespace BetterButterflyHutch
         /// <param name="e">The event arguments.</param>
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
+            MyHelper.Events.Input.ButtonPressed += OnButtonPressed;
             if (!Config.UseHarmony)
                 MyHelper.Events.Player.Warped += Player_Warped;
         }
@@ -181,8 +194,79 @@ namespace BetterButterflyHutch
         /// <param name="e">The event arguments.</param>
         private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
+            MyHelper.Events.Input.ButtonPressed -= OnButtonPressed;
             if (!Config.UseHarmony)
                 MyHelper.Events.Player.Warped -= Player_Warped;
+        }
+
+        private static bool IsHutchHere(GameLocation location, Vector2 tile)
+        {
+            foreach (StardewValley.Object obj in location.furniture)
+            {
+                if (
+                    (obj.ParentSheetIndex == HutchIdx) &&
+                    (obj.boundingBox.Y / Game1.tileSize == tile.Y) &&
+                    (
+                     (obj.boundingBox.X / Game1.tileSize == tile.X) ||
+                     (((obj.boundingBox.X / Game1.tileSize)+1) == tile.X)
+                    )
+                   )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool CanSpawn(GameLocation loc)
+        {
+            if (loc.IsOutdoors)
+            {
+                // the game hutch code will
+                //     spawn butterfies in the rain or snow or wind debris.
+                //     spawn after dark
+                //     spawn any season
+                // Is...Here method return true for the Desert when it is raining/etc in the valley/town.
+                // the Desert LocationContext is the same as valley/town. there are really only two contexts. valley/town and island.
+                // we spawn in more sensible conditions.
+
+                bool island = loc.GetLocationContext() == StardewValley.GameLocation.LocationContext.Island;
+                bool desert = loc.Name.Equals("Desert", StringComparison.Ordinal);
+                bool isClear = !(Game1.IsRainingHere(loc) || Game1.IsLightningHere(loc) || Game1.IsSnowingHere(loc) || Game1.IsDebrisWeatherHere(loc));
+
+                bool spawn = island || desert || (!Game1.currentSeason.Equals("winter", StringComparison.Ordinal) || Config.WinterButterflies);
+                spawn = spawn && (isClear || desert);
+                spawn = spawn && !Game1.isStartingToGetDarkOut();
+
+                return spawn;
+            }
+            return true;
+        }
+
+        private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
+        {
+            Vector2 tile = e.Cursor.GrabTile;
+            GameLocation location = Game1.currentLocation;
+
+            if (
+                Context.IsPlayerFree &&
+                SButtonExtensions.IsActionButton(e.Button) &&
+                IsHutchHere(location, tile) &&
+                CanSpawn(location)
+                )
+            {
+                location.playSound("leafrustle");
+
+                bool island = location.GetLocationContext() == GameLocation.LocationContext.Island;
+                if (!location.IsOutdoors && Config.IslandButterflies)
+                    island = true;
+
+                do
+                {
+                    location.addCritter(new Butterfly(new Vector2(tile.X + (float)Game1.random.Next(1, 3), tile.Y - 2f + (float)Game1.random.Next(-1, 2)),
+                                        island));
+                } while (Game1.random.NextDouble() < 0.8);
+            }
         }
 
         private static int CountButterflies(GameLocation loc)
@@ -221,24 +305,9 @@ namespace BetterButterflyHutch
                 }
                 else
                 {
-                    // the game hutch code will
-                    //     spawn butterfies in the rain or snow or wind debris.
-                    //     spawn after dark
-                    //     spawn any season
-                    // Is...Here method return true for the Desert when it is raining/etc in the valley/town.
-                    // the Desert LocationContext is the same as valley/town. there are really only two contexts. valley/town and island.
-                    // we spawn in more sensible conditions.
-
-                    bool desert = loc.Name.Equals("Desert", StringComparison.Ordinal);
-                    bool isClear = !(Game1.IsRainingHere(loc) || Game1.IsLightningHere(loc) || Game1.IsSnowingHere(loc) || Game1.IsDebrisWeatherHere(loc));
-
-                    bool spawn = island || desert || (!Game1.currentSeason.Equals("winter", StringComparison.Ordinal) || Config.WinterButterflies);
-                    spawn = spawn && (isClear || desert);
-                    spawn = spawn && !Game1.isStartingToGetDarkOut();
-
                     if (Config.MinOutdoors > 0)
                     {
-                        if (spawn)
+                        if (CanSpawn(loc))
                         {
                             if (hutchCount < Config.MinOutdoors)
                                 min = Config.MinOutdoors - hutchCount;
@@ -304,7 +373,7 @@ namespace BetterButterflyHutch
 
                 foreach (StardewValley.Object obj in loc.furniture)
                 {
-                    if (obj.ParentSheetIndex == HutchIdx)//butterfly hutch
+                    if (obj.ParentSheetIndex == HutchIdx)
                     {
                         // we can't distinguish from ambient and hutch spawns. only matters outdoors.
                         int count = CountButterflies(loc);

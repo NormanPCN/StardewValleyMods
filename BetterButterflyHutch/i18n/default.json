@@ -12,5 +12,7 @@
   "winterButterflies.Label": "Winter Butterflies",
   "winterButterflies.tooltip": "Spawn butterflies outdoors in winter.",
   "islandButterflies.Label": "Island Butterflies",
-  "islandButterflies.tooltip": "Spawn island butterflies indoors on the mainland."
+  "islandButterflies.tooltip": "Spawn island butterflies indoors on the mainland.",
+  "shakeHutch.Label": "Shake Hutch",
+  "shakeHutch.tooltip":  "Shake the hutch to spawn butterflies. You shake the hutch just like shaking a tree."
 }

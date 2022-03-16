@@ -63,8 +63,11 @@ The number of Bat Wings used to trade for the Hutch at the Desert Trader. Vanill
 - Winter butterflies:  
 Spawn butterflies outdoors in winter.  
 
-- Island Butterflies
+- Island Butterflies:
 Spawn Ginger Island butterflies indoors on the mainland.
+
+- Shake Hutch:
+Shake the hutch to spawn butterflies. You shake the hutch just like shaking a tree.
 
 ## Changlog
 
@@ -80,4 +83,7 @@ v1.0.1:
  v1.2.0
  Added config option to spawn Island butterflies indoors on the mainland.
  Adjusted the "dark" time to stop spawning butterflies outdoors.
+
+ v1.3.0
+ You can now shake the hutch to instantly spawn butterflies.
 
