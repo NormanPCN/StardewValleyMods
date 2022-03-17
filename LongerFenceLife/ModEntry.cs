@@ -321,8 +321,6 @@ namespace LongerFenceLife
         /// <param name="e">The event arguments.</param>
         private void Player_InventoryChanged(object sender, InventoryChangedEventArgs e)
         {
-            // Using Harmony and Prefix+PostFix on Fence.PerformRepairIfNecessary would be a simple method of precise repair detection.
-
             Item grabbed = e.Player.mostRecentlyGrabbedItem;
             if (grabbed == null)
                 return;
@@ -335,12 +333,15 @@ namespace LongerFenceLife
                )
             {
                 Vector2 tilePosition = Game1.currentCursorTile;
+                StardewValley.Object obj;
                 if (
                     (!FencesAdded) &&
                     (e.QuantityChanged.FirstOrDefault(x => x.Item == grabbed) is ItemStackSizeChange item) &&
                     (item.NewSize+1 == item.OldSize) &&
-                    Game1.currentLocation.Objects.ContainsKey(tilePosition) &&
-                    (Game1.currentLocation.Objects[tilePosition] is StardewValley.Fence fence) &&
+                    Game1.currentLocation.Objects.TryGetValue(tilePosition, out obj) &&
+                    (obj is StardewValley.Fence fence) &&
+                    //Game1.currentLocation.Objects.ContainsKey(tilePosition) &&
+                    //(Game1.currentLocation.Objects[tilePosition] is StardewValley.Fence fence) &&
                     (fence.GetItemParentSheetIndex() == idx)
                    )
                 {
@@ -421,6 +422,8 @@ namespace LongerFenceLife
                     Vector2 view = new Vector2(Game1.viewport.X, Game1.viewport.Y);
                     Vector2 tile = new Vector2(0, 0);
 
+                    StardewValley.Object obj;
+
                     Rectangle visibleArea = GetVisibleAreaInTiles(1);
                     for (int x = visibleArea.X; x < visibleArea.X+visibleArea.Width; x++)
                     {
@@ -428,7 +431,7 @@ namespace LongerFenceLife
                         for (int y = visibleArea.Y; y < visibleArea.Y+visibleArea.Height; y++)
                         {
                             tile.Y = y;
-                            if (location.Objects.ContainsKey(tile) && (location.Objects[tile] is StardewValley.Fence fence1))
+                            if (location.Objects.TryGetValue(tile, out obj) && (obj is StardewValley.Fence fence1))
                             {
                                 Color color = Color.Green;
                                 int daysLeft = (int)(fence1.health.Value * 1440f / 60 / 24);
@@ -446,7 +449,7 @@ namespace LongerFenceLife
                     }
 
                     tile = Game1.currentCursorTile;
-                    if (location.Objects.ContainsKey(tile) && (location.Objects[tile] is StardewValley.Fence fence2))
+                    if (location.Objects.TryGetValue(tile, out obj) && (obj is StardewValley.Fence fence2))
                     {
                         int daysLeft = (int)(fence2.health.Value * 1440f / 60 / 24);
 
@@ -470,6 +473,7 @@ namespace LongerFenceLife
             if (Context.IsPlayerFree)
             {
                 GameLocation location = Game1.currentLocation;
+                StardewValley.Object obj;
 
                 if (e.Button == Config.FenceLifeKeybind)
                 {
@@ -477,8 +481,10 @@ namespace LongerFenceLife
                 }
                 else if ((e.Button == SButton.MouseLeft) &&
                          MyHelper.Input.IsDown(Config.FenceLifeKeybind) &&
-                         location.Objects.ContainsKey(Game1.currentCursorTile) &&
-                         (location.Objects[Game1.currentCursorTile] is StardewValley.Fence fence)
+                         location.Objects.TryGetValue(Game1.currentCursorTile, out obj) &&
+                         (obj is StardewValley.Fence fence)
+                        //location.Objects.ContainsKey(Game1.currentCursorTile) &&
+                        //(location.Objects[Game1.currentCursorTile] is StardewValley.Fence fence)
                         )
                 {
                     fence.repair();
@@ -489,9 +495,9 @@ namespace LongerFenceLife
                     if ((e.Button == SButton.F5) || (e.Button == SButton.F6) || (e.Button == SButton.F7))
                     {
                         GameLocation farm = Game1.getLocationFromName("Farm");
-                        foreach (StardewValley.Object obj in farm.objects.Values)
+                        foreach (StardewValley.Object obj1 in farm.objects.Values)
                         {
-                            if (obj is Fence f)
+                            if (obj1 is Fence f)
                             {
                                 if (e.Button == SButton.F5)
                                     f.minutesElapsed(1440, farm);//one day by fence.minutesElaspsed logic.
