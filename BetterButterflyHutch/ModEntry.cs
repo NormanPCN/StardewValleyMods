@@ -199,7 +199,7 @@ namespace BetterButterflyHutch
                 MyHelper.Events.Player.Warped -= Player_Warped;
         }
 
-        private static bool IsHutchHere(GameLocation location, Vector2 tile)
+        private static bool IsHutchAtTile(GameLocation location, Vector2 tile)
         {
             foreach (StardewValley.Object obj in location.furniture)
             {
@@ -252,7 +252,7 @@ namespace BetterButterflyHutch
                 Context.IsPlayerFree &&
                 SButtonExtensions.IsActionButton(e.Button) &&
                 (location.furniture.Count > 0) &&
-                IsHutchHere(location, tile)
+                IsHutchAtTile(location, tile)
                 )
             {
                 location.playSound("leafrustle");
