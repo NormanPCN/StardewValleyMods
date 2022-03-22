@@ -87,3 +87,9 @@ v1.0.1:
  v1.3.0
  You can now shake the hutch to instantly spawn butterflies.
 
+ v1.3.1
+ Butterflies spawned by shaking the hutch now stay inbounds on the map.
+
+ v.1.3.2
+ Fix for a bad upload. Version change to trigger updates.
+

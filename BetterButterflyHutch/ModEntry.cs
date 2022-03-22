@@ -265,8 +265,8 @@ namespace BetterButterflyHutch
 
                     do
                     {
-                        location.addCritter(new Butterfly(new Vector2(tile.X + (float)Game1.random.Next(1, 3), tile.Y - 2f + (float)Game1.random.Next(-1, 2)),
-                                            island));
+                        Vector2 v = new Vector2(tile.X + (float)Game1.random.Next(1, 3), tile.Y - 2f + (float)Game1.random.Next(-1, 2));
+                        location.addCritter(new Butterfly(v, island).setStayInbounds(true));
                     } while (Game1.random.NextDouble() < 0.8);
                 }
             }
@@ -355,7 +355,7 @@ namespace BetterButterflyHutch
                     }
 
                     for (int i = 0; i < spawnCount; i++)
-                        loc.addCritter(new Butterfly(loc.getRandomTile(), island).setStayInbounds(stayInbounds: true));
+                        loc.addCritter(new Butterfly(loc.getRandomTile(), island).setStayInbounds(true));
                 }
             }
             //else
