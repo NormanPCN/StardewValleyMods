@@ -45,6 +45,23 @@ If you lower the eradication goal in the middle of a gameplay save and the new g
 
 Conversely if you raise the goal and have already received your reward then you will not receive the reward again, and again meeting the new eradication goal. You receive the reward once. If you have not yet collected the reward and raise the goal then the reward will no longer be available until you meet the eradication goal.
 
+## For Mod Authors
+
+This mod provides a simple Api that allows you to fetch the modified monster eradication goal.  
+SMAPI makes calling other mod Apis simple as well. https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Integrations#Mod-provided_APIs
+
+    public interface IEasierMonsterEradicationApi
+    {
+        /// <summary>Return the modified monster eradication goal value. returns -1 if the passed monster could not be identified.</summary>
+        /// <param name="nameOfMonster">You pass the generic monster name as indentified by the game code.
+        /// "Slimes", "DustSprites", "Bats", "Serpent", "VoidSpirits", "MagmaSprite", "CaveInsects", "Mummies", "RockCrabs", "Skeletons", "PepperRex", "Duggies".
+        /// You can also pass specific game monster names like "Green Slime" if that is more convenient.
+        /// </param>
+        public int GetMonsterGoal(string nameOfMonster);
+
+    }
+
+
 ## Changlog
 
 v1.0.0:  

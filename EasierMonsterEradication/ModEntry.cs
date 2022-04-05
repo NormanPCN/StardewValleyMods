@@ -124,7 +124,7 @@ namespace EasierMonsterEradication
             }
             else
             {
-                Monitor.LogOnce("Generic Mod Config Menu not available.", LogLevel.Info);
+                Log.LogOnce("Generic Mod Config Menu not available.");
             };
 
             Debug = Config.Debug;
@@ -445,6 +445,37 @@ namespace EasierMonsterEradication
             talkedToGil.SetValue(true);
         }
 
+        public class ApiImplementation : IEasierMonsterEradicationApi
+        {
+            int IEasierMonsterEradicationApi.GetMonsterGoal(string nameOfMonster)
+            {
+                var monsters = MonstersTable;
+                for (int i = 0; i < monsters.Length; i++)
+                {
+                    var group = monsters[i];
+
+                    if (nameOfMonster.Equals(group.GroupName, StringComparison.Ordinal))
+                    {
+                        return (int)(group.KillsNeeded * Config.MonsterPercentage);
+                    }
+
+                    foreach (string monster in group.Monsters)
+                    {
+                        if (nameOfMonster.Equals(monster, StringComparison.Ordinal))
+                        {
+                            return (int)(group.KillsNeeded * Config.MonsterPercentage);
+                        }
+                    }
+                }
+                return -1;
+            }
+
+        }
+
+        public override object GetApi()
+        {
+            return new ApiImplementation();
+        }
 
         [HarmonyPatch(typeof(StardewValley.Locations.AdventureGuild))]
         public class AdventureGuildPatches
