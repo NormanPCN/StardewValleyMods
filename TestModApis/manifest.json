@@ -1,0 +1,11 @@
+﻿{
+  "Name": "TestModApis",
+  "Author": "NormanPCN",
+  "Version": "1.0.0",
+  "Description": "Tests that my mod Apis are working.",
+  "UniqueID": "NormanPCN.TestModApis",
+  "EntryDll": "TestModApis.dll",
+  "MinimumApiVersion": "3.13.0",
+  "UpdateKeys": ["Nexus:0000"],
+  "Dependencies": []
+}
