@@ -28,15 +28,15 @@ namespace EasierMonsterEradication
 
         private struct MonsterRec
         {
-            public string GroupName;
-            public float KillsNeeded;//vanilla kill count
+            public string GroupName;// must match game internal string used by "Gil". showMonsterKillList.
+            public float KillsNeeded;//vanilla kill amount
             public string RewardName;
-            public string[] Monsters;
+            public string[] Monsters;// string must match game internal monster names.
 
-            public MonsterRec(string groupName, int killsReq, string rewardName, string[] monsterNames)
+            public MonsterRec(string groupName, int killsNeeded, string rewardName, string[] monsterNames)
             {
                 GroupName = groupName;
-                KillsNeeded = killsReq;
+                KillsNeeded = killsNeeded;
                 RewardName = rewardName;
                 Monsters = monsterNames;
             }
@@ -44,7 +44,7 @@ namespace EasierMonsterEradication
 
         // the enum and lookup table must match order
         private enum MonsterType { Slime, DustSprite, Bat, Serpent, VoidSpirit, MagmaSprite, Insect, Mummy, RockCrab, Skeleton, Dino, Duggy };
-        private static MonsterRec[] MonstersTable = new MonsterRec[(int)MonsterType.Duggy + 1]
+        private static MonsterRec[] MonsterTable = new MonsterRec[(int)MonsterType.Duggy + 1]
         {
             new MonsterRec("Slimes",      1000, "Gil_Slime Charmer Ring",    new string[4] { "Green Slime", "Frost Jelly", "Sludge", "Tiger Slime" }),
             new MonsterRec("DustSprites", 500,  "Gil_Burglar's Ring",        new string[1] { "Dust Spirit" }),
@@ -92,7 +92,7 @@ namespace EasierMonsterEradication
             Config = MyHelper.ReadConfig<ModConfig>();
             if (Config.MonsterPercentage < MinPercent)
                 Config.MonsterPercentage = MinPercent;
-            if (Config.MonsterPercentage > MaxPercent)
+            else if (Config.MonsterPercentage > MaxPercent)
                 Config.MonsterPercentage = MaxPercent;
 
             // use GMCM in an optional manner.
@@ -119,8 +119,7 @@ namespace EasierMonsterEradication
                                      min: MinPercent,
                                      max: MaxPercent,
                                      interval: 0.05f);
-                gmcm.AddParagraph(ModManifest,
-                                  () => GetParagraphText());
+                gmcm.AddParagraph(ModManifest, () => GetParagraphText());
             }
             else
             {
@@ -164,10 +163,9 @@ namespace EasierMonsterEradication
 
                     if (e.Button == SButton.F5) //set monsters just below threshold
                     {
-                        var monsters = MonstersTable;
-                        for (int i = 0; i < monsters.Length; i++)
+                        for (int i = 0; i < MonsterTable.Length; i++)
                         {
-                            var group = monsters[i];
+                            var group = MonsterTable[i];
 
                             int killed = 0;
                             foreach (string monster in group.Monsters)
@@ -190,10 +188,9 @@ namespace EasierMonsterEradication
                     }
                     else if (e.Button == SButton.F6) //complete one monster slayer goal
                     {
-                        var monsters = MonstersTable;
-                        for (int i = 0; i < monsters.Length; i++)
+                        for (int i = 0; i < MonsterTable.Length; i++)
                         {
-                            var group = monsters[i];
+                            var group = MonsterTable[i];
 
                             // make sure the first monster exists
                             if (!stats.specificMonstersKilled.ContainsKey(group.Monsters[0]))
@@ -226,17 +223,16 @@ namespace EasierMonsterEradication
         }
 
         // the game code has embedded literal constants for the monster goals spread across numerous methods.
-        // rather than try to transpile every literal, I just copy the methods game method code here and replace them with Harmony.
-        // for the monster calculations, I substitute a lookup table versus the explicit individual calls.
+        // rather than try to transpile every literal, I largely just copy the game method code here and replace the methods with Harmony.
+        // for the monster calculations, I did substitute a lookup table setup.
 
         private static bool willThisKillCompleteAMonsterSlayerQuest(string nameOfMonster)
         {
-            var monsters = MonstersTable;
-            for (int i = 0; i < monsters.Length; i++)
+            for (int i = 0; i < MonsterTable.Length; i++)
             {
                 var player = Game1.player;
 
-                var group = monsters[i];
+                var group = MonsterTable[i];
                 foreach (string monster in group.Monsters)
                 {
                     if (nameOfMonster.Equals(monster, StringComparison.Ordinal))
@@ -269,11 +265,10 @@ namespace EasierMonsterEradication
 
         private static bool areAllMonsterSlayerQuestsComplete()
         {
-            var monsters = MonstersTable;
-            for (int i = 0; i < monsters.Length; i++)
+            for (int i = 0; i < MonsterTable.Length; i++)
             {
                 var stats = Game1.player.stats;
-                var group = monsters[i];
+                var group = MonsterTable[i];
 
                 int killed = 0;
                 foreach (string monster in group.Monsters)
@@ -318,10 +313,9 @@ namespace EasierMonsterEradication
 
             stringBuilder.Append(Game1.content.LoadString("Strings\\Locations:AdventureGuild_KillList_Header").Replace('\n', '^') + "^");
 
-            var monsters = MonstersTable;
-            for (int i = 0; i < monsters.Length; i++)
+            for (int i = 0; i < MonsterTable.Length; i++)
             {
-                var group = monsters[i];
+                var group = MonsterTable[i];
 
                 int killed = 0;
                 foreach (string monster in group.Monsters)
@@ -352,11 +346,10 @@ namespace EasierMonsterEradication
         {
             List<Item> rewards = new List<Item>();
 
-            var monsters = MonstersTable;
-            for (int i = 0; i < monsters.Length; i++)
+            for (int i = 0; i < MonsterTable.Length; i++)
             {
                 var player = Game1.player;
-                var group = monsters[i];
+                var group = MonsterTable[i];
 
                 int killed = 0;
                 foreach (string specificMonster in group.Monsters)
@@ -449,10 +442,9 @@ namespace EasierMonsterEradication
         {
             int IEasierMonsterEradicationApi.GetMonsterGoal(string nameOfMonster)
             {
-                var monsters = MonstersTable;
-                for (int i = 0; i < monsters.Length; i++)
+                for (int i = 0; i < MonsterTable.Length; i++)
                 {
-                    var group = monsters[i];
+                    var group = MonsterTable[i];
 
                     if (nameOfMonster.Equals(group.GroupName, StringComparison.Ordinal))
                     {
@@ -469,7 +461,6 @@ namespace EasierMonsterEradication
                 }
                 return -1;
             }
-
         }
 
         public override object GetApi()
@@ -544,9 +535,7 @@ namespace EasierMonsterEradication
                     return true;
                 }
             }
-
         }
-
     }
 }
 
