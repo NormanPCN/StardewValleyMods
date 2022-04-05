@@ -52,7 +52,9 @@ SMAPI makes calling other mod Apis simple as well. https://stardewvalleywiki.com
 
     public interface IEasierMonsterEradicationApi
     {
-        /// <summary>Return the modified monster eradication goal value. returns -1 if the passed monster could not be identified.</summary>
+        /// <summary>Return the modified monster eradication goal value. returns -1 if the passed monster could not be identified.
+        /// A good place to access the Api could be in the OnSaveLoaded SMAPI event. The goal values will not change during gameplay.
+        /// </summary>
         /// <param name="nameOfMonster">You pass the generic monster name as indentified by the game code.
         /// "Slimes", "DustSprites", "Bats", "Serpent", "VoidSpirits", "MagmaSprite", "CaveInsects", "Mummies", "RockCrabs", "Skeletons", "PepperRex", "Duggies".
         /// You can also pass specific game monster names like "Green Slime" if that is more convenient.
