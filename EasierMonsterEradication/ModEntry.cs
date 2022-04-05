@@ -26,23 +26,25 @@ namespace EasierMonsterEradication
 
         internal bool Debug;
 
-        public struct MonsterRec
+        private struct MonsterRec
         {
             public string GroupName;
-            public float KillsReq;//vanilla kill value
+            public float KillsNeeded;//vanilla kill count
             public string RewardName;
             public string[] Monsters;
 
-            public MonsterRec(string group, int killsReq, string rewardName, string[] monsterNames)
+            public MonsterRec(string groupName, int killsReq, string rewardName, string[] monsterNames)
             {
-                GroupName = group;
-                KillsReq = killsReq;
+                GroupName = groupName;
+                KillsNeeded = killsReq;
                 RewardName = rewardName;
                 Monsters = monsterNames;
             }
         }
 
-        private static MonsterRec[] MonstersTable = new MonsterRec[12]
+        // the enum and lookup table must match order
+        private enum MonsterType { Slime, DustSprite, Bat, Serpent, VoidSpirit, MagmaSprite, Insect, Mummy, RockCrab, Skeleton, Dino, Duggy };
+        private static MonsterRec[] MonstersTable = new MonsterRec[(int)MonsterType.Duggy + 1]
         {
             new MonsterRec("Slimes",      1000, "Gil_Slime Charmer Ring",    new string[4] { "Green Slime", "Frost Jelly", "Sludge", "Tiger Slime" }),
             new MonsterRec("DustSprites", 500,  "Gil_Burglar's Ring",        new string[1] { "Dust Spirit" }),
@@ -116,7 +118,7 @@ namespace EasierMonsterEradication
                                      () => I18nGet("monsterPercent.tooltip"),
                                      min: MinPercent,
                                      max: MaxPercent,
-                                     interval: 0.1f);
+                                     interval: 0.05f);
                 gmcm.AddParagraph(ModManifest,
                                   () => GetParagraphText());
             }
@@ -158,33 +160,64 @@ namespace EasierMonsterEradication
             {
                 if (Debug)
                 {
+                    var stats = Game1.player.stats;
+
                     if (e.Button == SButton.F5) //set monsters just below threshold
                     {
-                        var monstersData = MonstersTable;
-                        for (int i = 0; i < monstersData.Length; i++)
+                        var monsters = MonstersTable;
+                        for (int i = 0; i < monsters.Length; i++)
                         {
-                            var player = Game1.player;
-                            var group = monstersData[i];
+                            var group = monsters[i];
 
                             int killed = 0;
                             foreach (string monster in group.Monsters)
                             {
-                                if (player.stats.specificMonstersKilled.TryGetValue(monster, out int thisKill))
+                                if (stats.specificMonstersKilled.TryGetValue(monster, out int thisKill))
                                 {
                                     killed += thisKill;
                                 }
                             }
+                            int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
 
+                            // make sure the first monster exists
+                            if (!stats.specificMonstersKilled.ContainsKey(group.Monsters[0]))
+                                stats.specificMonstersKilled.Add(group.Monsters[0], 0);
+
+                            needed = needed - killed - 2;
+                            if (needed > 1)
+                                stats.specificMonstersKilled[group.Monsters[0]] += needed;
+                        }
+                    }
+                    else if (e.Button == SButton.F6) //complete one monster slayer goal
+                    {
+                        var monsters = MonstersTable;
+                        for (int i = 0; i < monsters.Length; i++)
+                        {
+                            var group = monsters[i];
+
+                            // make sure the first monster exists
+                            if (!stats.specificMonstersKilled.ContainsKey(group.Monsters[0]))
+                                stats.specificMonstersKilled.Add(group.Monsters[0], 0);
+
+                            int killed = 0;
                             foreach (string monster in group.Monsters)
                             {
-                                if (player.stats.specificMonstersKilled.ContainsKey(monster))
+                                if (stats.specificMonstersKilled.TryGetValue(monster, out int thisKill))
                                 {
-                                    int needed = (int)(group.KillsReq * Config.MonsterPercentage);
-                                    needed = needed - killed - 2;
-                                    if (needed > 1)
-                                        player.stats.specificMonstersKilled[monster] += needed;
-                                    break;
+                                    killed += thisKill;
                                 }
+                            }
+                            int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
+
+                            if (killed < needed)
+                            {
+                                do
+                                {
+                                    killed++;
+                                    stats.monsterKilled(group.Monsters[0]);
+                                }
+                                while (killed < needed);
+                                return;
                             }
                         }
                     }
@@ -192,28 +225,35 @@ namespace EasierMonsterEradication
             }
         }
 
+        // the game code has embedded literal constants for the monster goals spread across numerous methods.
+        // rather than try to transpile every literal, I just copy the methods game method code here and replace them with Harmony.
+        // for the monster calculations, I substitute a lookup table versus the explicit individual calls.
+
         private static bool willThisKillCompleteAMonsterSlayerQuest(string nameOfMonster)
         {
             var monsters = MonstersTable;
             for (int i = 0; i < monsters.Length; i++)
             {
                 var player = Game1.player;
+
                 var group = monsters[i];
                 foreach (string monster in group.Monsters)
                 {
-                    if (nameOfMonster.Equals(monster))
+                    if (nameOfMonster.Equals(monster, StringComparison.Ordinal))
                     {
-                        if (!Game1.player.mailReceived.Contains(group.RewardName))
+                        if (!player.mailReceived.Contains(group.RewardName))
                         {
+                            var stats = player.stats;
+
                             int killed = 0;
                             foreach (string specificMonster in group.Monsters)
                             {
-                                if (player.stats.specificMonstersKilled.TryGetValue(specificMonster, out int thisKill))
+                                if (stats.specificMonstersKilled.TryGetValue(specificMonster, out int thisKill))
                                 {
                                     killed += thisKill;
                                 }
                             }
-                            int needed = (int)(group.KillsReq * Config.MonsterPercentage);
+                            int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
 
                             if ((killed < needed) && (killed+1 >= needed))
                             {
@@ -232,18 +272,18 @@ namespace EasierMonsterEradication
             var monsters = MonstersTable;
             for (int i = 0; i < monsters.Length; i++)
             {
-                var player = Game1.player;
+                var stats = Game1.player.stats;
                 var group = monsters[i];
 
                 int killed = 0;
                 foreach (string monster in group.Monsters)
                 {
-                    if (player.stats.specificMonstersKilled.TryGetValue(monster, out int thisKill))
+                    if (stats.specificMonstersKilled.TryGetValue(monster, out int thisKill))
                     {
                         killed += thisKill;
                     }
                 }
-                int needed = (int)(group.KillsReq * Config.MonsterPercentage);
+                int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
 
                 if (killed < needed)
                     return false;
@@ -267,11 +307,13 @@ namespace EasierMonsterEradication
 
         private static void showMonsterKillList()
         {
+            var player = Game1.player;
+
             StringBuilder stringBuilder = new StringBuilder();
 
-            if (!Game1.player.mailReceived.Contains("checkedMonsterBoard"))
+            if (!player.mailReceived.Contains("checkedMonsterBoard"))
             {
-                Game1.player.mailReceived.Add("checkedMonsterBoard");
+                player.mailReceived.Add("checkedMonsterBoard");
             }
 
             stringBuilder.Append(Game1.content.LoadString("Strings\\Locations:AdventureGuild_KillList_Header").Replace('\n', '^') + "^");
@@ -279,7 +321,6 @@ namespace EasierMonsterEradication
             var monsters = MonstersTable;
             for (int i = 0; i < monsters.Length; i++)
             {
-                var player = Game1.player;
                 var group = monsters[i];
 
                 int killed = 0;
@@ -290,7 +331,7 @@ namespace EasierMonsterEradication
                         killed += thisKill;
                     }
                 }
-                int needed = (int)(group.KillsReq * Config.MonsterPercentage);
+                int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
 
                 stringBuilder.Append(killListLine(group.GroupName, killed, needed));
             }
@@ -311,11 +352,11 @@ namespace EasierMonsterEradication
         {
             List<Item> rewards = new List<Item>();
 
-            var monstersData = MonstersTable;
-            for (int i = 0; i < monstersData.Length; i++)
+            var monsters = MonstersTable;
+            for (int i = 0; i < monsters.Length; i++)
             {
                 var player = Game1.player;
-                var group = monstersData[i];
+                var group = monsters[i];
 
                 int killed = 0;
                 foreach (string specificMonster in group.Monsters)
@@ -325,60 +366,52 @@ namespace EasierMonsterEradication
                         killed += thisKill;
                     }
                 }
-                int needed = (int)(group.KillsReq * Config.MonsterPercentage);
+                int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
 
-                if ((killed >= needed) && !Game1.player.mailReceived.Contains(group.RewardName))
+                if ((killed >= needed) && !player.mailReceived.Contains(group.RewardName))
                 {
-                    if (group.GroupName.Equals("Slimes"))
+                    switch ((MonsterType)i)
                     {
-                        rewards.Add(new StardewValley.Objects.Ring(520));
-                    }
-                    else if (group.GroupName.Equals("VoidSpirits"))
-                    {
-                        rewards.Add(new StardewValley.Objects.Ring(523));
-                    }
-                    else if (group.GroupName.Equals("Skeletons"))
-                    {
-                        rewards.Add(new StardewValley.Objects.Hat(8));
-                    }
-                    else if (group.GroupName.Equals("DustSprites"))
-                    {
-                        rewards.Add(new StardewValley.Objects.Ring(526));
-                    }
-                    else if (group.GroupName.Equals("Bats"))
-                    {
-                        rewards.Add(new StardewValley.Objects.Ring(522));
-                    }
-                    else if (group.GroupName.Equals("Serpent"))
-                    {
-                        rewards.Add(new StardewValley.Objects.Ring(811));
-                    }
-                    else if (group.GroupName.Equals("MagmaSprite"))
-                    {
-                        var gilNpc = MyHelper.Reflection.GetField<StardewValley.NPC>(__instance, "Gil").GetValue();
-                        Game1.addMail("Gil_Telephone", noLetter: true, sendToEveryone: true);
-                        Game1.drawDialogue(gilNpc, Game1.content.LoadString("Strings\\Locations:Gil_Telephone"));
-                        return;
-                    }
-                    else if (group.GroupName.Equals("CaveInsects"))
-                    {
-                        rewards.Add(new StardewValley.Tools.MeleeWeapon(13));
-                    }
-                    else if (group.GroupName.Equals("Mummies"))
-                    {
-                        rewards.Add(new StardewValley.Objects.Hat(60));
-                    }
-                    else if (group.GroupName.Equals("RockCrabs"))
-                    {
-                        rewards.Add(new StardewValley.Objects.Ring(810));
-                    }
-                    else if (group.GroupName.Equals("PepperRex"))
-                    {
-                        rewards.Add(new StardewValley.Objects.Hat(50));
-                    }
-                    else if (group.GroupName.Equals("Duggies"))
-                    {
-                        rewards.Add(new StardewValley.Objects.Hat(27));
+                        case MonsterType.Slime:
+                            rewards.Add(new StardewValley.Objects.Ring(520));
+                            break;
+                        case MonsterType.VoidSpirit:
+                            rewards.Add(new StardewValley.Objects.Ring(523));
+                            break;
+                        case MonsterType.Skeleton:
+                            rewards.Add(new StardewValley.Objects.Hat(8));
+                            break;
+                        case MonsterType.DustSprite:
+                            rewards.Add(new StardewValley.Objects.Ring(526));
+                            break;
+                        case MonsterType.Bat:
+                            rewards.Add(new StardewValley.Objects.Ring(522));
+                            break;
+                        case MonsterType.Serpent:
+                            rewards.Add(new StardewValley.Objects.Ring(811));
+                            break;
+                        case MonsterType.MagmaSprite:
+                            var gilNpc = MyHelper.Reflection.GetField<StardewValley.NPC>(__instance, "Gil").GetValue();
+                            Game1.addMail("Gil_Telephone", noLetter: true, sendToEveryone: true);
+                            Game1.drawDialogue(gilNpc, Game1.content.LoadString("Strings\\Locations:Gil_Telephone"));
+                            return;
+                        case MonsterType.Insect:
+                            rewards.Add(new StardewValley.Tools.MeleeWeapon(13));
+                            break;
+                        case MonsterType.Mummy:
+                            rewards.Add(new StardewValley.Objects.Hat(60));
+                            break;
+                        case MonsterType.RockCrab:
+                            rewards.Add(new StardewValley.Objects.Ring(810));
+                            break;
+                        case MonsterType.Dino:
+                            rewards.Add(new StardewValley.Objects.Hat(50));
+                            break;
+                        case MonsterType.Duggy:
+                            rewards.Add(new StardewValley.Objects.Hat(27));
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
