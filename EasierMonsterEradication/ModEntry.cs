@@ -13,6 +13,21 @@ using HarmonyLib;
 
 namespace EasierMonsterEradication
 {
+    public class ApiImplementation : IEasierMonsterEradicationApi
+    {
+        private ModEntry _instance;
+
+        public ApiImplementation(ModEntry instance)
+        {
+            _instance = instance;
+        }
+
+        public int GetMonsterGoal(string nameOfMonster)
+        {
+            return ModEntry.DoGetMonsterGoal(nameOfMonster);
+        }
+    }
+
     public class ModEntry : Mod
     {
         public const float MinPercent = 0.2f;
@@ -76,6 +91,33 @@ namespace EasierMonsterEradication
             MyHelper.Events.GameLoop.GameLaunched += OnGameLaunched;
             MyHelper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
             MyHelper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
+        }
+
+        public static int DoGetMonsterGoal(string nameOfMonster)
+        {
+            for (int i = 0; i < MonsterTable.Length; i++)
+            {
+                var group = MonsterTable[i];
+
+                if (nameOfMonster.Equals(group.GroupName, StringComparison.Ordinal))
+                {
+                    return (int)(group.KillsNeeded * Config.MonsterPercentage);
+                }
+
+                foreach (string monster in group.Monsters)
+                {
+                    if (nameOfMonster.Equals(monster, StringComparison.Ordinal))
+                    {
+                        return (int)(group.KillsNeeded * Config.MonsterPercentage);
+                    }
+                }
+            }
+            return -1;
+        }
+
+        public override object GetApi()
+        {
+            return new ApiImplementation(this);
         }
 
         private string GetParagraphText()
@@ -436,36 +478,6 @@ namespace EasierMonsterEradication
                 Game1.drawDialogue(gil, Game1.content.LoadString("Characters\\Dialogue\\Gil:ComeBackLater"));
             }
             talkedToGil.SetValue(true);
-        }
-
-        public class ApiImplementation : IEasierMonsterEradicationApi
-        {
-            int IEasierMonsterEradicationApi.GetMonsterGoal(string nameOfMonster)
-            {
-                for (int i = 0; i < MonsterTable.Length; i++)
-                {
-                    var group = MonsterTable[i];
-
-                    if (nameOfMonster.Equals(group.GroupName, StringComparison.Ordinal))
-                    {
-                        return (int)(group.KillsNeeded * Config.MonsterPercentage);
-                    }
-
-                    foreach (string monster in group.Monsters)
-                    {
-                        if (nameOfMonster.Equals(monster, StringComparison.Ordinal))
-                        {
-                            return (int)(group.KillsNeeded * Config.MonsterPercentage);
-                        }
-                    }
-                }
-                return -1;
-            }
-        }
-
-        public override object GetApi()
-        {
-            return new ApiImplementation();
         }
 
         [HarmonyPatch(typeof(StardewValley.Locations.AdventureGuild))]

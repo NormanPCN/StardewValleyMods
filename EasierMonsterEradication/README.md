@@ -66,3 +66,6 @@ SMAPI makes calling other mod Apis simple as well. https://stardewvalleywiki.com
 
 v1.0.0:  
  Initial release. 
+
+ v1.0.1
+ Fix issues with the Api for Mod authors
