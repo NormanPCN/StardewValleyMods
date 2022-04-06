@@ -384,7 +384,7 @@ namespace EasierMonsterEradication
             }
         }
 
-        public void GillRewards(StardewValley.Locations.AdventureGuild __instance)
+        public void GilRewards(StardewValley.Locations.AdventureGuild __instance)
         {
             List<Item> rewards = new List<Item>();
 
@@ -453,9 +453,9 @@ namespace EasierMonsterEradication
 
             foreach (Item i in rewards)
             {
-                if (i is StardewValley.Object)
+                if (i is StardewValley.Object o)
                 {
-                    (i as StardewValley.Object).specialItem = true;
+                    o.specialItem = true;
                 }
             }
             if (rewards.Count > 0)
@@ -538,7 +538,7 @@ namespace EasierMonsterEradication
             {
                 try
                 {
-                    Instance.GillRewards(__instance);
+                    Instance.GilRewards(__instance);
                     return false;
                 }
                 catch (Exception ex)
