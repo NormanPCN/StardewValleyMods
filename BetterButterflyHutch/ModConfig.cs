@@ -9,7 +9,7 @@
         public int NumBatWings = 100;
         public bool WinterButterflies = false;
         public bool IslandButterflies = false;
-        public bool ShakeHutch = true;
+//        public bool ShakeHutch = true;
         public bool UseHarmony = true;
         public bool Debug = false;
     }
