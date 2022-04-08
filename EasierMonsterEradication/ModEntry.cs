@@ -44,14 +44,16 @@ namespace EasierMonsterEradication
         private struct MonsterRec
         {
             public string GroupName;// must match game internal string used by "Gil". showMonsterKillList.
-            public float KillsNeeded;//vanilla kill amount
+            public int KillsNeededOld;//vanilla kill amount
+            public int KillsNeededNew;
             public string RewardName;
             public string[] Monsters;// string must match game internal monster names.
 
             public MonsterRec(string groupName, int killsNeeded, string rewardName, string[] monsterNames)
             {
                 GroupName = groupName;
-                KillsNeeded = killsNeeded;
+                KillsNeededOld = killsNeeded;
+                KillsNeededNew = killsNeeded;
                 RewardName = rewardName;
                 Monsters = monsterNames;
             }
@@ -101,14 +103,14 @@ namespace EasierMonsterEradication
 
                 if (nameOfMonster.Equals(group.GroupName, StringComparison.Ordinal))
                 {
-                    return (int)(group.KillsNeeded * Config.MonsterPercentage);
+                    return group.KillsNeededNew;
                 }
 
                 foreach (string monster in group.Monsters)
                 {
                     if (nameOfMonster.Equals(monster, StringComparison.Ordinal))
                     {
-                        return (int)(group.KillsNeeded * Config.MonsterPercentage);
+                        return group.KillsNeededNew;
                     }
                 }
             }
@@ -122,8 +124,16 @@ namespace EasierMonsterEradication
 
         private string GetParagraphText()
         {
-            //return MyHelper.Translation.Get("VanillaMonsters", new { slimes = MonstersTable[0].KillsReq.ToString() });
+            //return MyHelper.Translation.Get("VanillaMonsters", new { slimes = MonstersTable[0].KillsNeededNew.ToString() });
             return I18nGet("VanillaMonsters");
+        }
+
+        private static void SetupNewGoalValue(float monsterPercentage)
+        {
+            Config.MonsterPercentage = monsterPercentage;
+
+            for (int i = 0; i < MonsterTable.Length; i++)
+                MonsterTable[i].KillsNeededNew = (int)((float)MonsterTable[i].KillsNeededOld * monsterPercentage);
         }
 
         /// <summary>Raised after the game has loaded and all Mods are loaded. Here we load the config.json file and setup GMCM </summary>
@@ -136,6 +146,8 @@ namespace EasierMonsterEradication
                 Config.MonsterPercentage = MinPercent;
             else if (Config.MonsterPercentage > MaxPercent)
                 Config.MonsterPercentage = MaxPercent;
+
+            SetupNewGoalValue(Config.MonsterPercentage);
 
             // use GMCM in an optional manner.
 
@@ -155,7 +167,7 @@ namespace EasierMonsterEradication
                 //                   () => I18nGet("config.Tooltip"));
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.MonsterPercentage,
-                                     (float value) => Config.MonsterPercentage = value,
+                                     (float value) => SetupNewGoalValue(value),
                                      () => I18nGet("monsterPercent.Label"),
                                      () => I18nGet("monsterPercent.tooltip"),
                                      min: MinPercent,
@@ -217,7 +229,7 @@ namespace EasierMonsterEradication
                                     killed += thisKill;
                                 }
                             }
-                            int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
+                            int needed = group.KillsNeededNew;
 
                             // make sure the first monster exists
                             if (!stats.specificMonstersKilled.ContainsKey(group.Monsters[0]))
@@ -246,7 +258,7 @@ namespace EasierMonsterEradication
                                     killed += thisKill;
                                 }
                             }
-                            int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
+                            int needed = group.KillsNeededNew;
 
                             if (killed < needed)
                             {
@@ -265,9 +277,10 @@ namespace EasierMonsterEradication
         }
 
         // the game code has embedded literal constants for the monster goals spread across numerous methods.
-        // rather than try to transpile every literal, I largely just copy the game method code here and replace the methods with Harmony.
+        // rather than try to transpile every literal, I largely just copy the game method code function here and replace the methods with Harmony.
         // for the monster calculations, I did substitute a lookup table setup.
 
+        //mostly different from game code due to lookup table
         private static bool willThisKillCompleteAMonsterSlayerQuest(string nameOfMonster)
         {
             for (int i = 0; i < MonsterTable.Length; i++)
@@ -291,9 +304,8 @@ namespace EasierMonsterEradication
                                     killed += thisKill;
                                 }
                             }
-                            int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
 
-                            if ((killed < needed) && (killed+1 >= needed))
+                            if ((killed < group.KillsNeededNew) && (killed+1 >= group.KillsNeededNew))
                             {
                                 return true;
                             }
@@ -305,6 +317,7 @@ namespace EasierMonsterEradication
             return false;
         }
 
+        //mostly different from game code due to lookup table
         private static bool areAllMonsterSlayerQuestsComplete()
         {
             for (int i = 0; i < MonsterTable.Length; i++)
@@ -320,14 +333,14 @@ namespace EasierMonsterEradication
                         killed += thisKill;
                     }
                 }
-                int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
 
-                if (killed < needed)
+                if (killed < group.KillsNeededNew)
                     return false;
             }
             return true;
         }
 
+        // verbatum copy of game code
         private static string killListLine(string monsterType, int killCount, int target)
         {
             string monsterNamePlural = Game1.content.LoadString("Strings\\Locations:AdventureGuild_KillList_" + monsterType);
@@ -342,6 +355,7 @@ namespace EasierMonsterEradication
             return Game1.content.LoadString("Strings\\Locations:AdventureGuild_KillList_LineFormat", killCount, target, monsterNamePlural) + "^";
         }
 
+        //mostly a copy of the game code
         private static void showMonsterKillList()
         {
             var player = Game1.player;
@@ -367,15 +381,15 @@ namespace EasierMonsterEradication
                         killed += thisKill;
                     }
                 }
-                int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
 
-                stringBuilder.Append(killListLine(group.GroupName, killed, needed));
+                stringBuilder.Append(killListLine(group.GroupName, killed, group.KillsNeededNew));
             }
 
             stringBuilder.Append(Game1.content.LoadString("Strings\\Locations:AdventureGuild_KillList_Footer").Replace('\n', '^'));
             Game1.drawLetterMessage(stringBuilder.ToString());
         }
 
+        //verbatum copy of game code
         public void onRewardCollected(Item item, Farmer who)
         {
             if (item != null && !who.hasOrWillReceiveMail("Gil_" + item.Name))
@@ -384,6 +398,7 @@ namespace EasierMonsterEradication
             }
         }
 
+        //mostly a copy of game code
         public void GilRewards(StardewValley.Locations.AdventureGuild __instance)
         {
             List<Item> rewards = new List<Item>();
@@ -401,9 +416,8 @@ namespace EasierMonsterEradication
                         killed += thisKill;
                     }
                 }
-                int needed = (int)(group.KillsNeeded * Config.MonsterPercentage);
 
-                if ((killed >= needed) && !player.mailReceived.Contains(group.RewardName))
+                if ((killed >= group.KillsNeededNew) && !player.mailReceived.Contains(group.RewardName))
                 {
                     switch ((MonsterType)i)
                     {
@@ -453,9 +467,9 @@ namespace EasierMonsterEradication
 
             foreach (Item i in rewards)
             {
-                if (i is StardewValley.Object o)
+                if (i is StardewValley.Object obj)
                 {
-                    o.specialItem = true;
+                    obj.specialItem = true;
                 }
             }
             if (rewards.Count > 0)
