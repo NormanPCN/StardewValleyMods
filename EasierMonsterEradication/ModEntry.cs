@@ -280,7 +280,7 @@ namespace EasierMonsterEradication
         // rather than try to transpile every literal, I largely just copy the game method code function here and replace the methods with Harmony.
         // for the monster calculations, I did substitute a lookup table setup.
 
-        //mostly different from game code due to lookup table
+        //different from game code due to lookup table
         private static bool willThisKillCompleteAMonsterSlayerQuest(string nameOfMonster)
         {
             for (int i = 0; i < MonsterTable.Length; i++)
@@ -317,7 +317,7 @@ namespace EasierMonsterEradication
             return false;
         }
 
-        //mostly different from game code due to lookup table
+        //different from game code due to lookup table
         private static bool areAllMonsterSlayerQuestsComplete()
         {
             for (int i = 0; i < MonsterTable.Length; i++)
@@ -398,7 +398,7 @@ namespace EasierMonsterEradication
             }
         }
 
-        //mostly a copy of game code
+        //significant copy of game code
         public void GilRewards(StardewValley.Locations.AdventureGuild __instance)
         {
             List<Item> rewards = new List<Item>();
