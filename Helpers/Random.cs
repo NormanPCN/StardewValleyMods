@@ -169,7 +169,7 @@ namespace NormanPCN.Utils
                     Ranq1();
                     return;
                 case NR_Ran:
-                    state64[ran_u] = 4101842887655102017;
+                    state64[ran_v] = 4101842887655102017;
                     state64[ran_w] = 1;
                     state64[ran_u] = (ulong)seed ^ state64[ran_v];
                     Ran();
