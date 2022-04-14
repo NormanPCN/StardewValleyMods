@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using StardewModdingAPI;
 
 namespace Helpers
@@ -71,6 +72,7 @@ namespace Helpers
 		//Every once in a while, you want a random sequence H(i) whose values you can visit or revisit in any order of i’s.
 		//That is to say, you want a random hash of the integers i, one that passes serious tests for randomness, even for very ordered sequences of i’s.
 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static uint RanHash(uint seed)
         {
 			// different generators feeding into the next.
@@ -88,6 +90,7 @@ namespace Helpers
 			return v;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static ulong RanHash(ulong seed)
 		{
 			// different generators feeding into the next.
