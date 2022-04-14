@@ -127,9 +127,9 @@ namespace NormanPCN.Utils
             switch (genType)
             {
                 case XorShiftWow:
-                    return (double)xorwow() * 2.32830643653869629E-10;
+                    return (double)xorwow() * 2.32830643653869629E-10;// 1.0 / 2**32
                 case XorShiftPlus:
-                    return (double)xorp() * 5.42101086242752217E-20;
+                    return (double)xorp() * 5.42101086242752217E-20;// 1.0 / 2**64
                 case Ranq1:
                     return (double)Ran_q1() * 5.42101086242752217E-20;
                 default:

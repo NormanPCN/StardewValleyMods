@@ -47,12 +47,12 @@ namespace NormanPCN.Utils
 
         public static double RndDouble(uint seed)
         {
-            return RanHash(seed) * 2.32830643653869629E-10;
+            return RanHash(seed) * 2.32830643653869629E-10;// 1.0 / 2**32
         }
 
         public static double RndDouble(ulong seed)
         {
-            return RanHash(seed) * 5.42101086242752217E-20;
+            return RanHash(seed) * 5.42101086242752217E-20;// 1.0 / 2**64
         }
 
         public static int Rnd(uint seed, int range)
