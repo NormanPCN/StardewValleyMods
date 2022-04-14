@@ -94,7 +94,7 @@ namespace NormanPCN.Utils
                     state64[0] = (ulong)(seed) ^ 4101842887655102017;
                     return;
                 default:
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException("genType invalid");
             }
 
         }
@@ -155,7 +155,7 @@ namespace NormanPCN.Utils
                 case Ranq1:
                     return (double)Ran_q1() * 5.42101086242752217E-20;
                 default:
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException("genType invalid");
             }
         }
 
@@ -170,7 +170,7 @@ namespace NormanPCN.Utils
                 case Ranq1:
                     return (int)(Ran_q1() & 0x7fffffff);
                 default:
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException("genType invalid");
             }
             
         }
@@ -188,12 +188,12 @@ namespace NormanPCN.Utils
                     case Ranq1:
                         return (int)(Ran_q1() % (ulong)maxValue);
                     default:
-                        throw new InvalidOperationException();
+                        throw new InvalidOperationException("genType invalid");
                 }
             }
             else
             {
-                throw new ArgumentOutOfRangeException(nameof(maxValue), $"maxValue <= 0 in {nameof(Next)}");
+                throw new ArgumentOutOfRangeException(nameof(maxValue));
             }
         }
 
@@ -213,17 +213,17 @@ namespace NormanPCN.Utils
                         case Ranq1:
                             return (int)(Ran_q1() % (ulong)range) + minValue;
                         default:
-                            throw new InvalidOperationException();
+                            throw new InvalidOperationException("genType invalid");
                     }
                 }
                 else
                 {
-                    throw new ArgumentOutOfRangeException(nameof(minValue), $"range too large in {nameof(Next)}");
+                    throw new ArgumentOutOfRangeException(nameof(minValue), "range too large");
                 }
             }
             else
             {
-                throw new ArgumentOutOfRangeException(nameof(minValue), $"minValue >= maxValue in {nameof(Next)}");
+                throw new ArgumentException($"minValue >= maxValue", nameof(minValue));
             }
         }
 
@@ -250,7 +250,7 @@ namespace NormanPCN.Utils
                         d = Ran_q1();
                         break;
                     default:
-                        throw new InvalidOperationException();
+                        throw new InvalidOperationException("genType invalid");
                 }
                 for (int j = 0; j < b; i++)
                 {
