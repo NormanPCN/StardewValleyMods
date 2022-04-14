@@ -5,14 +5,17 @@ namespace NormanPCN.Utils
 {
     public class RandomNumbers
     {
-        public const int XorShiftWow = 1;
-        public const int XorShiftPlus = 2;
-        public const int Ranq1 = 3;
+        public const int XorShiftWow = 0;
+        public const int XorShiftPlus = 1;
+        public const int Ranq1 = 2;
 
         private int genType;
         private uint[] state32 = new uint[5];
         private ulong[] state64 = new ulong[2];
         private uint incr;
+
+        //private delegate ulong RandomNumberFunc();
+        //private RandomNumberFunc randFunc;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint XorShift32(uint seed)
@@ -49,6 +52,25 @@ namespace NormanPCN.Utils
         public RandomNumbers(uint seed, int genType = XorShiftWow)
         {
             this.genType = genType;
+
+            if ((genType < XorShiftWow) || (genType > Ranq1))
+                throw new ArgumentOutOfRangeException(nameof(genType));
+
+            //switch (genType)
+            //{
+            //    case XorShiftWow:
+            //        this.randFunc = xorwow;
+            //        break;
+            //    case XorShiftPlus:
+            //        this.randFunc = xorp;
+            //        break;
+            //    case Ranq1:
+            //        this.randFunc = Ran_q1;
+            //        break;
+            //    default:
+            //        throw new ArgumentOutOfRangeException(nameof(genType));
+            //}
+
             Reseed(seed);
         }
 
