@@ -67,7 +67,7 @@ namespace NormanPCN.Utils
             }
             else
             {
-                throw new ArgumentOutOfRangeException(nameof(range), $"range < 0 in {nameof(Rnd)}");
+                throw new ArgumentOutOfRangeException(nameof(range), "range < 0");
             }
         }
 
@@ -83,7 +83,7 @@ namespace NormanPCN.Utils
             }
             else
             {
-                throw new ArgumentOutOfRangeException(nameof(range), $"range < 0 in {nameof(Rnd)}");
+                throw new ArgumentOutOfRangeException(nameof(range), "range < 0");
             }
         }
 
@@ -98,12 +98,12 @@ namespace NormanPCN.Utils
                 }
                 else
                 {
-                    throw new ArgumentOutOfRangeException(nameof(minValue), $"range too large in {nameof(Rnd)}");
+                    throw new ArgumentException("range too large");
                 }
             }
             else
             {
-                throw new ArgumentOutOfRangeException(nameof(minValue), $"minValue >= maxValue in {nameof(Rnd)}");
+                throw new ArgumentOutOfRangeException(nameof(minValue), "minValue >= maxValue");
             }
         }
         public static int Rnd(ulong seed, int minValue, int maxValue)
@@ -117,12 +117,12 @@ namespace NormanPCN.Utils
                 }
                 else
                 {
-                    throw new ArgumentOutOfRangeException(nameof(minValue), $"range too large in {nameof(Rnd)}");
+                    throw new ArgumentException("range too large");
                 }
             }
             else
             {
-                throw new ArgumentOutOfRangeException(nameof(minValue), $"minValue >= maxValue in {nameof(Rnd)}");
+                throw new ArgumentOutOfRangeException(nameof(minValue), "minValue >= maxValue");
             }
         }
     }
