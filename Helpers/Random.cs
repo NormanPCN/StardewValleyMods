@@ -69,8 +69,11 @@ namespace NormanPCN.Utils
             //    case XorShiftPlus:
             //        this.randFunc = xorp;
             //        break;
-            //    case Ranq1:
-            //        this.randFunc = Ran_q1;
+            //    case NR_Ranq1:
+            //        this.randFunc = Ranq1;
+            //        break;
+            //    case NR_Ran:
+            //        this.randFunc = Ran;
             //        break;
             //    default:
             //        throw new ArgumentOutOfRangeException(nameof(genType));
