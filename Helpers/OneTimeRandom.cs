@@ -9,6 +9,10 @@ namespace NormanPCN.Utils
         //Every once in a while, you want a random sequence H(i) whose values you can visit or revisit in any order of i’s.
         //That is to say, you want a random hash of the integers i, one that passes serious tests for randomness, even for very ordered sequences of i’s.
 
+        //this class provides 32 and 64-bit integer calculations for a randomized result.
+        //Using the 64-bit ulong seed methods uses the 64-bit calculations.
+        //Using the 32-bit uint seed methods uses the 32-bit calculations.
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint RanHash(uint seed)
         {
