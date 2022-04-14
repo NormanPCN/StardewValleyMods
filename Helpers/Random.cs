@@ -7,12 +7,17 @@ namespace NormanPCN.Utils
     {
         public const int XorShiftWow = 0;
         public const int XorShiftPlus = 1;
-        public const int Ranq1 = 2;
+        public const int NR_Ranq1 = 2;
+        public const int NR_Ran = 3;
 
         private int genType;
         private uint[] state32 = new uint[5];
-        private ulong[] state64 = new ulong[2];
+        private ulong[] state64 = new ulong[3];
         private uint incr;
+
+        private const int ran_u = 0;
+        private const int ran_v = 1;
+        private const int ran_w = 2;
 
         //private delegate ulong RandomNumberFunc();
         //private RandomNumberFunc randFunc;
@@ -53,7 +58,7 @@ namespace NormanPCN.Utils
         {
             this.genType = genType;
 
-            if ((genType < XorShiftWow) || (genType > Ranq1))
+            if ((genType < XorShiftWow) || (genType > NR_Ran))
                 throw new ArgumentOutOfRangeException(nameof(genType));
 
             //switch (genType)
@@ -72,31 +77,6 @@ namespace NormanPCN.Utils
             //}
 
             Reseed(seed);
-        }
-
-        public void Reseed(uint seed)
-        {
-            switch (genType)
-            {
-                case XorShiftWow:
-                    incr = 6615241;//could be anything. xorwow uses this value.
-                    for (int i = 0; i < 5; i++)
-                    {
-                        seed = XorShift32(seed);
-                        state32[i] = seed;
-                    }
-                    return;
-                case XorShiftPlus:
-                    state64[0] = XorShift64(seed);
-                    state64[1] = XorShift64(state64[0]);
-                    return;
-                case Ranq1:
-                    state64[0] = (ulong)(seed) ^ 4101842887655102017;
-                    return;
-                default:
-                    throw new InvalidOperationException("genType invalid");
-            }
-
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -134,7 +114,7 @@ namespace NormanPCN.Utils
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ulong Ran_q1()
+        private ulong Ranq1()
         {
             ulong v = state64[0];
             v ^= v >> 21;
@@ -142,6 +122,63 @@ namespace NormanPCN.Utils
             v ^= v >> 4;
             state64[0] = v;
             return v * 2685821657736338717;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ulong Ran()
+        {
+            ulong u = state64[ran_u];
+            ulong v = state64[ran_v];
+            ulong w = state64[ran_w];
+
+            u = u * 2862933555777941757 + 7046029254386353087;
+            state64[ran_u] = u;
+            v ^= v >> 17;
+            v ^= v << 31;
+            v ^= v >> 8;
+            state64[ran_v] = v;
+            w = 4294957665U * (w & 0xffffffff) + (w >> 32);
+            state64[ran_w] = w;
+            ulong x = u ^ (u << 21);
+            x ^= x >> 35;
+            x ^= x << 4;
+            return (x + v) ^ w;
+        }
+
+        public void Reseed(uint seed)
+        {
+            switch (genType)
+            {
+                case XorShiftWow:
+                    incr = 6615241;//could be anything. xorwow uses this value.
+                    for (int i = 0; i < 5; i++)
+                    {
+                        seed = XorShift32(seed);
+                        state32[i] = seed;
+                    }
+                    return;
+                case XorShiftPlus:
+                    state64[0] = XorShift64(seed);
+                    state64[1] = XorShift64(state64[0]);
+                    return;
+                case NR_Ranq1:
+                    state64[0] = (ulong)(seed) ^ 4101842887655102017;
+                    Ranq1();
+                    return;
+                case NR_Ran:
+                    state64[ran_u] = 4101842887655102017;
+                    state64[ran_w] = 1;
+                    state64[ran_u] = (ulong)seed ^ state64[ran_v];
+                    Ran();
+                    state64[ran_v] = state64[ran_u];
+                    Ran();
+                    state64[ran_w] = state64[ran_v];
+                    Ran();
+                    return;
+                default:
+                    throw new InvalidOperationException("genType invalid");
+            }
+
         }
 
         public double NextDouble()
@@ -152,8 +189,10 @@ namespace NormanPCN.Utils
                     return (double)xorwow() * 2.32830643653869629E-10;// 1.0 / 2**32
                 case XorShiftPlus:
                     return (double)xorp() * 5.42101086242752217E-20;// 1.0 / 2**64
-                case Ranq1:
-                    return (double)Ran_q1() * 5.42101086242752217E-20;
+                case NR_Ranq1:
+                    return (double)Ranq1() * 5.42101086242752217E-20;
+                case NR_Ran:
+                    return (double)Ran() * 5.42101086242752217E-20;
                 default:
                     throw new InvalidOperationException("genType invalid");
             }
@@ -167,8 +206,10 @@ namespace NormanPCN.Utils
                     return (int)(xorwow() & 0x7fffffff);
                 case XorShiftPlus:
                     return (int)(xorp() & 0x7fffffff);
-                case Ranq1:
-                    return (int)(Ran_q1() & 0x7fffffff);
+                case NR_Ranq1:
+                    return (int)(Ranq1() & 0x7fffffff);
+                case NR_Ran:
+                    return (int)(Ran() & 0x7fffffff);
                 default:
                     throw new InvalidOperationException("genType invalid");
             }
@@ -185,8 +226,10 @@ namespace NormanPCN.Utils
                         return (int)(xorwow() % maxValue);
                     case XorShiftPlus:
                         return (int)(xorp() % (ulong)maxValue);
-                    case Ranq1:
-                        return (int)(Ran_q1() % (ulong)maxValue);
+                    case NR_Ranq1:
+                        return (int)(Ranq1() % (ulong)maxValue);
+                    case NR_Ran:
+                        return (int)(Ran() % (ulong)maxValue);
                     default:
                         throw new InvalidOperationException("genType invalid");
                 }
@@ -210,8 +253,10 @@ namespace NormanPCN.Utils
                             return (int)(xorwow() % (uint)range) + minValue;
                         case XorShiftPlus:
                             return (int)(xorp() % (ulong)range) + minValue;
-                        case Ranq1:
-                            return (int)(Ran_q1() % (ulong)range) + minValue;
+                        case NR_Ranq1:
+                            return (int)(Ranq1() % (ulong)range) + minValue;
+                        case NR_Ran:
+                            return (int)(Ran() % (ulong)range) + minValue;
                         default:
                             throw new InvalidOperationException("genType invalid");
                     }
@@ -246,8 +291,11 @@ namespace NormanPCN.Utils
                     case XorShiftPlus:
                         d = xorp();
                         break;
-                    case Ranq1:
-                        d = Ran_q1();
+                    case NR_Ranq1:
+                        d = Ranq1();
+                        break;
+                    case NR_Ran:
+                        d = Ran();
                         break;
                     default:
                         throw new InvalidOperationException("genType invalid");
