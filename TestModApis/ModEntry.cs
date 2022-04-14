@@ -74,15 +74,6 @@ namespace TemplateMod
                 Log.Debug($"Relection Slimes={MyHelper.Reflection.GetMethod(rapi, "GetMonsterGoal").Invoke<int>("Slimes")}");
             else
                 Log.Debug("Reflection EasierMonsterEradicationApi == null");
-
-            for (uint i = 0; i < 20; i++)
-            {
-                Log.Debug($"OneTimeRandom32 = {OneTimeRandom.Rnd((uint)(Game1.uniqueIDForThisGame / 2) + i, 0, 10)}");
-            }
-            for (uint i = 0; i < 20; i++)
-            {
-                Log.Debug($"OneTimeRandom64 = {OneTimeRandom.Rnd((Game1.uniqueIDForThisGame / 2) + i, 0, 10)}");
-            }
         }
 
         /// <summary>Raised after a game has exited a game/save to the title screen.  Here we unhook our gameplay events.</summary>
