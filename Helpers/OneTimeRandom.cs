@@ -67,7 +67,7 @@ namespace NormanPCN.Utils
                 if (range == 0)
                     return (int)(v & 0x7fffffff);
                 else
-                    return (int)(v % range);
+                    return (int)(((ulong)v * (ulong)range) >> 32);
             }
             else
             {
@@ -98,7 +98,8 @@ namespace NormanPCN.Utils
                 long range = (long)maxValue - (long)minValue;
                 if (range <= (long)Int32.MaxValue)
                 {
-                    return (int)(RanHash(seed) % (uint)range) + minValue;
+                    uint v = RanHash(seed);
+                    return (int)(((ulong)v * (ulong)range) >> 32);
                 }
                 else
                 {

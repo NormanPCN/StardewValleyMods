@@ -226,7 +226,7 @@ namespace NormanPCN.Utils
                 switch (genType)
                 {
                     case XorShiftWow:
-                        return (int)(xorwow() % maxValue);
+                        return (int)(((ulong)(xorwow() & 0x7fffffff) * (ulong)maxValue) >> 32);
                     case XorShiftPlus:
                         return (int)(xorp() % (ulong)maxValue);
                     case NR_Ranq1:
@@ -253,7 +253,7 @@ namespace NormanPCN.Utils
                     switch (genType)
                     {
                         case XorShiftWow:
-                            return (int)(xorwow() % (uint)range) + minValue;
+                            return (int)(((ulong)(xorwow() & 0x7fffffff) * (ulong)range) >> 32) + minValue;
                         case XorShiftPlus:
                             return (int)(xorp() % (ulong)range) + minValue;
                         case NR_Ranq1:
