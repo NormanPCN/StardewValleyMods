@@ -43,11 +43,17 @@ namespace NormanPCN.Utils
         public static uint GetRandomSeed()
         {
             long seed = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-
             //DateTime epoc = new DateTime(2000, 1, 1);
             //long seed = (ulong)(DateTime.UtcNow - epoc).TotalSeconds;
 
-            return XorShift32((uint)seed);
+            seed += Environment.CurrentManagedThreadId;
+            seed += Environment.ProcessId;
+            seed += Environment.TickCount64;
+            //seed += System.Threading.Thread.CurrentThread.ManagedThreadId;
+            //seed += System.Diagnostics.Process.GetCurrentProcess().Id;
+
+
+            return (uint)XorShift64((ulong)seed);
         }
 
         public RandomNumbers() : this(GetRandomSeed(), XorShiftWow)
@@ -161,7 +167,7 @@ namespace NormanPCN.Utils
                     }
                     return;
                 case XorShiftPlus:
-                    state64[0] = XorShift64(seed);
+                    state64[0] = XorShift64((ulong)seed ^ 4101842887655102017);
                     state64[1] = XorShift64(state64[0]);
                     return;
                 case NR_Ranq1:
@@ -226,7 +232,7 @@ namespace NormanPCN.Utils
                 switch (genType)
                 {
                     case XorShiftWow:
-                        return (int)(((ulong)(xorwow() & 0x7fffffff) * (ulong)maxValue) >> 32);
+                        return (int)(((ulong)xorwow() * (ulong)maxValue) >> 32);
                     case XorShiftPlus:
                         return (int)(xorp() % (ulong)maxValue);
                     case NR_Ranq1:
@@ -253,7 +259,7 @@ namespace NormanPCN.Utils
                     switch (genType)
                     {
                         case XorShiftWow:
-                            return (int)(((ulong)(xorwow() & 0x7fffffff) * (ulong)range) >> 32) + minValue;
+                            return (int)(((ulong)xorwow() * (ulong)range) >> 32) + minValue;
                         case XorShiftPlus:
                             return (int)(xorp() % (ulong)range) + minValue;
                         case NR_Ranq1:
