@@ -99,7 +99,7 @@ namespace NormanPCN.Utils
                 if (range <= (long)Int32.MaxValue)
                 {
                     uint v = RanHash(seed);
-                    return (int)(((ulong)v * (ulong)range) >> 32);
+                    return (int)(((ulong)v * (ulong)range) >> 32) + minValue;
                 }
                 else
                 {
