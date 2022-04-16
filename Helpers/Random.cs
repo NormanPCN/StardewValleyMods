@@ -10,7 +10,7 @@ namespace NormanPCN.Utils
         public const int NR_Ranq1 = 2;
         public const int NR_Ran = 3;
 
-        private int genType;
+        private uint genType;
         private uint[] state32 = new uint[5];
         private ulong[] state64 = new ulong[3];
         private uint incr;
@@ -18,6 +18,9 @@ namespace NormanPCN.Utils
         private const int ran_u = 0;
         private const int ran_v = 1;
         private const int ran_w = 2;
+
+        private const double uintToDouble = 2.32830643653869629E-10;// 1.0 / 2*32
+        private const double ulongToDouble = 5.42101086242752217E-20;// 1.0 / 2**64
 
         //private delegate ulong RandomNumberFunc();
         //private RandomNumberFunc randFunc;
@@ -60,7 +63,7 @@ namespace NormanPCN.Utils
         {
         }
 
-        public RandomNumbers(uint seed, int genType = XorShiftWow)
+        public RandomNumbers(uint seed, uint genType = XorShiftWow)
         {
             this.genType = genType;
 
@@ -195,13 +198,13 @@ namespace NormanPCN.Utils
             switch (genType)
             {
                 case XorShiftWow:
-                    return (double)xorwow() * 2.32830643653869629E-10;// 1.0 / 2**32
+                    return (double)xorwow() * uintToDouble;
                 case XorShiftPlus:
-                    return (double)xorp() * 5.42101086242752217E-20;// 1.0 / 2**64
+                    return (double)xorp() * ulongToDouble;
                 case NR_Ranq1:
-                    return (double)Ranq1() * 5.42101086242752217E-20;
+                    return (double)Ranq1() * ulongToDouble;
                 case NR_Ran:
-                    return (double)Ran() * 5.42101086242752217E-20;
+                    return (double)Ran() * ulongToDouble;
                 default:
                     throw new InvalidOperationException("genType invalid");
             }
@@ -211,6 +214,7 @@ namespace NormanPCN.Utils
         {
             switch (genType)
             {
+                // return signed int positive range
                 case XorShiftWow:
                     return (int)(xorwow() & 0x7fffffff);
                 case XorShiftPlus:
@@ -234,11 +238,11 @@ namespace NormanPCN.Utils
                     case XorShiftWow:
                         return (int)(((ulong)xorwow() * (ulong)maxValue) >> 32);
                     case XorShiftPlus:
-                        return (int)(xorp() % (ulong)maxValue);
+                        return (int)((double)xorp() * ulongToDouble * (double)maxValue);
                     case NR_Ranq1:
-                        return (int)(Ranq1() % (ulong)maxValue);
+                        return (int)((double)Ranq1() * ulongToDouble * (double)maxValue);
                     case NR_Ran:
-                        return (int)(Ran() % (ulong)maxValue);
+                        return (int)((double)Ran() * ulongToDouble * (double)maxValue);
                     default:
                         throw new InvalidOperationException("genType invalid");
                 }
@@ -261,23 +265,23 @@ namespace NormanPCN.Utils
                         case XorShiftWow:
                             return (int)(((ulong)xorwow() * (ulong)range) >> 32) + minValue;
                         case XorShiftPlus:
-                            return (int)(xorp() % (ulong)range) + minValue;
+                            return (int)((double)xorp() * ulongToDouble * (double)range) + minValue;
                         case NR_Ranq1:
-                            return (int)(Ranq1() % (ulong)range) + minValue;
+                            return (int)((double)Ranq1() * ulongToDouble * (double)range) + minValue;
                         case NR_Ran:
-                            return (int)(Ran() % (ulong)range) + minValue;
+                            return (int)((double)Ran() * ulongToDouble * (double)range) + minValue;
                         default:
                             throw new InvalidOperationException("genType invalid");
                     }
                 }
                 else
                 {
-                    throw new ArgumentOutOfRangeException(nameof(minValue), "range too large");
+                    throw new ArgumentException("range too large");
                 }
             }
             else
             {
-                throw new ArgumentException($"minValue >= maxValue", nameof(minValue));
+                throw new ArgumentException($"minValue >= maxValue");
             }
         }
 

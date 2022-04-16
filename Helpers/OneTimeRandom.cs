@@ -13,8 +13,11 @@ namespace NormanPCN.Utils
         //Using the 64-bit ulong seed methods uses the 64-bit calculations.
         //Using the 32-bit uint seed methods uses the 32-bit calculations.
 
+        private const double uintToDouble = 2.32830643653869629E-10;// 1.0 / 2*32
+        private const double ulongToDouble = 5.42101086242752217E-20;// 1.0 / 2**64
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static uint RanHash(uint seed)
+        private static uint RanHash32(uint seed)
         {
             // different generators feeding into the next.
             // LCG->XorShift->MLCG->XorShift
@@ -32,7 +35,7 @@ namespace NormanPCN.Utils
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ulong RanHash(ulong seed)
+        private static ulong RanHash64(ulong seed)
         {
             // different generators feeding into the next.
             // LCG->XorShift->MLCG->XorShift
@@ -51,21 +54,21 @@ namespace NormanPCN.Utils
 
         public static double RndDouble(uint seed)
         {
-            return RanHash(seed) * 2.32830643653869629E-10;// 1.0 / 2**32
+            return RanHash32(seed) * uintToDouble;
         }
 
         public static double RndDouble(ulong seed)
         {
-            return RanHash(seed) * 5.42101086242752217E-20;// 1.0 / 2**64
+            return RanHash64(seed) * ulongToDouble;
         }
 
         public static int Rnd(uint seed, int range)
         {
             if (range >= 0)
             {
-                uint v = RanHash(seed);
+                uint v = RanHash32(seed);
                 if (range == 0)
-                    return (int)(v & 0x7fffffff);
+                    return (int)(v & 0x7fffffff);// return the positive 32-bit signed integer range
                 else
                     return (int)(((ulong)v * (ulong)range) >> 32);
             }
@@ -79,11 +82,11 @@ namespace NormanPCN.Utils
         {
             if (range >= 0)
             {
-                ulong v = RanHash(seed);
+                ulong v = RanHash64(seed);
                 if (range == 0)
                     return (int)(v & 0x7fffffff);// return the positive 32-bit signed integer range
                 else
-                    return (int)(v % (ulong)range);
+                    return (int)((double)v * ulongToDouble * (double)range);
             }
             else
             {
@@ -98,8 +101,7 @@ namespace NormanPCN.Utils
                 long range = (long)maxValue - (long)minValue;
                 if (range <= (long)Int32.MaxValue)
                 {
-                    uint v = RanHash(seed);
-                    return (int)(((ulong)v * (ulong)range) >> 32) + minValue;
+                    return (int)(((ulong)RanHash32(seed) * (ulong)range) >> 32) + minValue;
                 }
                 else
                 {
@@ -118,7 +120,7 @@ namespace NormanPCN.Utils
                 long range = (long)maxValue - (long)minValue;
                 if (range <= (long)Int32.MaxValue)
                 {
-                    return (int)(RanHash(seed) % (ulong)range) + minValue;
+                    return (int)((double)RanHash64(seed) * ulongToDouble * (double)range) + minValue;
                 }
                 else
                 {
