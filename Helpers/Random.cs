@@ -5,19 +5,20 @@ namespace NormanPCN.Utils
 {
     public class RandomNumbers
     {
-        public const int XorShiftWow = 0;
-        public const int XorShiftPlus = 1;
-        public const int NR_Ranq1 = 2;
-        public const int NR_Ran = 3;
+        public const uint XorShiftWow = 0;
+        public const uint XorShiftPlus = 1;
+        public const uint NR_Ranq1 = 2;
+        public const uint NR_Ran = 3;
+        public const uint DefaultRNG = XorShiftWow;
 
         private uint genType;
         private uint[] state32 = new uint[5];
         private ulong[] state64 = new ulong[3];
         private uint incr;
 
-        private const int ran_u = 0;
-        private const int ran_v = 1;
-        private const int ran_w = 2;
+        private const uint ran_u = 0;
+        private const uint ran_v = 1;
+        private const uint ran_w = 2;
 
         private const double uintToDouble = 2.32830643653869629E-10;// 1.0 / 2*32
         private const double ulongToDouble = 5.42101086242752217E-20;// 1.0 / 2**64
@@ -59,11 +60,11 @@ namespace NormanPCN.Utils
             return (uint)XorShift64((ulong)seed);
         }
 
-        public RandomNumbers() : this(GetRandomSeed(), XorShiftWow)
+        public RandomNumbers() : this(GetRandomSeed(), DefaultRNG)
         {
         }
 
-        public RandomNumbers(uint seed, uint genType = XorShiftWow)
+        public RandomNumbers(uint seed, uint genType = DefaultRNG)
         {
             this.genType = genType;
 
@@ -240,6 +241,7 @@ namespace NormanPCN.Utils
                     case XorShiftPlus:
                         return (int)((double)xorp() * ulongToDouble * (double)maxValue);
                     case NR_Ranq1:
+                        //return (int)(Ranq1() % (ulong)maxValue);
                         return (int)((double)Ranq1() * ulongToDouble * (double)maxValue);
                     case NR_Ran:
                         return (int)((double)Ran() * ulongToDouble * (double)maxValue);
