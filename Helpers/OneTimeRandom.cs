@@ -10,11 +10,13 @@ namespace NormanPCN.Utils
         //That is to say, you want a random hash of the integers i, one that passes serious tests for randomness, even for very ordered sequences of i’s.
 
         //this class provides 32 and 64-bit integer calculations for a randomized result.
-        //Using the 64-bit ulong seed methods uses the 64-bit calculations.
-        //Using the 32-bit uint seed methods uses the 32-bit calculations.
+        //Using the 64-bit ulong seed methods use the 64-bit calculations.
+        //Using the 32-bit uint seed methods use the 32-bit calculations.
 
         private const double uintToDouble = 2.32830643653869629E-10;// 1.0 / 2*32
         private const double ulongToDouble = 5.42101086242752217E-20;// 1.0 / 2**64
+
+        // need both flags for best performance in resulting code
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static uint RanHash32(uint seed)
@@ -84,7 +86,7 @@ namespace NormanPCN.Utils
             {
                 ulong v = RanHash64(seed);
                 if (range == 0)
-                    return (int)(v & 0x7fffffff);// return the positive 32-bit signed integer range
+                    return (int)(v >> 8 & 0x7fffffff);// return the positive 32-bit signed integer range. take middle bits.
                 else
                     return (int)((double)v * ulongToDouble * (double)range);
             }
@@ -110,7 +112,7 @@ namespace NormanPCN.Utils
             }
             else
             {
-                throw new ArgumentOutOfRangeException(nameof(minValue), "minValue >= maxValue");
+                throw new ArgumentException("minValue >= maxValue");
             }
         }
         public static int Rnd(ulong seed, int minValue, int maxValue)
@@ -120,6 +122,7 @@ namespace NormanPCN.Utils
                 long range = (long)maxValue - (long)minValue;
                 if (range <= (long)Int32.MaxValue)
                 {
+                    // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
                     return (int)((double)RanHash64(seed) * ulongToDouble * (double)range) + minValue;
                 }
                 else
@@ -129,7 +132,7 @@ namespace NormanPCN.Utils
             }
             else
             {
-                throw new ArgumentOutOfRangeException(nameof(minValue), "minValue >= maxValue");
+                throw new ArgumentException("minValue >= maxValue");
             }
         }
     }

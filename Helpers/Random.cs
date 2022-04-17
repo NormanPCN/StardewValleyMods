@@ -32,7 +32,7 @@ namespace NormanPCN.Utils
         //private delegate ulong RandomNumberFunc();
         //private RandomNumberFunc randFunc;
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint XorShift32(uint seed)
         {
             seed ^= seed << 13;
@@ -41,7 +41,7 @@ namespace NormanPCN.Utils
             return seed;
         }
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ulong XorShift64(ulong seed)
         {
             seed ^= seed << 13;
@@ -97,6 +97,8 @@ namespace NormanPCN.Utils
 
             Reseed(seed);
         }
+
+        // need both flags for best performance in resulting code
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private uint xorwow()
@@ -227,15 +229,15 @@ namespace NormanPCN.Utils
         {
             switch (genType)
             {
-                // return signed int positive range
+                // return signed int positive range. take middle bits of long results.
                 case XorShiftWow:
                     return (int)(xorwow() & 0x7fffffff);
                 case XorShiftPlus:
-                    return (int)(xorp() & 0x7fffffff);
+                    return (int)(xorp() >> 8 & 0x7fffffff);
                 case NR_Ranq1:
-                    return (int)(Ranq1() & 0x7fffffff);
+                    return (int)(Ranq1() >> 8 & 0x7fffffff);
                 case NR_Ran:
-                    return (int)(Ran() & 0x7fffffff);
+                    return (int)(Ran() >> 8 & 0x7fffffff);
                 default:
                     throw new InvalidOperationException("genType invalid");
             }
@@ -246,6 +248,7 @@ namespace NormanPCN.Utils
         {
             if (maxValue > 0)
             {
+                // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
                 switch (genType)
                 {
                     case XorShiftWow:
@@ -274,6 +277,7 @@ namespace NormanPCN.Utils
                 long range = (long)maxValue - (long)minValue;
                 if (range <= (long)Int32.MaxValue)
                 {
+                    // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
                     switch (genType)
                     {
                         case XorShiftWow:
@@ -295,7 +299,7 @@ namespace NormanPCN.Utils
             }
             else
             {
-                throw new ArgumentException($"minValue >= maxValue");
+                throw new ArgumentException("minValue >= maxValue");
             }
         }
 
