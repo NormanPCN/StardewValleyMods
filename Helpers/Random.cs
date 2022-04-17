@@ -98,7 +98,9 @@ namespace NormanPCN.Utils
             Reseed(seed);
         }
 
-        // need both flags for best performance in resulting code
+        // both flags for best performance in resulting code.
+        // the optimization flag seems to make the real diff (it seems to do both).
+        // these procs are so short inlining is important for performance.
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private uint xorwow()
@@ -172,7 +174,7 @@ namespace NormanPCN.Utils
             switch (genType)
             {
                 case XorShiftWow:
-                    incr = 6615241;//could be anything. xorwow uses this value.
+                    incr = 6615241;
                     seed = XorShift32(seed);
                     xorw_x = seed;
                     seed = XorShift32(seed);
@@ -212,6 +214,7 @@ namespace NormanPCN.Utils
         {
             switch (genType)
             {
+                // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
                 case XorShiftWow:
                     return (double)xorwow() * uintToDouble;
                 case XorShiftPlus:
@@ -229,7 +232,8 @@ namespace NormanPCN.Utils
         {
             switch (genType)
             {
-                // return signed int positive range. take middle bits of long results.
+                // return signed int positive range.
+                // take middle bits of long results.
                 case XorShiftWow:
                     return (int)(xorwow() & 0x7fffffff);
                 case XorShiftPlus:
@@ -249,6 +253,9 @@ namespace NormanPCN.Utils
             if (maxValue > 0)
             {
                 // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
+                // decent compiler should do (ulong)uint * (ulong)uint, and shift efficiently.
+                // no 128-bit int, we do the float thing. otherwise (int128)ulong * (int128)ulong >> 64
+                //     would only expect an int128 avail in a 64-bit mode specific target. p-code is agnostic
                 switch (genType)
                 {
                     case XorShiftWow:
@@ -278,6 +285,9 @@ namespace NormanPCN.Utils
                 if (range <= (long)Int32.MaxValue)
                 {
                     // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
+                    // decent compiler should do (ulong)uint * (ulong)uint, and shift efficiently.
+                    // no 128-bit int, we do the float thing. otherwise (int128)ulong * (int128)ulong >> 64
+                    //     would only expect an int128 avail in a 64-bit mode specific target. p-code is agnostic
                     switch (genType)
                     {
                         case XorShiftWow:
