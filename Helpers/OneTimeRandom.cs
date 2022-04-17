@@ -16,7 +16,7 @@ namespace NormanPCN.Utils
         private const double uintToDouble = 2.32830643653869629E-10;// 1.0 / 2*32
         private const double ulongToDouble = 5.42101086242752217E-20;// 1.0 / 2**64
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static uint RanHash32(uint seed)
         {
             // different generators feeding into the next.
@@ -34,7 +34,7 @@ namespace NormanPCN.Utils
             return v;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ulong RanHash64(ulong seed)
         {
             // different generators feeding into the next.

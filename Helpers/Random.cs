@@ -12,19 +12,19 @@ namespace NormanPCN.Utils
         public const uint DefaultRNG = XorShiftWow;
 
         private uint genType;
-        private uint[] state32 = new uint[5];
-        private ulong[] state64 = new ulong[3];
+
+        // state variables
+        private uint xorw_v;
+        private uint xorw_w;
+        private uint xorw_z;
+        private uint xorw_y;
+        private uint xorw_x;
         private uint incr;
-
-        private const uint xorw_x = 4;
-        private const uint xorw_y = 3;
-        private const uint xorw_z = 2;
-        private const uint xorw_w = 1;
-        private const uint xorw_v = 0;
-
-        private const uint ran_u = 0;
-        private const uint ran_v = 1;
-        private const uint ran_w = 2;
+        private ulong ran_u;
+        private ulong ran_v;
+        private ulong ran_w;
+        private ulong xorp_0;
+        private ulong xorp_1;
 
         private const double uintToDouble = 2.32830643653869629E-10;// 1.0 / 2*32
         private const double ulongToDouble = 5.42101086242752217E-20;// 1.0 / 2**64
@@ -32,16 +32,16 @@ namespace NormanPCN.Utils
         //private delegate ulong RandomNumberFunc();
         //private RandomNumberFunc randFunc;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint XorShift32(uint seed)
         {
-            seed ^= seed << 13; // G1, numerical recipes
+            seed ^= seed << 13;
             seed ^= seed >> 17;
             seed ^= seed << 5;
             return seed;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ulong XorShift64(ulong seed)
         {
             seed ^= seed << 13;
@@ -98,66 +98,67 @@ namespace NormanPCN.Utils
             Reseed(seed);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private uint xorwow()
         {
-            uint t = state32[xorw_x];
-            uint s = state32[xorw_v];
+            uint t = xorw_x;
+            uint s = xorw_v;
 
-            state32[xorw_x] = state32[xorw_y];
-            state32[xorw_y] = state32[xorw_z];
-            state32[xorw_z] = state32[xorw_w];
-            state32[xorw_w] = s;
+            xorw_x = xorw_y;
+            xorw_y = xorw_z;
+            xorw_z = xorw_w;
+            xorw_w = s;
 
             t ^= t >> 2;
             t ^= t << 1;
             t ^= s ^ (s << 4);
-            state32[xorw_v] = t;
+            xorw_v = t;
             incr += 362437;
             return t + incr;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private ulong xorp()
         {
-            ulong t = state64[0];
-            ulong s = state64[1];
+            ulong t = xorp_0;
+            ulong s = xorp_1;
 
-            state64[0] = s;
+            xorp_0 = s;
             t ^= t << 23;
             t ^= t >> 18;
             t ^= s ^ (s >> 5);
-            state64[1] = t;
+            xorp_1 = t;
 
             return t + s;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private ulong Ranq1()
         {
-            ulong v = state64[0];
+            // a so called XorShift64* algorithm
+            ulong v = ran_v;
             v ^= v >> 21;
             v ^= v << 35;
             v ^= v >> 4;
-            state64[0] = v;
+            ran_v = v;
             return v * 2685821657736338717;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private ulong Ran()
         {
-            ulong u = state64[ran_u];
-            ulong v = state64[ran_v];
-            ulong w = state64[ran_w];
+            ulong u = ran_u;
+            ulong v = ran_v;
+            ulong w = ran_w;
 
             u = u * 2862933555777941757 + 7046029254386353087;
-            state64[ran_u] = u;
+            ran_u = u;
             v ^= v >> 17;
             v ^= v << 31;
             v ^= v >> 8;
-            state64[ran_v] = v;
+            ran_v = v;
             w = 4294957665U * (w & 0xffffffff) + (w >> 32);
-            state64[ran_w] = w;
+            ran_w = w;
             ulong x = u ^ (u << 21);
             x ^= x >> 35;
             x ^= x << 4;
@@ -170,28 +171,33 @@ namespace NormanPCN.Utils
             {
                 case XorShiftWow:
                     incr = 6615241;//could be anything. xorwow uses this value.
-                    for (int i = 0; i < 5; i++)
-                    {
-                        seed = XorShift32(seed);
-                        state32[i] = seed;
-                    }
+                    seed = XorShift32(seed);
+                    xorw_x = seed;
+                    seed = XorShift32(seed);
+                    xorw_y = seed;
+                    seed = XorShift32(seed);
+                    xorw_z = seed;
+                    seed = XorShift32(seed);
+                    xorw_w = seed;
+                    seed = XorShift32(seed);
+                    xorw_v = seed;
                     return;
                 case XorShiftPlus:
-                    state64[0] = XorShift64((ulong)seed ^ 4101842887655102017);
-                    state64[1] = XorShift64(state64[0]);
+                    xorp_0 = XorShift64((ulong)seed ^ 4101842887655102017);
+                    xorp_1 = XorShift64(xorp_0);
                     return;
                 case NR_Ranq1:
-                    state64[0] = (ulong)(seed) ^ 4101842887655102017;
-                    Ranq1();
+                    ran_v = (ulong)(seed) ^ 4101842887655102017;
+                    ran_v = Ranq1();
                     return;
                 case NR_Ran:
-                    state64[ran_v] = 4101842887655102017;
-                    state64[ran_w] = 1;
-                    state64[ran_u] = (ulong)seed ^ state64[ran_v];
+                    ran_v = 4101842887655102017;
+                    ran_w = 1;
+                    ran_u = (ulong)seed ^ ran_v;
                     Ran();
-                    state64[ran_v] = state64[ran_u];
+                    ran_v = ran_u;
                     Ran();
-                    state64[ran_w] = state64[ran_v];
+                    ran_w = ran_v;
                     Ran();
                     return;
                 default:
