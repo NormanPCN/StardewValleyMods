@@ -237,17 +237,18 @@ namespace NormanPCN.Utils
                 case XorShiftWow:
                     return (int)(xorwow() & 0x7fffffff);
                 case XorShiftPlus:
-                    return (int)(xorp() >> 8 & 0x7fffffff);
+                    return (int)((xorp() >> 8) & 0x7fffffff);
                 case NR_Ranq1:
-                    return (int)(Ranq1() >> 8 & 0x7fffffff);
+                    return (int)((Ranq1() >> 8) & 0x7fffffff);
                 case NR_Ran:
-                    return (int)(Ran() >> 8 & 0x7fffffff);
+                    return (int)((Ran() >> 8) & 0x7fffffff);
                 default:
                     throw new InvalidOperationException("genType invalid");
             }
             
         }
 
+#if !Unbiased
         public int Next(int maxValue)
         {
             if (maxValue > 0)
@@ -312,6 +313,111 @@ namespace NormanPCN.Utils
                 throw new ArgumentException("minValue >= maxValue");
             }
         }
+#else
+
+        /// <summary>
+        ///  return an unbiased modulus result.
+        ///  what it does is reject results in the upper modulo range which is biased.
+        /// </summary>
+        /// <param name="range">range > 0 and <= Int32.MaxValue</param>
+        /// <param name="rndNum">selected random number generator. returning a uint</param>
+        /// <returns>int in a range [0..range)</returns>
+        private int unbiasedRange32(uint range, Func<uint> rndNum)
+        {
+            uint x, r;
+            do
+            {
+                x = rndNum();
+                r = x % range;
+                //neg of unsigned is a trick identity. negate is promoted so we have to trunc it down
+            } while ((x - r) > (uint)-range);
+
+            return (int)r;
+        }
+
+        /// <summary>
+        ///  return an unbiased modulus result
+        ///  what it does is reject results in the upper modulo range which is biased.
+        /// </summary>
+        /// <param name="range">range > 0 and <= Int32.MaxValue</param>
+        /// <param name="rndNum">selected random number generator. returning a ulong</param>
+        /// <returns>int in a range [0..range)</returns>
+        private int unbiasedRange64(uint range, Func<ulong> rndNum)
+        {
+            ulong x;
+            uint r;
+            do
+            {
+                x = rndNum();
+                r = (uint) (x % (ulong)range);
+                //neg of unsigned is a trick identity. negate is promoted so we have to trunc it down
+            } while ((uint)(x - r) > (uint)-range);
+
+            return (int)r;
+        }
+
+        public int Next(int maxValue)
+        {
+            if (maxValue > 0)
+            {
+                switch (genType)
+                {
+                    case XorShiftWow:
+                        return (int)unbiasedRange32((uint)maxValue, xorwow);
+                    case XorShiftPlus:
+                        return (int)unbiasedRange64((uint)maxValue, xorp);
+                        //return (int)unbiasedRange32((uint)maxValue, () => (uint)(xorp()>> 8));
+                    case NR_Ranq1:
+                        return (int)unbiasedRange64((uint)maxValue, Ranq1);
+                        //return (int)unbiasedRange32((uint)maxValue, () => (uint)(Ranq1() >> 8));
+                    case NR_Ran:
+                        return (int)unbiasedRange64((uint)maxValue, Ran);
+                        //return (int)unbiasedRange32((uint)maxValue, () => (uint)(Ran() >> 8));
+                    default:
+                        throw new InvalidOperationException("genType invalid");
+                }
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(maxValue));
+            }
+        }
+
+        public int Next(int minValue, int maxValue)
+        {
+            if (minValue < maxValue)
+            {
+                long range = (long)maxValue - (long)minValue;
+                if (range <= (long)Int32.MaxValue)
+                {
+                    switch (genType)
+                    {
+                        case XorShiftWow:
+                            return (int)unbiasedRange32((uint)maxValue, xorwow);
+                        case XorShiftPlus:
+                            return (int)unbiasedRange64((uint)maxValue, xorp);
+                            //return (int)unbiasedRange32((uint)maxValue, () => (uint)(xorp()>> 8));
+                        case NR_Ranq1:
+                            return (int)unbiasedRange64((uint)maxValue, Ranq1);
+                            //return (int)unbiasedRange32((uint)maxValue, () => (uint)(Ranq1() >> 8));
+                        case NR_Ran:
+                            return (int)unbiasedRange64((uint)maxValue, Ran);
+                            //return (int)unbiasedRange32((uint)maxValue, () => (uint)(Ran() >> 8));
+                        default:
+                            throw new InvalidOperationException("genType invalid");
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException("range too large");
+                }
+            }
+            else
+            {
+                throw new ArgumentException("minValue >= maxValue");
+            }
+        }
+#endif
 
         public void NextBytes(byte[] buffer)
         {
