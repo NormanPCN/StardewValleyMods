@@ -16,6 +16,12 @@ namespace NormanPCN.Utils
         private ulong[] state64 = new ulong[3];
         private uint incr;
 
+        private const uint xorw_x = 4;
+        private const uint xorw_y = 3;
+        private const uint xorw_z = 2;
+        private const uint xorw_w = 1;
+        private const uint xorw_v = 0;
+
         private const uint ran_u = 0;
         private const uint ran_v = 1;
         private const uint ran_w = 2;
@@ -95,18 +101,18 @@ namespace NormanPCN.Utils
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private uint xorwow()
         {
-            uint t = state32[4];
-            uint s = state32[0];
+            uint t = state32[xorw_x];
+            uint s = state32[xorw_v];
 
-            state32[4] = state32[3];
-            state32[3] = state32[2];
-            state32[2] = state32[1];
-            state32[1] = s;
+            state32[xorw_x] = state32[xorw_y];
+            state32[xorw_y] = state32[xorw_z];
+            state32[xorw_z] = state32[xorw_w];
+            state32[xorw_w] = s;
 
             t ^= t >> 2;
             t ^= t << 1;
             t ^= s ^ (s << 4);
-            state32[0] = t;
+            state32[xorw_v] = t;
             incr += 362437;
             return t + incr;
         }
