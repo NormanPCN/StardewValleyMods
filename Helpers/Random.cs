@@ -249,25 +249,33 @@ namespace NormanPCN.Utils
             
         }
 
+        // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
+        // decent compiler should do (ulong)uint * (ulong)uint, and shift efficiently.
+        // it would be faster to take a 32-bit subrange of a ulong result and do the int mul range thing.
+        //     just possibly more bias with very large ranges relative to 32-bit.
+        // no 128-bit int, we do the float thing with ulong results.
+        //     otherwise (int128)ulong * (int128)ulong >> 64. decent compiler still needed.
+        //     also, would only expect an int128 to be avail in a 64-bit specific target. p-code is agnostic
         public int Next(int maxValue)
         {
             if (maxValue > 0)
             {
-                // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
-                // decent compiler should do (ulong)uint * (ulong)uint, and shift efficiently.
-                // no 128-bit int, we do the float thing. otherwise (int128)ulong * (int128)ulong >> 64
-                //     would only expect an int128 avail in a 64-bit mode specific target. p-code is agnostic
                 switch (genType)
                 {
                     case XorShiftWow:
                         return (int)(((ulong)xorwow() * (ulong)maxValue) >> 32);
                     case XorShiftPlus:
                         return (int)((double)xorp() * ulongToDouble * (double)maxValue);
+                        //return (int)(((ulong)(uint)(xorp() >> 8) * (ulong)maxValue) >> 32);
+                        //return (int)(xorp() % (ulong)maxValue);
                     case NR_Ranq1:
-                        //return (int)(Ranq1() % (ulong)maxValue);
                         return (int)((double)Ranq1() * ulongToDouble * (double)maxValue);
+                        //return (int)(((ulong)(uint)(Ranq1() >> 8) * (ulong)maxValue) >> 32);
+                        //return (int)(Ranq1() % (ulong)maxValue);
                     case NR_Ran:
                         return (int)((double)Ran() * ulongToDouble * (double)maxValue);
+                        //return (int)(((ulong)(uint)(Ran() >> 8) * (ulong)maxValue) >> 32);
+                        //return (int)(Ran() % (ulong)maxValue);
                     default:
                         throw new InvalidOperationException("genType invalid");
                 }
@@ -285,20 +293,22 @@ namespace NormanPCN.Utils
                 long range = (long)maxValue - (long)minValue;
                 if (range <= (long)Int32.MaxValue)
                 {
-                    // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
-                    // decent compiler should do (ulong)uint * (ulong)uint, and shift efficiently.
-                    // no 128-bit int, we do the float thing. otherwise (int128)ulong * (int128)ulong >> 64
-                    //     would only expect an int128 avail in a 64-bit mode specific target. p-code is agnostic
                     switch (genType)
                     {
                         case XorShiftWow:
                             return (int)(((ulong)xorwow() * (ulong)range) >> 32) + minValue;
                         case XorShiftPlus:
                             return (int)((double)xorp() * ulongToDouble * (double)range) + minValue;
+                            //return (int)(((ulong)(uint)(xorp() >> 8) * (ulong)maxValue) >> 32) + minValue;
+                            //return (int)(xorp() % (ulong)range) + minValue;
                         case NR_Ranq1:
                             return (int)((double)Ranq1() * ulongToDouble * (double)range) + minValue;
+                            //return (int)(((ulong)(uint)(Ranq1() >> 8) * (ulong)maxValue) >> 32) + minValue;
+                            //return (int)(Ranq1() % (ulong)range) + minValue;
                         case NR_Ran:
                             return (int)((double)Ran() * ulongToDouble * (double)range) + minValue;
+                            //return (int)(((ulong)(uint)(Ran() >> 8) * (ulong)maxValue) >> 32) + minValue;
+                            //return (int)(Ran() % (ulong)range) + minValue;
                         default:
                             throw new InvalidOperationException("genType invalid");
                     }

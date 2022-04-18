@@ -109,7 +109,8 @@ namespace NormanPCN.Utils
                 long range = (long)maxValue - (long)minValue;
                 if (range <= (long)Int32.MaxValue)
                 {
-                    return (int)(((ulong)RanHash32(seed) * (ulong)range) >> 32) + minValue;//decent compiler should do this efficiently.
+                    // decent compiler should do (ulong)uint * (ulong)uint, and shift efficiently.
+                    return (int)(((ulong)RanHash32(seed) * (ulong)range) >> 32) + minValue;
                 }
                 else
                 {
@@ -129,9 +130,14 @@ namespace NormanPCN.Utils
                 if (range <= (long)Int32.MaxValue)
                 {
                     // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
-                    // no 128-bit int, we do the float thing. otherwise (int128)ulong * (int128)ulong >> 64
-                    //     would only expect an int128 avail in a 64-bit mode specific target. p-code is agnostic
+                    // decent compiler should do (ulong)uint * (ulong)uint, and shift efficiently.
+                    // it would be faster to take a 32-bit subrange of a ulong result and do the int mul range thing.
+                    //     just possibly more bias with very large ranges relative to 32-bit.
+                    // no 128-bit int, we do the float thing with ulong results.
+                    //     otherwise (int128)ulong * (int128)ulong >> 64. decent compiler still needed.
+                    //     also, would only expect an int128 to be avail in a 64-bit specific target. p-code is agnostic
                     return (int)((double)RanHash64(seed) * ulongToDouble * (double)range) + minValue;
+                    //return (int)(((ulong)(uint)(RanHash64(seed) >> 8) * (ulong)range) >> 32) + minValue;
                 }
                 else
                 {
