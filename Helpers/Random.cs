@@ -99,14 +99,15 @@ namespace NormanPCN.Utils
         }
 
         // both flags for best performance in resulting code.
-        // the optimization flag seems to make the real diff (it seems to do both).
-        // these procs are so short inlining is important for performance.
+        // the optimization flag seems to make the real diff (it seems to do both?).
+        // what is "regular" optimization?  these are pretty simple/trivial procs, why "aggressive" needed?
+        // these procs are so short and fast inlining is important for performance.
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private uint xorwow()
         {
-            uint t = xorw_x;
             uint s = xorw_v;
+            uint t = xorw_x;
 
             xorw_x = xorw_y;
             xorw_y = xorw_z;
