@@ -249,7 +249,6 @@ namespace NormanPCN.Utils
             
         }
 
-#if !Unbiased
         public int Next(int maxValue)
         {
             if (maxValue > 0)
@@ -314,7 +313,6 @@ namespace NormanPCN.Utils
                 throw new ArgumentException("minValue >= maxValue");
             }
         }
-#else
 
         /// <summary>
         ///  return an unbiased modulus result.
@@ -357,23 +355,23 @@ namespace NormanPCN.Utils
             return (int)r;
         }
 
-        public int Next(int maxValue)
+        public int NextU(int maxValue)
         {
             if (maxValue > 0)
             {
                 switch (genType)
                 {
                     case XorShiftWow:
-                        return (int)unbiasedRange32((uint)maxValue, xorwow);
+                        return unbiasedRange32((uint)maxValue, xorwow);
                     case XorShiftPlus:
-                        return (int)unbiasedRange64((uint)maxValue, xorp);
-                        //return (int)unbiasedRange32((uint)maxValue, () => (uint)(xorp()>> 8));
+                        return unbiasedRange64((uint)maxValue, xorp);
+                        //return unbiasedRange32((uint)maxValue, () => (uint)(xorp()>> 8));
                     case NR_Ranq1:
-                        return (int)unbiasedRange64((uint)maxValue, Ranq1);
-                        //return (int)unbiasedRange32((uint)maxValue, () => (uint)(Ranq1() >> 8));
+                        return unbiasedRange64((uint)maxValue, Ranq1);
+                        //return unbiasedRange32((uint)maxValue, () => (uint)(Ranq1() >> 8));
                     case NR_Ran:
-                        return (int)unbiasedRange64((uint)maxValue, Ran);
-                        //return (int)unbiasedRange32((uint)maxValue, () => (uint)(Ran() >> 8));
+                        return unbiasedRange64((uint)maxValue, Ran);
+                        //return unbiasedRange32((uint)maxValue, () => (uint)(Ran() >> 8));
                     default:
                         throw new InvalidOperationException("genType invalid");
                 }
@@ -384,7 +382,7 @@ namespace NormanPCN.Utils
             }
         }
 
-        public int Next(int minValue, int maxValue)
+        public int NextU(int minValue, int maxValue)
         {
             if (minValue < maxValue)
             {
@@ -394,16 +392,16 @@ namespace NormanPCN.Utils
                     switch (genType)
                     {
                         case XorShiftWow:
-                            return (int)unbiasedRange32((uint)maxValue, xorwow);
+                            return unbiasedRange32((uint)range, xorwow) + minValue;
                         case XorShiftPlus:
-                            return (int)unbiasedRange64((uint)maxValue, xorp);
-                            //return (int)unbiasedRange32((uint)maxValue, () => (uint)(xorp()>> 8));
+                            return unbiasedRange64((uint)range, xorp) + minValue;
+                            //return unbiasedRange32((uint)range, () => (uint)(xorp()>> 8)) + minValue;
                         case NR_Ranq1:
-                            return (int)unbiasedRange64((uint)maxValue, Ranq1);
-                            //return (int)unbiasedRange32((uint)maxValue, () => (uint)(Ranq1() >> 8));
+                            return unbiasedRange64((uint)range, Ranq1) + minValue;
+                            //return unbiasedRange32((uint)range, () => (uint)(Ranq1() >> 8)) + minValue;
                         case NR_Ran:
-                            return (int)unbiasedRange64((uint)maxValue, Ran);
-                            //return (int)unbiasedRange32((uint)maxValue, () => (uint)(Ran() >> 8));
+                            return unbiasedRange64((uint)range, Ran) + minValue;
+                            //return unbiasedRange32((uint)range, () => (uint)(Ran() >> 8)) + minValue;
                         default:
                             throw new InvalidOperationException("genType invalid");
                     }
@@ -418,7 +416,6 @@ namespace NormanPCN.Utils
                 throw new ArgumentException("minValue >= maxValue");
             }
         }
-#endif
 
         public void NextBytes(byte[] buffer)
         {
