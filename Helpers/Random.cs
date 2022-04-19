@@ -50,6 +50,10 @@ namespace NormanPCN.Utils
             return seed;
         }
 
+        /// <summary>
+        /// generate a random seed value. based on the current system time, process and thread ids.
+        /// </summary>
+        /// <returns>random seed value of type uint</returns>
         public static uint GetRandomSeed()
         {
             long seed = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
@@ -170,8 +174,17 @@ namespace NormanPCN.Utils
             return (x + v) ^ w;
         }
 
+        /// <summary>
+        /// reseed, reinit, the random number generator using the new seed value.<br/>
+        /// if seed==0, then a random seed value is generated.
+        /// </summary>
+        /// <param name="seed">if seed==0, then a random seed value is generated.</param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Reseed(uint seed)
         {
+            if (seed == 0)
+                seed = GetRandomSeed();
+
             switch (genType)
             {
                 case XorShiftWow:
@@ -211,6 +224,11 @@ namespace NormanPCN.Utils
 
         }
 
+        /// <summary>
+        /// return a floating point random number in the range [0..1.0)
+        /// </summary>
+        /// <returns>double in the range [0..1.0)</returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public double NextDouble()
         {
             switch (genType)
@@ -229,6 +247,11 @@ namespace NormanPCN.Utils
             }
         }
 
+        /// <summary>
+        /// returns a random number in the full positive range of Int32
+        /// </summary>
+        /// <returns>int in a range [0..Int32.MaxValue]</returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public int Next()
         {
             switch (genType)
@@ -249,122 +272,169 @@ namespace NormanPCN.Utils
             
         }
 
-        // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
-        // decent compiler should do (ulong)uint * (ulong)uint, and shift efficiently.
-        // it would be faster to take a 32-bit subrange of a ulong result and do the int mul range thing.
-        //     just possibly more bias with very large ranges relative to 32-bit.
-        // no 128-bit int, we do the float thing with ulong results.
-        //     otherwise (int128)ulong * (int128)ulong >> 64. decent compiler still needed.
-        //     also, would only expect an int128 to be avail in a 64-bit specific target. p-code is agnostic
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private int rndRange(uint range)
+        {
+            // inline can only happen with very plain code. if/else, no loops, no exceptions. gen procs have no branches/loops.
+            //
+            // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
+            // decent compiler should do (ulong)uint * (ulong)uint, and shift efficiently.
+            // no 128-bit int so we do the float thing with ulong results.
+            //     otherwise (int128)ulong * (int128)ulong >> 64. decent compiler still needed.
+            //     also, would only expect an int128 to be avail in a 64-bit specific target. p-code is agnostic
+            //
+            // it would be faster to take a 32-bit subrange of a ulong result and do the int mul range thing.
+            //     using the full range random does lower bias with larger ranges.
+            if (genType == XorShiftWow)
+            {
+                return (int)(((ulong)xorwow() * (ulong)range) >> 32);
+            }
+            else if (genType == XorShiftPlus)
+            {
+                return (int)((double)xorp() * ulongToDouble * (double)range);
+                //return (int)(((ulong)((uint)(xorp() >> 8)) * (ulong)range) >> 32);
+                //return (int)(xorp() % (ulong)range);
+            }
+            else if (genType == NR_Ranq1)
+            {
+                return (int)((double)Ranq1() * ulongToDouble * (double)range);
+                //return (int)(((ulong)((uint)(Ranq1() >> 8)) * (ulong)range) >> 32);
+                //return (int)(Ranq1() % (ulong)range);
+            }
+            else// if (genType == NR_Ran)
+            {
+                return (int)((double)Ran() * ulongToDouble * (double)range);
+                //return (int)(((ulong)((uint)(Ran() >> 8)) * (ulong)range) >> 32);
+                //return (int)(Ran() % (ulong)range);
+            }
+        }
+
+        /// <summary>
+        /// returns a random number in limited bounded range.
+        /// </summary>
+        /// <param name="maxValue"></param>
+        /// <returns>int in a range [0..maxValue)</returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public int Next(int maxValue)
         {
-            if (maxValue > 0)
+            if ((genType >= XorShiftWow) && (genType <= NR_Ran))
             {
-                switch (genType)
+                if (maxValue > 0)
                 {
-                    case XorShiftWow:
-                        return (int)(((ulong)xorwow() * (ulong)maxValue) >> 32);
-                    case XorShiftPlus:
-                        return (int)((double)xorp() * ulongToDouble * (double)maxValue);
-                        //return (int)(((ulong)(uint)(xorp() >> 8) * (ulong)maxValue) >> 32);
-                        //return (int)(xorp() % (ulong)maxValue);
-                    case NR_Ranq1:
-                        return (int)((double)Ranq1() * ulongToDouble * (double)maxValue);
-                        //return (int)(((ulong)(uint)(Ranq1() >> 8) * (ulong)maxValue) >> 32);
-                        //return (int)(Ranq1() % (ulong)maxValue);
-                    case NR_Ran:
-                        return (int)((double)Ran() * ulongToDouble * (double)maxValue);
-                        //return (int)(((ulong)(uint)(Ran() >> 8) * (ulong)maxValue) >> 32);
-                        //return (int)(Ran() % (ulong)maxValue);
-                    default:
-                        throw new InvalidOperationException("genType invalid");
+                    return rndRange((uint)maxValue);
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException(nameof(maxValue));
                 }
             }
             else
             {
-                throw new ArgumentOutOfRangeException(nameof(maxValue));
+                throw new InvalidOperationException("genType invalid");
             }
         }
 
+        /// <summary>
+        /// returns a random number in a limited bounded range.<br/>
+        /// (maxValue-minValue) &lt;= Int32.MaxValue
+        /// </summary>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <returns>int in a range [minValue..maxValue)</returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public int Next(int minValue, int maxValue)
         {
-            if (minValue < maxValue)
+            if ((genType >= XorShiftWow) && (genType <= NR_Ran))
             {
-                long range = (long)maxValue - (long)minValue;
-                if (range <= (long)Int32.MaxValue)
+                if (minValue < maxValue)
                 {
-                    switch (genType)
+                    uint range = (uint)((long)maxValue - (long)minValue);
+                    if (range <= (uint)Int32.MaxValue)
                     {
-                        case XorShiftWow:
-                            return (int)(((ulong)xorwow() * (ulong)range) >> 32) + minValue;
-                        case XorShiftPlus:
-                            return (int)((double)xorp() * ulongToDouble * (double)range) + minValue;
-                            //return (int)(((ulong)(uint)(xorp() >> 8) * (ulong)maxValue) >> 32) + minValue;
-                            //return (int)(xorp() % (ulong)range) + minValue;
-                        case NR_Ranq1:
-                            return (int)((double)Ranq1() * ulongToDouble * (double)range) + minValue;
-                            //return (int)(((ulong)(uint)(Ranq1() >> 8) * (ulong)maxValue) >> 32) + minValue;
-                            //return (int)(Ranq1() % (ulong)range) + minValue;
-                        case NR_Ran:
-                            return (int)((double)Ran() * ulongToDouble * (double)range) + minValue;
-                            //return (int)(((ulong)(uint)(Ran() >> 8) * (ulong)maxValue) >> 32) + minValue;
-                            //return (int)(Ran() % (ulong)range) + minValue;
-                        default:
-                            throw new InvalidOperationException("genType invalid");
+                        return rndRange(range) + minValue;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("range too large");
                     }
                 }
                 else
                 {
-                    throw new ArgumentException("range too large");
+                    throw new ArgumentException("minValue >= maxValue");
                 }
             }
             else
             {
-                throw new ArgumentException("minValue >= maxValue");
+                throw new InvalidOperationException("genType invalid");
             }
         }
 
-        /// <summary>
-        ///  return an unbiased modulus result.
-        ///  what it does is reject results in the upper modulo range which is biased.
-        /// </summary>
-        /// <param name="range">range > 0 and <= Int32.MaxValue</param>
-        /// <param name="rndNum">selected random number generator. returning a uint</param>
-        /// <returns>int in a range [0..range)</returns>
         private int unbiasedRange32(uint range, Func<uint> rndNum)
         {
-            uint x, r;
-            do
-            {
-                x = rndNum();
-                r = x % range;
-                //neg of unsigned is a trick identity. negate is promoted so we have to trunc it down
-            } while ((x - r) > (uint)-range);
+            // negate unsigned number. an identity/trick. -range = (2**32 - range). without double precision math.
+            // negate is promoted so we have to trunc it down. decent compiler should do that well.
 
-            return (int)r;
+            // Lemire unbiased mult moduluo algorithm. https://github.com/lemire/fastrange
+            // second tweak (threshold calc) found at https://www.pcg-random.org/posts/bounded-rands.html
+
+            uint x = rndNum();
+            ulong m = (ulong)x * (ulong)range;
+            uint leftover = (uint)m;
+            if (leftover < range)
+            {
+                uint threshold = (uint)(-range) % range;
+                //uint threshold = (uint)-range;
+                //if (threshold >= range)
+                //{
+                //    threshold -= range;
+                //    if (threshold >= range)
+                //        threshold %= range;
+                //}
+                while (leftover < threshold)
+                {
+                    x = rndNum();
+                    m = (ulong)x * (ulong)range;
+                    leftover = (uint)m;
+                }
+            }
+            return (int)(m >> 32);
+            //uint x, r;
+            //do
+            //{
+            //    x = rndNum();
+            //    r = x % range;
+            //} while ((x - r) > (uint)-range);
+            //return (int)r;
         }
 
-        /// <summary>
-        ///  return an unbiased modulus result
-        ///  what it does is reject results in the upper modulo range which is biased.
-        /// </summary>
-        /// <param name="range">range > 0 and <= Int32.MaxValue</param>
-        /// <param name="rndNum">selected random number generator. returning a ulong</param>
-        /// <returns>int in a range [0..range)</returns>
         private int unbiasedRange64(uint range, Func<ulong> rndNum)
         {
+            // have a func using the full rnd64 source simply reduces the occurance of bias.
+            //     and thus reduces the frequency of this code looping.
+            // negate unsigned number. an identity/trick. -range = (2**32 - range). without double precision math.
+            // negate is promoted so we have to trunc it down. decent compiler should do that well.
             ulong x;
             uint r;
             do
             {
                 x = rndNum();
                 r = (uint) (x % (ulong)range);
-                //neg of unsigned is a trick identity. negate is promoted so we have to trunc it down
             } while ((uint)(x - r) > (uint)-range);
 
             return (int)r;
         }
 
+        /// <summary>
+        /// returns a random number within a range. the result has no modulo bias.<br/>
+        /// modulo bias often does not matter.<br/>
+        /// only when the requested range is high relative to the full native range of the random number generator.
+        /// </summary>
+        /// <param name="maxValue"></param>
+        /// <returns>a number in the range [minValue..maxValue)</returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public int NextU(int maxValue)
         {
             if (maxValue > 0)
@@ -375,7 +445,7 @@ namespace NormanPCN.Utils
                         return unbiasedRange32((uint)maxValue, xorwow);
                     case XorShiftPlus:
                         return unbiasedRange64((uint)maxValue, xorp);
-                        //return unbiasedRange32((uint)maxValue, () => (uint)(xorp()>> 8));
+                        //return unbiasedRange32((uint)maxValue, () => (uint)(xorp() >> 8));
                     case NR_Ranq1:
                         return unbiasedRange64((uint)maxValue, Ranq1);
                         //return unbiasedRange32((uint)maxValue, () => (uint)(Ranq1() >> 8));
@@ -392,26 +462,37 @@ namespace NormanPCN.Utils
             }
         }
 
+        /// <summary>
+        /// returns a random number within a range. the result has no modulo bias.<br/>
+        /// modulo bias often does not matter.<br/>
+        /// only when the requested range is high relative to the full native range of the random number generator.
+        /// maxValue-minValue must be &lt;= Int32.MaxValue
+        /// </summary>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <returns>a number in the range [minValue..maxValue)</returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public int NextU(int minValue, int maxValue)
         {
             if (minValue < maxValue)
             {
-                long range = (long)maxValue - (long)minValue;
-                if (range <= (long)Int32.MaxValue)
+                uint range = (uint)((long)maxValue - (long)minValue);
+                if (range <= (uint)Int32.MaxValue)
                 {
                     switch (genType)
                     {
                         case XorShiftWow:
-                            return unbiasedRange32((uint)range, xorwow) + minValue;
+                            return unbiasedRange32(range, xorwow) + minValue;
                         case XorShiftPlus:
-                            return unbiasedRange64((uint)range, xorp) + minValue;
-                            //return unbiasedRange32((uint)range, () => (uint)(xorp()>> 8)) + minValue;
+                            return unbiasedRange64(range, xorp) + minValue;
+                            //return unbiasedRange32(range, () => (uint)(xorp() >> 8)) + minValue;
                         case NR_Ranq1:
-                            return unbiasedRange64((uint)range, Ranq1) + minValue;
-                            //return unbiasedRange32((uint)range, () => (uint)(Ranq1() >> 8)) + minValue;
+                            return unbiasedRange64(range, Ranq1) + minValue;
+                            //return unbiasedRange32(range, () => (uint)(Ranq1() >> 8)) + minValue;
                         case NR_Ran:
-                            return unbiasedRange64((uint)range, Ran) + minValue;
-                            //return unbiasedRange32((uint)range, () => (uint)(Ran() >> 8)) + minValue;
+                            return unbiasedRange64(range, Ran) + minValue;
+                            //return unbiasedRange32(range, () => (uint)(Ran() >> 8)) + minValue;
                         default:
                             throw new InvalidOperationException("genType invalid");
                     }

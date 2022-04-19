@@ -4,13 +4,13 @@ using System.Runtime.CompilerServices;
 namespace NormanPCN.Utils
 {
     /// <summary>
-    /// numerical recipes...
-    /// Every once in a while, you want a random sequence H(i) whose values you can visit or revisit in any order of i’s.
+    /// numerical recipes...<br/>
+    /// Every once in a while, you want a random sequence H(i) whose values you can visit or revisit in any order of i’s.<br/>
     /// That is to say, you want a random hash of the integers i, one that passes serious tests for randomness, even for very ordered sequences of i’s.
-    /// 
-    /// this class provides 32 and 64-bit integer calculations for a randomized result.
-    /// Using the 64-bit ulong seed methods use the 64-bit calculations.
-    /// Using the 32-bit uint seed methods use the 32-bit calculations.
+    /// <br/>
+    /// this class provides 32 and 64-bit integer calculations for a randomized result.<br/>
+    /// Using the 64-bit ulong seed methods use the 64-bit calculations.<br/>
+    /// Using the 32-bit uint seed methods use the 32-bit calculations.<br/>
     /// </summary>
     public static class OneTimeRandom
     {
@@ -57,16 +57,36 @@ namespace NormanPCN.Utils
             return v;
         }
 
+        /// <summary>
+        /// return a floating point random number in the range [0..1.0).<br/>
+        /// performs 32-bit calculations.
+        /// </summary>
+        /// <param name="seed">the seed value to generate the random number</param>
+        /// <returns>double in the range [0..1.0)</returns>
         public static double RndDouble(uint seed)
         {
             return RanHash32(seed) * uintToDouble;
         }
 
+        /// <summary>
+        /// return a floating point random number in the range [0..1.0).<br/>
+        /// performs 64-bit calculations.
+        /// </summary>
+        /// <param name="seed">the seed value to generate the random number</param>
+        /// <returns>double in the range [0..1.0)</returns>
         public static double RndDouble(ulong seed)
         {
             return RanHash64(seed) * ulongToDouble;
         }
 
+        /// <summary>
+        /// return a positive integer random number in a range.<br/>
+        /// performs 32-bit calculations.
+        /// </summary>
+        /// <param name="seed">the seed value to generate the random number</param>
+        /// <param name="range">0=full positive integer range, otherwise the range is [0..range)</param>
+        /// <returns>range=0=full positive integer range. <br/>otherwise the range is [0..range)</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static int Rnd(uint seed, int range)
         {
             if (range >= 0)
@@ -83,6 +103,14 @@ namespace NormanPCN.Utils
             }
         }
 
+        /// <summary>
+        /// return a positive integer random number in a range.<br/>
+        /// performs 64-bit calculations.
+        /// </summary>
+        /// <param name="seed">the seed value to generate the random number</param>
+        /// <param name="range">0=full positive integer range, otherwise the range is [0..range)</param>
+        /// <returns>range=0 returns the full positive integer range. <br/>otherwise the range is [0..range)</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static int Rnd(ulong seed, int range)
         {
             if (range >= 0)
@@ -102,6 +130,16 @@ namespace NormanPCN.Utils
             }
         }
 
+        /// <summary>
+        /// return a positive integer random number in a range.<br/>
+        /// (maxValue-minValue) &lt;= Int32.MaxValue.<br/>
+        /// performs 32-bit calculations.
+        /// </summary>
+        /// <param name="seed">the seed value to generate the random number</param>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <returns>integer in the range [minValue..maxValue)</returns>
+        /// <exception cref="ArgumentException"></exception>
         public static int Rnd(uint seed, int minValue, int maxValue)
         {
             if (minValue < maxValue)
@@ -122,6 +160,17 @@ namespace NormanPCN.Utils
                 throw new ArgumentException("minValue >= maxValue");
             }
         }
+
+        /// <summary>
+        /// return a positive integer random number in a range.<br/>
+        /// maxValue-minValue &lt;= Int32.MaxValue.<br/>
+        /// performs 64-bit calculations.
+        /// </summary>
+        /// <param name="seed">the seed value to generate the random number</param>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <returns>integer in the range [minValue..maxValue)</returns>
+        /// <exception cref="ArgumentException"></exception>
         public static int Rnd(ulong seed, int minValue, int maxValue)
         {
             if (minValue < maxValue)
