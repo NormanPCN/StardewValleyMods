@@ -87,6 +87,9 @@ For swords and clubs.
 > The movement velocity for special attack slick moves. Swords and clubs. Controls the speed and distance of the slide.
 
 ## Changlog
+v1.2.4
+* Fixes typos and syntax of the config option text. Adds a German translation.
+
 v1.2.3
 * Fixed a bug when the regular tools direction fix was enabled and the fishing rod was in use. Facing direction change is now disabled after the fishing line is in the water.
 
