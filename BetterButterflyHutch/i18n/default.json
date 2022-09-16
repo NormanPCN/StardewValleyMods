@@ -16,5 +16,5 @@
   "shakeHutch.Label": "Shake Hutch",
   "shakeHutch.tooltip": "Shake the hutch to spawn butterflies. You shake the hutch just like shaking a tree.",
   "nightButterflies.Label": "Night Butterflies",
-  "nightButterflies.Tooltip": "When enabled, indoor butterfly hutches will spawn butterflies after the game 'getting dark' time. The vanilla hutch spawns butterflies all day when indoors. Disabling this spawns butterflies as outdoors and butterflies can get the evening off and get a little rest. :-)"
+  "nightButterflies.Tooltip": "Indoor butterflies. When enabled, indoor butterfly hutches will spawn butterflies all day. Just as in the vanilla game. Disabling this spawns butterflies only in daylight hours. Butterflies need rest too!"
 }
