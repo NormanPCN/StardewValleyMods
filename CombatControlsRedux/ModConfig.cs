@@ -3,7 +3,7 @@
     public class ModConfig
     {
         public bool MouseFix = true;
-        public bool ControllerFix = false;
+        public bool ControllerCursorFix = false;
         public bool RegularToolsFix = false;
 
         public bool AutoSwing = false;
