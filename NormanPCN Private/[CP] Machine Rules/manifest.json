@@ -1,0 +1,13 @@
+{
+    "Name": "NormanPCN Machine Updates",
+    "Author": "NormanPCN",
+    "Version": "1.0",
+    "MinimumApiVersion": "4.0.0",
+    "Description": "Misc machine rule changes",
+    "UniqueID": "NormanPCN.MachineUpdates",
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher",
+        "MinimumVersion": "2.0.0"
+    },
+    "UpdateKeys": ["Nexus:00000"]
+}

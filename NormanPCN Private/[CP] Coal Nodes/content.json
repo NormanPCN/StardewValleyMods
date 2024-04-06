@@ -1,0 +1,392 @@
+{
+    "Format": "2.0",
+    "ConfigSchema": {
+        "Coal1To20": {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.02",
+            "Section": "Normal Coal",
+            "Description": "How many of the stones should become coal stones on mine leves 0 to 20. 0.01 is 1 percent coal stones."
+        },
+        "Coal21To39": {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.02",
+            "Section": "Normal Coal",
+            "Description": "How many of the stones should become coal stones on mine leves 21 to 39. 0.01 is 1 percent coal stones."
+        },
+        "Coal121To170": {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.03",
+            "Section": "Normal Coal",
+            "Description": "How many of the stones should become coal stones in the Skull Cavern levels 1-50, 0.01 is 1 percent coal stones."
+        }, 
+        //ice Coal
+        "IceCoal40to59":  {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.02",
+            "Section": "Ice Coal",
+            "Description": "How many of the stones should become ice coal stones on mine leves 40 to 59. 0.01 is 1 percent coal stones."
+        },
+        "IceCoal60to69":  {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.02",
+            "Section": "Ice Coal",
+            "Description": "How many of the stones should become ice coal stones on mine leves 60 to 69. 0.01 is 1 percent coal stones."
+        },
+        "IceCoal70to79": {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.02",
+            "Section": "Ice Coal",
+            "Description": "How many of the stones should become ice coal stones on mine leves 70 to 79. 0.01 is 1 percent coal stones."
+        },
+        //lava coal
+        "LavaCoal80to100": {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.02",
+            "Section": "Lava Coal",
+            "Description": "How many of the stones should become ice coal stones on mine leves 80 to 100. 0.01 is 1 percent coal stones."
+        },
+        "LavaCoal100to120": {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.02",
+            "Section": "Lava Coal",
+            "Description": "How many of the stones should become ice coal stones on mine leves 100 to 120. 0.01 is 1 percent coal stones."
+        },
+        //pure coal
+        "PureCoal1to39": {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.00",
+            "Section": "Pure Coal",
+            "Description": "How many of the stones should become pure coal stones on mine leves 1 to 39. 0.01 is 1 percent coal stones."
+        },
+        "PureCoal40to80": {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.01",
+            "Section": "Pure Coal",
+            "Description": "How many of the stones should become pure coal stones on mine leves 40 to 80. 0.01 is 1 percent coal stones."
+        },
+        "PureCoal81to119": {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.03",
+            "Section": "Pure Coal",
+            "Description": "How many of the stones should become pure coal stones on mine leves 81 to 119. 0.01 is 1 percent coal stones."
+        },
+        "PureCoal171to999": {
+            "AllowValues": "0.00, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05",
+            "Default": "0.04",
+            "Section": "Pure Coal",
+            "Description": "How many of the stones should become pure coal stones in the Skull Cavern levels 71+. 0.01 is 1 percent coal stones."
+        },
+        //prismatic stone
+        "PrismaticStoneSkull": {
+            "AllowValues": "0.00, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.01",
+            "Default": "0.003",
+            "Section": "Prismatic Stone",
+            "Description": "How many of the stones should become prismatic stones in Skull Cavern levels 71+. 0.001 is .1 percent prismatic stones."
+        }
+    },
+    "Changes": [
+        {
+            "LogName": "Add resource",
+            "Action": "EditData",
+            "Target": "Mods/mistyspring.ItemExtensions/Resources",
+            "Entries": {
+                //normal coal
+                "NormanPCN.CoalNodes_0": {
+                    "Name": "NormanPCN.CoalNodes_0",
+                    "DisplayName": "[LocalizedText Strings\\Objects:Stone_NodeWithCoal_Name]",//"[LocalizedText Strings\\Objects:Stone_Name]",
+                    "Description": "This stone is rich in coal.",
+                    "Texture": "Mods/{{ModId}}/CoalStone",
+                    "SpriteIndex": 0,
+                    "Width": 1,
+                    "Height": 1,
+                    "Health": 3,
+                    "ItemDropped": "(O)382",
+                    "MinDrops": 1,
+                    "MaxDrops": 2,
+                    "ExtraItems": [
+                        {
+                            "ItemId": "(O)382",
+                            "MaxItems": 1,
+                            "Chance": 0.5
+                        }
+                    ],
+                    "Debris": "stone",
+                    "FailSounds": [
+                        "clubhit",
+                        "clank"
+                    ],
+                    "BreakingSound": "stoneCrack",
+                    "Sound": "hammer",
+                    "AddHay": 0,
+                    "SecretNotes": true,
+                    "Shake": true,
+                    "CountTowards": "None",
+                    "Tool": "Pickaxe",
+                    "SayWrongTool": null,
+                    "MinToolLevel": 0,
+                    "Exp": 8,
+                    "Skill": "mining",
+                    "ContextTags": [],
+                    "CustomFields": {},
+                    "Light": null,
+                    "OnDestroy": null,
+                    "MineSpawns": [
+                        {
+                            "Floors": "1/20",
+                            "SpawnFrequency": "{{Coal1To20}}",
+                            "Type": "All"
+                        },
+                        {
+                            "Floors": "21/39",
+                            "SpawnFrequency": "{{Coal21To39}}",
+                            "Type": "All"
+                        },
+                        {
+                            "Floors": "121/170",
+                            "SpawnFrequency": "{{Coal121To170}}",
+                            "Type": "All"
+                        }
+                    ]
+                },
+                //ice coal
+                "NormanPCN.CoalNodes_1": {
+                    "Name": "NormanPCN.CoalNodes_1",
+                    "DisplayName": "[LocalizedText Strings\\Objects:Stone_NodeWithCoal_Name]",
+                    "Description": "This frozen stone is rich in coal.",
+                    "Texture": "Mods/{{ModId}}/CoalStoneIce",
+                    "SpriteIndex": 0,
+                    "Width": 1,
+                    "Height": 1,
+                    "Health": 5,
+                    "ItemDropped": "(O)382",
+                    "MinDrops": 1,
+                    "MaxDrops": 2,
+                    "ExtraItems": [
+                        {
+                            "ItemId": "(O)382",
+                            "MaxItems": 1,
+                            "Chance": 0.5
+                        }
+                    ],
+                    "Debris": "stone",
+                    "FailSounds": [
+                        "clubhit",
+                        "clank"
+                    ],
+                    "BreakingSound": "stoneCrack",
+                    "Sound": "hammer",
+                    "AddHay": 0,
+                    "SecretNotes": true,
+                    "Shake": true,
+                    "CountTowards": "None",
+                    "Tool": "Pickaxe",
+                    "SayWrongTool": null,
+                    "MinToolLevel": 0,
+                    "Exp": 8,
+                    "Skill": "mining",
+                    "ContextTags": [],
+                    "CustomFields": {},
+                    "Light": null,
+                    "OnDestroy": null,
+                    "MineSpawns": [
+                        {
+                            "Floors": "40/59",
+                            "SpawnFrequency": "{{IceCoal40to59}}",
+                            "Type": "All"
+                        },
+                        {
+                            "Floors": "60/69",
+                            "SpawnFrequency": "{{IceCoal60to69}}",
+                            "Type": "All"
+                        },
+                        {
+                            "Floors": "70/79",
+                            "SpawnFrequency": "{{IceCoal70to79}}",
+                            "Type": "All"
+                        }
+                    ]
+                },
+                //lava coal
+                "NormanPCN.CoalNodes_2": {
+                    "Name": "NormanPCN.CoalNodes_2",
+                    "DisplayName": "[LocalizedText Strings\\Objects:Stone_NodeWithCoal_Name]",
+                    "Description": "This red hot stone is rich in coal.",
+                    "Texture": "Mods/{{ModId}}/CoalStoneLava",
+                    "SpriteIndex": 0,
+                    "Width": 1,
+                    "Height": 1,
+                    "Health": 6,
+                    "ItemDropped": "(O)382",
+                    "MinDrops": 1,
+                    "MaxDrops": 2,
+                    "ExtraItems": [
+                        {
+                            "ItemId": "(O)382",
+                            "MaxItems": 1,
+                            "Chance": 0.5
+                        }
+                    ],
+                    "Debris": "stone",
+                    "FailSounds": [
+                        "clubhit",
+                        "clank"
+                    ],
+                    "BreakingSound": "stoneCrack",
+                    "Sound": "hammer",
+                    "AddHay": 0,
+                    "SecretNotes": true,
+                    "Shake": true,
+                    "CountTowards": "None",
+                    "Tool": "Pickaxe",
+                    "SayWrongTool": null,
+                    "MinToolLevel": 0,
+                    "Exp": 8,
+                    "Skill": "mining",
+                    "ContextTags": [],
+                    "CustomFields": {},
+                    "Light": null,
+                    "OnDestroy": null,
+                    "MineSpawns": [
+                        {
+                            "Floors": "80/100",
+                            "SpawnFrequency": "{{LavaCoal80to100}}",
+                            "Type": "All"
+                        },
+                        {
+                            "Floors": "100/120",
+                            "SpawnFrequency": "{{LavaCoal100to120}}",
+                            "Type": "All"
+                        }
+                    ]
+                },
+                //pure coal
+                "NormanPCN.CoalNodes_3": {
+                    "Name": "NormanPCN.CoalNodes_3",
+                    "DisplayName": "[LocalizedText Strings\\Objects:Stone_NodeWithCoal_Name]",
+                    "Description": "This looks like pure Coal.",
+                    "Texture": "Mods/{{ModId}}/CoalPure",
+                    "SpriteIndex": 0,
+                    "Width": 1,
+                    "Height": 1,
+                    "Health": 8,
+                    "ItemDropped": "(O)382",
+                    "MinDrops": 3,
+                    "MaxDrops": 5,
+                    "Debris": "stone",
+                    "FailSounds": [
+                        "clubhit",
+                        "clank"
+                    ],
+                    "BreakingSound": "stoneCrack",
+                    "Sound": "hammer",
+                    "AddHay": 0,
+                    "SecretNotes": true,
+                    "Shake": true,
+                    "CountTowards": "None",
+                    "Tool": "Pickaxe",
+                    "SayWrongTool": null,
+                    "MinToolLevel": 0,
+                    "Exp": 12,
+                    "Skill": "mining",
+                    "ContextTags": [],
+                    "CustomFields": {},
+                    "Light": null,
+                    "OnDestroy": null,
+                    "MineSpawns": [
+                        {
+                            "Floors": "1/39",
+                            "SpawnFrequency": "{{PureCoal1to39}}",
+                            "Type": "All"
+                        },
+                        {
+                            "Floors": "40/80",
+                            "SpawnFrequency": "{{PureCoal40to80}}",
+                            "Type": "All"
+                        },
+                        {
+                            "Floors": "81/119",
+                            "SpawnFrequency": "{{PureCoal81to119}}",
+                            "Type": "All"
+                        },
+                        {
+                            "Floors": "171/999",
+                            "SpawnFrequency": "{{PureCoal171To999}}",
+                            "Type": "All"
+                        }
+                    ]
+                },
+                //Prismatic stone
+                "NormanPCN.PrismaticStone": {
+                    "Name": "NormanPCN.PrismaticStone",
+                    "DisplayName": "[LocalizedText Strings\\Objects:Stone_Name]",
+                    "Description": "This stone shines like stardust.",
+                    "Texture": "Mods/{{ModId}}/PrismaticStone",
+                    "SpriteIndex": 0,
+                    "Width": 1,
+                    "Height": 1,
+                    "Health": 16,
+                    "ItemDropped": "(O)74",
+                    "MinDrops": 1,
+                    "MaxDrops": 1,
+                    "Debris": "stone",
+                    "FailSounds": [
+                        "clubhit",
+                        "clank"
+                    ],
+                    "BreakingSound": "stoneCrack",
+                    "Sound": "hammer",
+                    "AddHay": 0,
+                    "SecretNotes": true,
+                    "Shake": true,
+                    "CountTowards": "None",
+                    "Tool": "Pickaxe",
+                    "SayWrongTool": null,
+                    "MinToolLevel": 0,
+                    "Exp": 48,
+                    "Skill": "mining",
+                    "ContextTags": [],
+                    "CustomFields": {},
+                    "Light": null,
+                    "OnDestroy": null,
+                    "MineSpawns": [
+                        {
+                            "Floors": "191/999",
+                            "SpawnFrequency": "{{PrismaticStoneSkull}}",
+                            "Type": "All"
+                        }
+                    ]
+                },
+            }
+        },
+        {
+            "LogName": "Add resource image",
+            "Action": "Load",
+            "Target": "Mods/{{ModId}}/CoalStone",
+            "FromFile": "assets/CoalStone.png"
+        },
+        {
+            "LogName": "Add resource image",
+            "Action": "Load",
+            "Target": "Mods/{{ModId}}/CoalStoneIce",
+            "FromFile": "assets/CoalStoneIce.png"
+        },
+        {
+            "LogName": "Add resource image",
+            "Action": "Load",
+            "Target": "Mods/{{ModId}}/CoalStoneLava",
+            "FromFile": "assets/CoalStoneLava.png"
+        },
+        {
+            "LogName": "Add resource image",
+            "Action": "Load",
+            "Target": "Mods/{{ModId}}/CoalPure",
+            "FromFile": "assets/CoalPure.png"
+        },
+        {
+            "LogName": "Add resource image",
+            "Action": "Load",
+            "Target": "Mods/{{ModId}}/PrismaticStone",
+            "FromFile": "assets/PrismaticStone.png"
+        }
+    ]
+}

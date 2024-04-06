@@ -1,0 +1,13 @@
+{
+  "Name": "[FTM] NormanPCN Better Quarry",
+  "Author": "NormanPCN",
+  "Version": "1.0.0",
+  "Description": "Improves the quarry item spawns.",
+  "UniqueID": "NormanPCN.BetterQuarry",
+  "MinimumApiVersion": "3.13.0",
+  "UpdateKeys": ["Nexus:00000"],
+  "ContentPackFor": {
+    "UniqueID": "Esca.FarmTypeManager",
+    "MinimumVersion": "1.16.0"
+  }
+}
