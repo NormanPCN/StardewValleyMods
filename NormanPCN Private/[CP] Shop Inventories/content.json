@@ -129,6 +129,44 @@
                "Condition": "YEAR 2, PLAYER_MINING_LEVEL Current 9, PLAYER_FRIENDSHIP_POINTS Current Clint 1500"//6 hearts
             }
          }
-       }
+      },
+      {
+         "Action": "EditData",
+         "Target": "Data/Shops",
+         "TargetField": ["FishShop", "Items"],
+         "Entries":
+         {
+            "NormanPCN.WillieSellsSeaweed": {
+               "Id": "NormanPCN.WillieSellsSeaweed",
+               "ItemId": "(O)152",
+               "Price": "40",
+               "AvailableStock": "5"
+            },
+            "NormanPCN.WillieSellsGreenAlgae": {
+               "Id": "NormanPCN.WillieSellsGreenAlgae",
+               "ItemId": "(0)153",
+               "Price": "30",
+               "AvailableStock": "5"
+            },
+            "NormanPCN.WillieSellsWhiteAlgae": {
+               "Id": "NormanPCN.WillieSellsWhiteAlgae",
+               "ItemId": "(0)157",
+               "Price": "50",
+               "AvailableStock": "5"
+            },
+            "NormanPCN.WillieSellsRecyclingMachine": {
+               "Id": "NormanPCN.WillieSellsRecyclingMachine",
+               "ItemId": "(BC)20",
+               "Price": "1000",
+               "Condition": "PLAYER_FISHING_LEVEL Current 4"
+            }
+         },
+         "MoveEntries": [
+               {"Id": "NormanPCN.WillieSellsSeaweed", "BeforeID": "(O)710"}, //crab pot
+               {"Id": "NormanPCN.WillieSellsGreenAlgae", "AfterID": "NormanPCN.WillieSellsSeaweed"},
+               {"Id": "NormanPCN.WillieSellsWhiteAlgae", "AfterID": "NormanPCN.WillieSellsGreenAlgae"},
+               {"Id": "NormanPCN.WillieSellsRecyclingMachine", "AfterID": "(O)710"} //crab pot
+         ]
+      }
    ]
 }
