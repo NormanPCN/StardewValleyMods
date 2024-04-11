@@ -12,7 +12,7 @@
                {
                   "Id": "NormanPCN.RobinSellsClay",
                   "ItemId": "(O)330",
-                  "Price": "100", // 5x sell price
+                  "Price": "50", // 2.5x sell price
                   "AvailableStock": "10"
                },
                "NormanPCN.RobinSellsHardwood":
@@ -21,7 +21,7 @@
                   "ItemId": "(O)709",
                   "Price": "250",// 5x year 2 wood price
                   "AvailableStock" : "25",
-                  "Condition": "YEAR 2, PLAYER_FORAGING_LEVEL Current 7, PLAYER_FRIENDSHIP_POINTS Current Robin 1500"//6 hearts
+                  "Condition": "YEAR 2, PLAYER_FORAGING_LEVEL Current 7"
                }
      	   },
          "MoveEntries":
@@ -40,25 +40,25 @@
                "Id": "NormanPCN.MarnieSellsAutoPetter",
                "ItemId": "(BC)272",
                "Price": "70000", // blackmarket price
-               "Condition": "IS_COMMUNITY_CENTER_COMPLETE, PLAYER_FARMING_LEVEL Current 10, PLAYER_FRIENDSHIP_POINTS Current Marnie 2000"//8 hearts
+               "Condition": "YEAR 2, PLAYER_FARMING_LEVEL Current 10, PLAYER_FRIENDSHIP_POINTS Current Marnie 2000"//8 hearts
             },
             "NormanPCN.MarnieSellsEggs": {
                "Id": "NormanPCN.MarnieSellsEggs",
                "ItemId": "(O)176",
-               "Price": "150", // 3x sell price
-               "Condition": "PLAYER_FRIENDSHIP_POINTS Current Marnie 500"//2 hearts
+               "Price": "100", // 2x sell price
+               //"Condition": "PLAYER_FRIENDSHIP_POINTS Current Marnie 500"//2 hearts
             },
             "NormanPCN.MarnieSellsMilk": {
                "Id": "NormanPCN.MarnieSellsMilk",
                "ItemId": "(O)184",
-               "Price": "375", // 3x sell price
-               "Condition": "PLAYER_FRIENDSHIP_POINTS Current Marnie 500"//2 hearts
+               "Price": "250", // 2x sell price
+               //"Condition": "PLAYER_FRIENDSHIP_POINTS Current Marnie 500"//2 hearts
             },
             "NormanPCN.MarnieSellsWool": {
                "Id": "NormanPCN.MarnieSellsWool",
                "ItemId": "(O)440",
-               "Price": "1020", // 3x sell price
-               "Condition": "PLAYER_FRIENDSHIP_POINTS Current Marnie 1500"//6 hearts
+               "Price": "700", // 2x sell price
+               "Condition": "YEAR 2, PLAYER_FRIENDSHIP_POINTS Current Marnie 1500"//6 hearts
             }
          },
          "MoveEntries":
@@ -74,10 +74,10 @@
          "Target": "Data/Shops",
          "TargetField": ["SeedShop", "Items"],
          "Entries": {
-            "NormanPCN.PierreSellTreeFertilizer": {
+            "NormanPCN.PierreSellsTreeFertilizer": {
                "Id": "NormanPCN.PierreSellsTreeFertilizer",
                "ItemId": "(O)805",
-               "Price": "75",//150, same price as deluxe speedgro. price sold/listed is 2x this amount for some unknown reason
+               "Price": "75",//150, same price as deluxe speedgro. price sold/listed is 2x this amount
                "AvailableStock": "10",
                "Condition": "YEAR 2, PLAYER_FORAGING_LEVEL Current 7"
             }
@@ -98,7 +98,7 @@
                "ItemId": "(O)82",
                "Price": "300",
                "AvailableStock": "10",
-               "Condition": "YEAR 2, PLAYER_MINING_LEVEL Current 6, PLAYER_FRIENDSHIP_POINTS Current Clint 1250"
+               "Condition": "PLAYER_MINING_LEVEL Current 6, PLAYER_FRIENDSHIP_POINTS Current Clint 1250"//5 hearts
             },
             "NormanPCN.ClintSellsGeode": {
                "Id": "NormanPCN.ClintSellsGeode",
@@ -124,7 +124,7 @@
             "NormanPCN.ClintSellsOmniGeode": {
                "Id": "NormanPCN.ClintSellsOmniGeode",
                "ItemId": "(O)749",
-               "Price": "1000",
+               "Price": "1000",//price at Sandy's
                "AvailableStock": "10",
                "Condition": "YEAR 2, PLAYER_MINING_LEVEL Current 9, PLAYER_FRIENDSHIP_POINTS Current Clint 1500"//6 hearts
             }
