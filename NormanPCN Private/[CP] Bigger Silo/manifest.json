@@ -1,0 +1,9 @@
+{
+	"Name": "Bigger Silo Size",
+	"Author": "NormanPCN",
+	"Version": "1.0",
+	"Description": "Increases silo capacity.",
+	"UniqueID": "NormanPCN.BiggerSilo",
+	"UpdateKeys": ["Nexus:00000"],
+	"ContentPackFor": {"UniqueID": "Pathoschild.ContentPatcher", "MinimumVersion": "2.0.0"}
+}

@@ -1,0 +1,11 @@
+{
+    "Name": "Kent And Sandy Friendship Boost",
+    "Author": "NormanPCN",
+    "Version": "1.0.0",
+    "Description": "Gives you a headstart with Kent and Sandy based on how much their family and friends like you.",
+    "UniqueID": "NormanPCN.KentAndSandyFriendshipBoost",
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher"
+    },
+    "UpdateKeys": ["Nexus:00000"]
+}
