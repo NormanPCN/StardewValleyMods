@@ -53,9 +53,31 @@ namespace ShopMenuFilter
 
             harmony.Patch(
                 original: AccessTools.Method(typeof(ShopMenu), nameof(ShopMenu.applyTab)),
-                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ShopMenu_applyTab_Postfix)));
+                postfix: new HarmonyMethod(typeof(ModEntry), nameof(applyTab_Postfix)));
 
-            harmony.PatchAll();
+            harmony.Patch(
+                original: AccessTools.Method(typeof(ShopMenu), nameof(ShopMenu.gameWindowSizeChanged)),
+                postfix: new HarmonyMethod(typeof(ModEntry), nameof(gameWindowSizeChanged_Postfix)));
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(ShopMenu), nameof(ShopMenu.drawCurrency)),
+                postfix: new HarmonyMethod(typeof(ModEntry), nameof(drawCurrency_Postfix)));
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(ShopMenu), nameof(ShopMenu.receiveLeftClick)),
+                postfix: new HarmonyMethod(typeof(ModEntry), nameof(receiveLeftClick_Postfix)));
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(ShopMenu), nameof(ShopMenu.receiveKeyPress)),
+                prefix: new HarmonyMethod(typeof(ModEntry), nameof(receiveKeyPress_Prefix)));
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(ShopMenu), nameof(ShopMenu.performHoverAction)),
+                postfix: new HarmonyMethod(typeof(ModEntry), nameof(performHoverAction_Postfix)));
+
+            //the auto patch method originally used did not work unless the project was compiled Debug.
+            //manual patch here always works regardless.
+            //harmony.PatchAll();
         }
 
 
