@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Shop Menu Filter",
+  "Author": "aedenthorn, NormanPCN",
+  "Version": "1.0.0",
+  "Description": "Adds a filter to shop menus.",
+  "UniqueID": "NormanPCN.ShopMenuFilter",
+  "EntryDll": "ShopMenuFilter.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:00000" ]
+}
