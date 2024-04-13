@@ -72,7 +72,7 @@ namespace EasierMonsterEradication
                 gmcm.Register(ModManifest,
                               reset: () => Config = new ModConfig(),
                               save: () => Helper.WriteConfig(Config),
-                              titleScreenOnly:true);
+                              titleScreenOnly:false);
 
                 //gmcm.AddBoolOption(ModManifest,
                 //                   () => Config.xxx,
