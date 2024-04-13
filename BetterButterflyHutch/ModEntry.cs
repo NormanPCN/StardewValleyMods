@@ -93,8 +93,8 @@ namespace BetterButterflyHutch
                                   postfix: new HarmonyMethod(typeof(DesertTraderPatches), nameof(DesertTraderPatches.OnDesertTrader_Postfix))
                                  );
 
-            //if (Config.UseHarmony)
-            //{
+            if (Config.UseHarmony)
+            {
                 try
                 {
                     mInfo = harmony.Patch(original: AccessTools.Method(typeof(StardewValley.Objects.Furniture), nameof(StardewValley.Objects.Furniture.actionOnPlayerEntryOrPlacement)),
@@ -107,7 +107,7 @@ namespace BetterButterflyHutch
                     Log.Error($"Failed Harmony Furniture Patches:\n{ex}");
                     //Config.UseHarmony = false;
                 }
-            //}
+            }
 
             // use GMCM in an optional manner.
 
@@ -196,8 +196,8 @@ namespace BetterButterflyHutch
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             MyHelper.Events.Input.ButtonPressed += Input_ButtonPressed;
-            //if (!Config.UseHarmony)
-            //    MyHelper.Events.Player.Warped += Player_Warped;
+            if (!Config.UseHarmony)
+                MyHelper.Events.Player.Warped += Player_Warped;
         }
 
         /// <summary>Raised after a game has exited a game/save to the title screen.  Here we unhook our gameplay events.</summary>
@@ -206,8 +206,8 @@ namespace BetterButterflyHutch
         private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
             MyHelper.Events.Input.ButtonPressed -= Input_ButtonPressed;
-            //if (!Config.UseHarmony)
-            //    MyHelper.Events.Player.Warped -= Player_Warped;
+            if (!Config.UseHarmony)
+                MyHelper.Events.Player.Warped -= Player_Warped;
         }
 
         private static bool IsHutchAtTile(GameLocation location, Vector2 tile)
@@ -397,29 +397,29 @@ namespace BetterButterflyHutch
         /// <summary>Raised just after the player changes location. Here we spawn our Butterflies.
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        //private void Player_Warped(object sender, WarpedEventArgs e)
-        //{
-        //    if (Context.IsPlayerFree)
-        //    {
-        //        GameLocation loc = e.NewLocation;
+        private void Player_Warped(object sender, WarpedEventArgs e)
+        {
+            if (Context.IsPlayerFree)
+            {
+                GameLocation loc = e.NewLocation;
 
-        //        // we can't distinguish from ambient and hutch spawns. this only matters outdoors.
-        //        // if there are multiple hutches, we cannot distinguish spawns from individual hutches
-        //        int count = CountButterflies(loc);
+                // we can't distinguish from ambient and hutch spawns. this only matters outdoors.
+                // if there are multiple hutches, we cannot distinguish spawns from individual hutches
+                int count = CountButterflies(loc);
 
-        //        foreach (StardewValley.Object obj in loc.furniture)
-        //        {
-        //            if (obj.ParentSheetIndex == HutchIdx)
-        //            {
-        //                if (Debug)
-        //                    Log.Debug($"Found Hutch at {loc.Name}, Outdoors={loc.IsOutdoors}, Game Butterflies={count}");
+                foreach (StardewValley.Object obj in loc.furniture)
+                {
+                    if (obj.ParentSheetIndex == HutchIdx)
+                    {
+                        if (Debug)
+                            Log.Debug($"Found Hutch at {loc.Name}, Outdoors={loc.IsOutdoors}, Game Butterflies={count}");
 
-        //                SpawnButterflies(loc, count, null);
-        //                return;
-        //            }
-        //        }
-        //    }
-        //}
+                        SpawnButterflies(loc, count, null);
+                        return;
+                    }
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(StardewValley.Objects.Furniture))]
         public class FurniturePatches

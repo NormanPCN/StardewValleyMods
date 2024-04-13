@@ -106,4 +106,4 @@ v1.0.1:
  Updates for Stardew Valley 1.6 and SMAPI 4.
 
  v1.4.1
- Mod always uses Harmony now. No config option.
+ Switch from using the old ParentSheetIndex field to the 1.6 'modern' QualifiedItemId/ItemId field.

@@ -11,7 +11,7 @@
         public bool IslandButterflies = false;
         public bool NightButterflies = false;
 //        public bool ShakeHutch = true;
-//        public bool UseHarmony = true;
+        public bool UseHarmony = true;
         public bool Debug = false;
     }
 }
