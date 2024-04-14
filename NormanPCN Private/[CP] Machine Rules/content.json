@@ -74,6 +74,13 @@
       "TargetField": ["(BC)114", "OutputRules", "#0"],
       "Entries": {"InvalidCountMessage": "Requires 1 Hardwood"},
       "When": {"Charcoal Kiln": "1 Hardwood"}
+    },
+    //Lava Eel fish pond
+    {
+      "Action": "EditData",
+      "Target": "Data/FishPondData",
+      "TargetField": ["LavaEel", "ProducedItems", "#7"],//Gold Ore: vanilla 5 => 10
+      "Entries": {"MinQuantity": 10, "MaxQuantity": 10}
     }
   ]
 }
