@@ -167,6 +167,27 @@
                {"Id": "NormanPCN.WillieSellsWhiteAlgae", "AfterID": "NormanPCN.WillieSellsGreenAlgae"},
                {"Id": "NormanPCN.WillieSellsRecyclingMachine", "AfterID": "(O)710"} //crab pot
          ]
+      },
+      {
+         "Action": "EditData",
+         "Target": "Data/Shops",
+         "TargetField": ["AdventureShop", "Items"],
+         "Entries":
+         {
+            "NormanPCN.MarlonSellsDwarfScrolls": {
+               "Id": "NormanPCN.MarlonSellsDwarfScrolls",
+               "Price": "10000",
+               "AvailableStock": "1",
+               "AvoidRepeat": true,
+               "RandomItemId": [
+                  "(0)96",
+                  "(0)97",
+                  "(0)98",
+                  "(0)99",
+               ],
+               "Condition": "MINE_LOWEST_LEVEL_REACHED 120"
+            }
+         }
       }
    ]
 }
