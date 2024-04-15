@@ -58,3 +58,7 @@ v1.0.0:
 
  v1.1.1
  Updated the vanilla quest amount for Cave insects. From 125 to 80. v1.5 to v1.6.
+
+ v.1.2.0
+ Added Japanese translation. (Thanks mitekano23)
+ The config dialog is no longer restricted to the game title screen menu. It can now be used inGame.
