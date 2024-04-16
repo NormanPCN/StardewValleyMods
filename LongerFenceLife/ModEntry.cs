@@ -12,6 +12,7 @@ using GenericModConfigMenu;
 //using HarmonyLib;
 using Helpers;
 using Microsoft.Xna.Framework.Media;
+using System.Diagnostics;
 
 
 namespace LongerFenceLife
@@ -336,6 +337,8 @@ namespace LongerFenceLife
                     Vector2 view = new Vector2(Game1.viewport.X, Game1.viewport.Y);
                     Rectangle visibleArea = GetVisibleAreaInTiles(1);
 
+                    //Stopwatch stopWatch = new Stopwatch();
+                    //stopWatch.Start();
                     foreach (StardewValley.Object obj in location.Objects.Values)
                     {
                         if (obj is StardewValley.Fence fence)
@@ -362,33 +365,11 @@ namespace LongerFenceLife
                             }
                         }
                     }
-                    //StardewValley.Object obj;
-                    //Vector2 tile = Vector2.Zero;
-                    //for (int x = visibleArea.X; x < visibleArea.X+visibleArea.Width; x++)
-                    //{
-                    //    tile.X = x;
-                    //    for (int y = visibleArea.Y; y < visibleArea.Y+visibleArea.Height; y++)
-                    //    {
-                    //        tile.Y = y;
-                    //        if (location.Objects.TryGetValue(tile, out obj) && (obj is StardewValley.Fence fence1))
-                    //        {
-                    //            Color color = Color.Green;
-                    //            int daysLeft = (int)(fence1.health.Value * 1440f / 60 / 24);
-                    //            if (daysLeft <= 28)
-                    //                color = Color.Red;
-                    //            else if (daysLeft <= 56)
-                    //                color = Color.Yellow;
+                    //stopWatch.Stop();
+                    //long t = stopWatch.ElapsedTicks;
+                    //Log.Debug($"t={t}");
 
-                    //            Vector2 pixelPosition = tile * Game1.tileSize - view;
-                    //            e.SpriteBatch.Draw(Texture,
-                    //                               new Rectangle((int)pixelPosition.X, (int)pixelPosition.Y, Game1.tileSize, Game1.tileSize),
-                    //                               color * 0.3f);
-                    //        }
-                    //    }
-                    //}
-
-                    tile = Game1.currentCursorTile;
-                    if (location.Objects.TryGetValue(tile, out StardewValley.Object obj1) && (obj1 is StardewValley.Fence fence2))
+                    if (location.Objects.TryGetValue(Game1.currentCursorTile, out StardewValley.Object obj1) && (obj1 is StardewValley.Fence fence2))
                     {
                         int daysLeft = (int)(fence2.health.Value * 1440f / 60 / 24);
 
