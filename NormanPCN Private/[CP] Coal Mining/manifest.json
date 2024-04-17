@@ -3,7 +3,7 @@
    "Author": "NormanPCN",
    "Version": "1.0.0",
    "Description": "Adds Coal ore nodes into the mines to have a better method of getting coal.",
-   "UniqueID": "NormanPCN.CoalNodes",
+   "UniqueID": "NormanPCN.CoalMining",
    "MinimumApiVersion": "4.0.0",
    "UpdateKeys": ["Nexus:00000"],
    "Dependencies": [

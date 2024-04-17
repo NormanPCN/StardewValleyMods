@@ -71,8 +71,8 @@
             "Target": "Mods/mistyspring.ItemExtensions/Resources",
             "Entries": {
                 //normal coal
-                "NormanPCN.CoalNodes_0": {
-                    "Name": "NormanPCN.CoalNodes_0",
+                "{{ModId}}_Coal": {
+                    "Name": "{{ModId}}_Coal",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_NodeWithCoal_Name]",//"[LocalizedText Strings\\Objects:Stone_Name]",
                     "Description": "This stone is rich in coal.",
                     "Texture": "Mods/{{ModId}}/CoalStone",
@@ -139,8 +139,8 @@
                     ]
                 },
                 //pure coal
-                "NormanPCN.CoalNodes_3": {
-                    "Name": "NormanPCN.CoalNodes_3",
+                "{{ModId}}_PureCoal": {
+                    "Name": "{{ModId}}_PureCoal",
                     "DisplayName": "[LocalizedText Strings\\Objects:Stone_NodeWithCoal_Name]",
                     "Description": "This looks like pure Coal.",
                     "Texture": "Mods/{{ModId}}/CoalPure",
@@ -210,7 +210,7 @@
                     "SpriteIndex": 0,
                     "Width": 1,
                     "Height": 1,
-                    "Health": 16,
+                    "Health": 18,
                     "ItemDropped": "(O)74",
                     "MinDrops": 1,
                     "MaxDrops": 1,
@@ -241,7 +241,7 @@
                             "Type": "All"
                         }
                     ]
-                },
+                }
             }
         },
         {
