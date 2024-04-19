@@ -172,16 +172,13 @@ namespace EasierMonsterEradication
                         {
                             if (questData.Targets != null)
                             {
-                                // make sure the first monster exists
-
-                                //set all targets to zero, and then the first target to just below the threshold
+                                //set the monster targets just below the threshold
                                 foreach (string targetType in questData.Targets)
                                 {
                                     if (!stats.specificMonstersKilled.ContainsKey(targetType))
                                         stats.specificMonstersKilled.Add(targetType, 0);
-                                    stats.specificMonstersKilled[targetType] = 0;
+                                    stats.specificMonstersKilled[targetType] = (questData.Count / questData.Targets.Count) - 1;
                                 }
-                                stats.specificMonstersKilled[questData.Targets[0]] = questData.Count - 2;
                             }
                         }
                     }
@@ -193,7 +190,7 @@ namespace EasierMonsterEradication
                             {
                                 int needed = questData.Count;
 
-                                // make sure the first monster exists
+                                // make sure the first monster target exists
                                 if (!stats.specificMonstersKilled.ContainsKey(questData.Targets[0]))
                                     stats.specificMonstersKilled.Add(questData.Targets[0], 0);
 
