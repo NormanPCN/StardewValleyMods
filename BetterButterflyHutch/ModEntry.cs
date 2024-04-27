@@ -26,7 +26,7 @@ namespace BetterButterflyHutch
         private const int MaxMinButterflies = MaxMaxButterflies;
         private const int MinBatWings = 10;
         private const int MaxBatWings = 200;
-        private const int HutchIdx = 1971;
+        //private const int HutchIdx = 1971;
         private const String HutchQID = "(F)1971";
 
         internal static Random Rand;
@@ -215,7 +215,7 @@ namespace BetterButterflyHutch
             foreach (StardewValley.Object obj in location.furniture)
             {
                 if (
-                    (obj.ParentSheetIndex == HutchIdx) &&
+                    (obj.QualifiedItemId == HutchQID) &&
                     (obj.boundingBox.Y / Game1.tileSize == tile.Y) &&
                     (
                      (obj.boundingBox.X / Game1.tileSize == tile.X) ||
@@ -409,7 +409,7 @@ namespace BetterButterflyHutch
 
                 foreach (StardewValley.Object obj in loc.furniture)
                 {
-                    if (obj.ParentSheetIndex == HutchIdx)
+                    if (obj.QualifiedItemId == HutchQID)
                     {
                         if (Debug)
                             Log.Debug($"Found Hutch at {loc.Name}, Outdoors={loc.IsOutdoors}, Game Butterflies={count}");
