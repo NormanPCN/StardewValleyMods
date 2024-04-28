@@ -59,13 +59,12 @@ namespace FixFallTappedTrees
                         if (pair.Value is StardewValley.TerrainFeatures.Tree tree && tree.isTemporaryGreenRainTree.Value)
                         {
                             StardewValley.Object tile_object = location.getObjectAtTile((int)tree.Tile.X, (int)tree.Tile.Y);
-                            if (tile_object is not null && tile_object.IsTapper())
+                            if ((tile_object != null) && tile_object.IsTapper())
                             {
-                                //in the game bug, tapped.Value has been set to false but the tapper remains on the tree.
-                                //the tapper produce has not be altered...yet
+                                //in the game bug(?), tapped.Value has been set to false but the tapper remains on the tree.
+                                //the tapper produce has not be altered...yet.
                                 //the tree has been converted to a green rain tree by this point.
-                                //so we assume a green rain tree with a tapper attached has been falsely converted
-                                //and we convert it back to a normal tree.
+                                //assume a green rain tree with a tapper attached has been falsely converted from a normal tree,
                                 Instance.Monitor.Log($"DayStarted: Changed tapped tree at ({tree.Tile.X}, {tree.Tile.Y}) back to normal.", LogLevel.Error);
                                 if (tree.treeType.Value == "10")
                                 {
@@ -87,9 +86,9 @@ namespace FixFallTappedTrees
 
         public static bool seasonUpdate_Prefix(Tree __instance, bool onLoad)
         {
+            //bool logic from game code.
             if (
                 Game1.IsFall &&
-                //Game1.random.NextDouble() < 0.05 &&
                 !__instance.tapped &&
                 (__instance.treeType.Value == "1" || __instance.treeType.Value == "2") &&
                 __instance.growthStage.Value >= 5 &&
@@ -100,7 +99,7 @@ namespace FixFallTappedTrees
                 StardewValley.Object tile_object = __instance.Location.getObjectAtTile((int)__instance.Tile.X, (int)__instance.Tile.Y);
                 if (tile_object != null && tile_object.IsTapper())
                 {
-                    Instance.Monitor.Log($"seasonUpdate: Tree !tapped with a tapper attached. ({__instance.Tile.X}, {__instance.Tile.Y}) onLoad={onLoad} tapped={__instance.tapped.Value} hasMoss={__instance.hasMoss.Value}. Game would have changed tree type.", LogLevel.Error);
+                    Instance.Monitor.Log($"seasonUpdate: Tree !tapped with a tapper attached. ({__instance.Tile.X}, {__instance.Tile.Y}) onLoad={onLoad} tapped={__instance.tapped.Value} hasMoss={__instance.hasMoss.Value}.", LogLevel.Error);
                     __instance.tapped.Value = true;
                 }
             }
