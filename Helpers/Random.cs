@@ -56,15 +56,18 @@ namespace NormanPCN.Utils
         /// <returns>random seed value of type uint</returns>
         public static uint GetRandomSeed()
         {
-            long seed = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            long seed = DateTime.Now.Ticks;
             //DateTime epoc = new DateTime(2000, 1, 1);
             //long seed = (ulong)(DateTime.UtcNow - epoc).TotalSeconds;
 
-            seed += Environment.CurrentManagedThreadId;
-            seed += Environment.ProcessId;
-            seed += Environment.TickCount64;
-            //seed += System.Threading.Thread.CurrentThread.ManagedThreadId;
-            //seed += System.Diagnostics.Process.GetCurrentProcess().Id;
+            unchecked
+            {
+                seed = (seed * 33) + Environment.CurrentManagedThreadId;
+                seed = (seed * 33) + Environment.ProcessId;
+                seed = (seed * 33) + Environment.TickCount64;
+                //seed += System.Threading.Thread.CurrentThread.ManagedThreadId;
+                //seed += System.Diagnostics.Process.GetCurrentProcess().Id;
+            }
 
 
             return (uint)XorShift64((ulong)seed);
