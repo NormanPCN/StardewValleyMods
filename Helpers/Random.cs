@@ -32,7 +32,7 @@ namespace NormanPCN.Utils
         //private delegate ulong RandomNumberFunc();
         //private RandomNumberFunc randFunc;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint XorShift32(uint seed)
         {
             seed ^= seed << 13;
@@ -41,7 +41,7 @@ namespace NormanPCN.Utils
             return seed;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ulong XorShift64(ulong seed)
         {
             seed ^= seed << 13;
@@ -56,21 +56,20 @@ namespace NormanPCN.Utils
         /// <returns>random seed value of type uint</returns>
         public static uint GetRandomSeed()
         {
-            long seed = DateTime.Now.Ticks;
+            ulong seed = (ulong) DateTime.Now.Ticks;
             //DateTime epoc = new DateTime(2000, 1, 1);
-            //long seed = (ulong)(DateTime.UtcNow - epoc).TotalSeconds;
+            //ulong seed = (ulong)(DateTime.UtcNow - epoc).TotalSeconds;
 
+            //no overflow or range checking
             unchecked
             {
-                seed = (seed * 33) + Environment.CurrentManagedThreadId;
-                seed = (seed * 33) + Environment.ProcessId;
-                seed = (seed * 33) + Environment.TickCount64;
+                seed = XorShift64(seed) + (ulong)Environment.TickCount64;
+                seed = XorShift64(seed) + (ulong)Environment.CurrentManagedThreadId;
+                seed = XorShift64(seed) + (ulong)Environment.ProcessId;
                 //seed += System.Threading.Thread.CurrentThread.ManagedThreadId;
                 //seed += System.Diagnostics.Process.GetCurrentProcess().Id;
+                return (uint)(XorShift64(seed) >> 8);//take middle bits
             }
-
-
-            return (uint)XorShift64((ulong)seed);
         }
 
         public RandomNumbers() : this(GetRandomSeed(), DefaultRNG)
