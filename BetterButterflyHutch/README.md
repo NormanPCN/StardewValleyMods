@@ -107,3 +107,6 @@ v1.0.1:
 
  v1.4.1
  Switch from using the old ParentSheetIndex field to the 1.6 'modern' QualifiedItemId/ItemId field.
+
+ v1.4.2
+ Tweaks for compaitbility with Stardew 1.6 and associated SMAPI changes.

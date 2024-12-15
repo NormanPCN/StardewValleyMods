@@ -85,29 +85,16 @@ namespace BetterButterflyHutch
 #endif
 
             var harmony = new Harmony(this.ModManifest.UniqueID);
-            //harmony.PatchAll();
             System.Reflection.MethodInfo mInfo;
 
-            // must use a patch to perform this action.
             mInfo = harmony.Patch(original: AccessTools.Method(typeof(StardewValley.Locations.Desert), nameof(StardewValley.Locations.Desert.OnDesertTrader)),
                                   postfix: new HarmonyMethod(typeof(DesertTraderPatches), nameof(DesertTraderPatches.OnDesertTrader_Postfix))
                                  );
 
-            if (Config.UseHarmony)
-            {
-                try
-                {
-                    mInfo = harmony.Patch(original: AccessTools.Method(typeof(StardewValley.Objects.Furniture), nameof(StardewValley.Objects.Furniture.actionOnPlayerEntryOrPlacement)),
-                                          prefix: new HarmonyMethod(typeof(FurniturePatches), nameof(FurniturePatches.actionOnPlayerEntryOrPlacement_Prefix)),
-                                          postfix: new HarmonyMethod(typeof(FurniturePatches), nameof(FurniturePatches.actionOnPlayerEntryOrPlacement_Postfix))
-                                         );
-                }
-                catch (Exception ex)
-                {
-                    Log.Error($"Failed Harmony Furniture Patches:\n{ex}");
-                    //Config.UseHarmony = false;
-                }
-            }
+            mInfo = harmony.Patch(original: AccessTools.Method(typeof(StardewValley.Objects.Furniture), nameof(StardewValley.Objects.Furniture.actionOnPlayerEntryOrPlacement)),
+                                    prefix: new HarmonyMethod(typeof(FurniturePatches), nameof(FurniturePatches.actionOnPlayerEntryOrPlacement_Prefix)),
+                                    postfix: new HarmonyMethod(typeof(FurniturePatches), nameof(FurniturePatches.actionOnPlayerEntryOrPlacement_Postfix))
+                                    );
 
             // use GMCM in an optional manner.
 
@@ -196,8 +183,7 @@ namespace BetterButterflyHutch
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             MyHelper.Events.Input.ButtonPressed += Input_ButtonPressed;
-            if (!Config.UseHarmony)
-                MyHelper.Events.Player.Warped += Player_Warped;
+            MyHelper.Events.Player.Warped += Player_Warped;
         }
 
         /// <summary>Raised after a game has exited a game/save to the title screen.  Here we unhook our gameplay events.</summary>
@@ -206,8 +192,7 @@ namespace BetterButterflyHutch
         private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
             MyHelper.Events.Input.ButtonPressed -= Input_ButtonPressed;
-            if (!Config.UseHarmony)
-                MyHelper.Events.Player.Warped -= Player_Warped;
+            MyHelper.Events.Player.Warped -= Player_Warped;
         }
 
         private static bool IsHutchAtTile(GameLocation location, Vector2 tile)
@@ -421,14 +406,10 @@ namespace BetterButterflyHutch
             }
         }
 
-        [HarmonyPatch(typeof(StardewValley.Objects.Furniture))]
         public class FurniturePatches
         {
             private static int Before;
 
-            [HarmonyPrefix]
-            [HarmonyPatch(nameof(StardewValley.Objects.Furniture.actionOnPlayerEntryOrPlacement))]
-            [HarmonyPatch(new Type[] { typeof(GameLocation), typeof(bool) })]
             public static bool actionOnPlayerEntryOrPlacement_Prefix(StardewValley.Objects.Furniture __instance, GameLocation environment, bool dropDown)
             {
                 try
@@ -444,9 +425,6 @@ namespace BetterButterflyHutch
                 }
             }
 
-            [HarmonyPostfix]
-            [HarmonyPatch(nameof(StardewValley.Objects.Furniture.actionOnPlayerEntryOrPlacement))]
-            [HarmonyPatch(new Type[] { typeof(GameLocation), typeof(bool) })]
             public static void actionOnPlayerEntryOrPlacement_Postfix(StardewValley.Objects.Furniture __instance, GameLocation environment, bool dropDown)
             {
                 try
@@ -461,12 +439,8 @@ namespace BetterButterflyHutch
             }
         }
 
-        [HarmonyPatch(typeof(StardewValley.Locations.Desert))]
         public class DesertTraderPatches
         {
-            [HarmonyPostfix]
-            [HarmonyPatch(nameof(StardewValley.Locations.Desert.OnDesertTrader))]
-            [HarmonyPatch(new Type[] { typeof(Farmer) })]
             public static void OnDesertTrader_Postfix(StardewValley.Locations.Desert __instance)
             {
                 try
