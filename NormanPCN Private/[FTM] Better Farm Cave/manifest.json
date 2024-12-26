@@ -1,0 +1,10 @@
+{
+	"Name": "NormanPCN Better Farm Cave",
+	"Author": "NormanPCN",
+	"Description": "More fruit spawns",
+	"Version": "1.0.0",
+	"UniqueID": "NormanPCN.BetterFarmCave",
+	"UpdateKeys": ["Nexus: 0000"],
+	"MinimumApiVersion": "3.0",
+	"ContentPackFor": {"UniqueID": "Esca.FarmTypeManager"}
+}
