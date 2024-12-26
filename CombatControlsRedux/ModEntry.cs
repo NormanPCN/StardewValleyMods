@@ -321,6 +321,7 @@ namespace CombatControlsRedux
             bool actionButtonPressed = SButtonExtensions.IsActionButton(e.Button);
 
             if (
+                (who != null) &&
                 (who.CurrentTool != null) &&
                 (useToolButtonPressed || actionButtonPressed) &&
                 Context.IsPlayerFree &&
@@ -489,7 +490,7 @@ namespace CombatControlsRedux
             {
                 Farmer who = Game1.player;
 
-                if (who.CurrentTool is MeleeWeapon tool)
+                if ((who != null) && (who.CurrentTool is MeleeWeapon tool))
                 {
 
                     if ((tool.type.Value == MeleeWeapon.club) && (screen.ClubSpamAttack > 0))
@@ -572,15 +573,16 @@ namespace CombatControlsRedux
             PerScreenData screen = ScreenData.Value;
             int facing = screen.MyFacingDirection;
             screen.MyFacingDirection = -1;
-            if ((facing >= 0) && (facing != Game1.player.FacingDirection))
+            Farmer who = Game1.player;
+            if ((who != null) && (facing >= 0) && (facing != who.FacingDirection))
             {
                 //the game changed the facing direction we selected. set it back.
                 //this disagreement only happens in the 8 tiles surrounding the player where the game code may set the facing direction.
                 //re-setting the direction here seems to work well enough. I've seen some animation quirks at times.
                 //this re-change may be happening on the next game tick.
                                         
-                //Log.Debug($"FacingDirection different me={facing} game={Game1.player.FacingDirection}");
-                Game1.player.FacingDirection = facing;
+                //Log.Debug($"FacingDirection different me={facing} game={who.FacingDirection}");
+                who.FacingDirection = facing;
             }
         }
     }
