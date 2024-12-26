@@ -292,6 +292,7 @@ namespace BetterButterflyHutch
             // remove hutch spawned butterflies in instances we think they should not spawn
             // outdoors, the game will not spawn ambient butterfies in these conditions. so just remove all butterflies.
             // indoors, we remove after dark by config.
+            // with Config island butterfly, then we may remove hutch spawned so we can replace with island.
 
             if (Debug)
                 Log.Debug($"Remove Butterflies. critters={loc.critters.Count}");
@@ -327,7 +328,12 @@ namespace BetterButterflyHutch
                                 min = Config.MinIndoors - hutchCount;
                             max = Config.MaxIndoors - hutchCount;
                             if (Config.IslandButterflies)
+                            {
                                 island = true;
+                                RemoveButterflies(loc);//remove hutch spawned butterflies. they will not be island.
+                                min = Config.MinIndoors;
+                                max = Config.MaxIndoors;
+                            }
                         }
                         else
                         {

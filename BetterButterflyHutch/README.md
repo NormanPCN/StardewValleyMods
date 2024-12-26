@@ -110,3 +110,6 @@ v1.0.1:
 
  v1.4.2
  Tweaks for compaitbility with Stardew 1.6 and associated SMAPI changes.
+
+ v1.5.0
+ Island butterfly option. Enabled. Indoor. When enabled the mod now removes vanilla hutch spawned butterflies in favor of the Island butterflies. So only Island bufferflies will be spawned.
