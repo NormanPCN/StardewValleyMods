@@ -39,7 +39,7 @@
             "{{ModId}}.MarnieSellsAutoPetter": {
                "Id": "{{ModId}}.MarnieSellsAutoPetter",
                "ItemId": "(BC)272",
-               "Price": "50000",
+               "Price": "75000",
                "Condition": "PLAYER_FARMING_LEVEL Current 10, IS_COMMUNITY_CENTER_COMPLETE"
             },
             "{{ModId}}.MarnieSellsEggs": {
