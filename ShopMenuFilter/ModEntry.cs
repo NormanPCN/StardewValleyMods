@@ -47,17 +47,6 @@ namespace ShopMenuFilter
                     original: constructor,
                     postfix: new HarmonyMethod(typeof(ModEntry), nameof(Shopmenu_Constructor_Postfix)));
             }
-            //harmony.Patch(
-            //    original: AccessTools.Constructor(typeof(ShopMenu), new Type[] { typeof(string), typeof(ShopData), typeof(ShopOwnerData), typeof(NPC), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(bool) }),
-            //    postfix: new HarmonyMethod(typeof(ModEntry), nameof(Shopmenu_Constructor_Postfix)));
-
-            //harmony.Patch(
-            //    original: AccessTools.Constructor(typeof(ShopMenu), new Type[] { typeof(string), typeof(Dictionary<ISalable, ItemStockInformation>), typeof(int), typeof(string), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(bool) }),
-            //    postfix: new HarmonyMethod(typeof(ModEntry), nameof(Shopmenu_Constructor_Postfix)));
-
-            //harmony.Patch(
-            //    original: AccessTools.Constructor(typeof(ShopMenu), new Type[] { typeof(string), typeof(List<ISalable>), typeof(int), typeof(string), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(bool) }),
-            //    postfix: new HarmonyMethod(typeof(ModEntry), nameof(Shopmenu_Constructor_Postfix)));
 
             harmony.Patch(
                 original: AccessTools.Method(typeof(ShopMenu), nameof(ShopMenu.applyTab)),
@@ -82,10 +71,6 @@ namespace ShopMenuFilter
             harmony.Patch(
                 original: AccessTools.Method(typeof(ShopMenu), nameof(ShopMenu.performHoverAction)),
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(performHoverAction_Postfix)));
-
-            //the auto patch method originally used did not work unless the project was compiled Debug.
-            //manual patch here always works regardless.
-            //harmony.PatchAll();
         }
 
 
