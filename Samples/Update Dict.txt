@@ -1,0 +1,15 @@
+  public static Dictionary<TKey, TValue> Update<TKey,TValue>(
+        [NotNull] this Dictionary<TKey, TValue> dictionary, 
+        Dictionary<TKey, TValue>? updateDict
+        ) where TKey : notnull
+          where TValue:notnull
+    {
+        if (updateDict is not null)
+        {
+            foreach (TKey key in updateDict.Keys)
+            {
+                dictionary[key] = updateDict[key];
+            }
+        }
+        return dictionary;
+    }
