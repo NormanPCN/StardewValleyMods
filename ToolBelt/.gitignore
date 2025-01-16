@@ -1,0 +1,26 @@
+#Visual Studio metadata
+.vs/
+GlobalSuppressions.cs
+
+#Autosave files
+*~
+
+#build
+[Oo]bj/
+[Bb]in/
+*.exe
+*.dll
+*.pdb
+
+#NuGet packages
+*.nupkg
+packages/
+
+#Misc
+*.zip
+*.lnk
+*.mp4
+
+#ReSharper
+*_Resharper.*
+*.Resharper
