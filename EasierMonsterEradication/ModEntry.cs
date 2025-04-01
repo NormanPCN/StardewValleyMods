@@ -46,10 +46,10 @@ namespace EasierMonsterEradication
             MyHelper.Events.Content.AssetRequested += OnAssetRequested;
         }
 
-        private string GetParagraphText()
+        internal void ChangeMonsterPercent(float value)
         {
-            //return MyHelper.Translation.Get("VanillaMonsters", new { slimes = MonstersTable[0].KillsNeededNew.ToString() });
-            return I18nGet("VanillaMonsters");
+            Config.MonsterPercentage = value;
+            MyHelper.GameContent.InvalidateCache("Data\\MonsterSlayerQuests");
         }
 
         /// <summary>Raised after the game has loaded and all Mods are loaded. Here we load the config.json file and setup GMCM </summary>
@@ -65,7 +65,6 @@ namespace EasierMonsterEradication
 
             // use GMCM in an optional manner.
 
-            //IGenericModConfigMenuApi gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             var gmcm = Helper.ModRegistry.GetGenericModConfigMenuApi(this.Monitor);
             if (gmcm != null)
             {
@@ -81,13 +80,14 @@ namespace EasierMonsterEradication
                 //                   () => I18nGet("config.Tooltip"));
                 gmcm.AddNumberOption(ModManifest,
                                      () => Config.MonsterPercentage,
-                                     (float value) => Config.MonsterPercentage = value,
+                                     (float value) => ChangeMonsterPercent(value),
                                      () => I18nGet("monsterPercent.Label"),
                                      () => I18nGet("monsterPercent.tooltip"),
                                      min: MinPercent,
                                      max: MaxPercent,
                                      interval: 0.05f);
-                gmcm.AddParagraph(ModManifest, () => GetParagraphText());
+
+                gmcm.AddParagraph(ModManifest, () => I18nGet("VanillaMonsters"));
             }
             else
             {
@@ -101,22 +101,6 @@ namespace EasierMonsterEradication
 
         }
 
-        //private static string[] MonsterList =
-        //{
-        //    "Slimes",
-        //    "Shadows",
-        //    "Bats",
-        //    "Skeletons",
-        //    "Insects",
-        //    "Duggy",
-        //    "DustSpirits",
-        //    "Crabs",
-        //    "Mummies",
-        //    "Dinos",
-        //    "Serpents",
-        //    "FlameSpirits"
-
-        //};
 
         private void OnAssetRequested(object sender, AssetRequestedEventArgs e)
         {
@@ -125,12 +109,6 @@ namespace EasierMonsterEradication
                 e.Edit(asset =>
                 {
                     var quests = asset.AsDictionary<string, MonsterSlayerQuestData>();
-                    //foreach (var monster in MonsterList)
-                    //{
-                    //    var quest = quests.Data[monster];
-                    //    quest.Count = (int)((float)quest.Count * Config.MonsterPercentage);
-                    //    quests.Data[monster] = quest;
-                    //}
                     foreach (KeyValuePair<string, MonsterSlayerQuestData> kvp in quests.Data)
                     {
                         quests.Data[kvp.Key].Count = (int)((float)quests.Data[kvp.Key].Count * Config.MonsterPercentage);
@@ -145,6 +123,7 @@ namespace EasierMonsterEradication
         /// <param name="e">The event arguments.</param>
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
+            MyHelper.GameContent.InvalidateCache("Data\\MonsterSlayerQuests");
             if (Debug)
                 MyHelper.Events.Input.ButtonPressed += Input_ButtonPressed;
         }

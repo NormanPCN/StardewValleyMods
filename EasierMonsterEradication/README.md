@@ -62,3 +62,6 @@ v1.0.0:
  v.1.2.0
  Added Japanese translation. (Thanks mitekano23)
  The config dialog is no longer restricted to the game title screen menu. It can now be used inGame.
+
+ v1.2.1
+ Fixed a bug where and in game change to the config MonsterPercent did not take effect. The games cache is invalidated.
