@@ -58,12 +58,13 @@ namespace CombatControlsRedux
             public int MyFacingDirection = -1;
             public int ClubSpamAttack = 0;
             public bool Controller;
+            public bool ReallyFastDagger = false;
         }
 
         public ModConfig Config;
 
         internal IModHelper MyHelper;
-        //private IReflectedMethod PerformFireTool;
+        private IReflectedMethod PerformFireTool;
 
         internal const int ClubSpamCountdown = 3;
 
@@ -214,8 +215,9 @@ namespace CombatControlsRedux
             screen.MyFacingDirection = -1;
             screen.ClubSpamAttack = 0;
             screen.Controller = false;
+            screen.ReallyFastDagger = false;
 
-            //PerformFireTool = MyHelper.Reflection.GetMethod(Game1.player, "performFireTool");
+            PerformFireTool = MyHelper.Reflection.GetMethod(Game1.player, "performFireTool");
 
             MyHelper.Events.Input.ButtonPressed += Input_ButtonPressed;
             MyHelper.Events.Input.ButtonReleased += Input_ButtonReleased;
@@ -229,7 +231,7 @@ namespace CombatControlsRedux
         /// <param name="e">The event arguments.</param>
         private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
-            //PerformFireTool = null;
+            PerformFireTool = null;
 
             MyHelper.Events.Input.ButtonPressed -= Input_ButtonPressed;
             MyHelper.Events.Input.ButtonReleased -= Input_ButtonReleased;
@@ -360,40 +362,50 @@ namespace CombatControlsRedux
                 {
                     screen.IsHoldingAttack = true;
                     screen.TickCountdown = Config.CountdownStart;
+                    screen.ReallyFastDagger = false;
 
-                    //Log.Debug($"Speed = {tool.speed.Value}");
+                    //Log.Debug($"ToolSpeed = {tool.speed.Value}");
                     if (dagger)
                     {
+                        //Log.Debug("Dagger");
+
                         // fast daggers need a short initial delay. this is because their animation is so fast.
                         // if the user button press is a bit slow, they may get an unintended auto swing.
                         // this is not too bad since the dagger stab is so fast.
                         if (tool.speed.Value > 3) // >= +2 speed.
                         {
                             // fast daggers.
+                            //Log.Debug("Fast Dagger");
                             screen.TickCountdown -= Config.CountdownFastDaggerOffset;
 
                             if (tool.speed.Value > 5)
                             {
                                 // really fast daggers.
+                                //Log.Debug("ReallyFast Dagger");
                                 screen.TickCountdown -= 1;
+                                screen.ReallyFastDagger = true;
 
                                 if (tool.speed.Value > 7)
                                 {
                                     // crazy fast daggers.
+                                    //Log.Debug("CrazyFast Dagger");
                                     screen.TickCountdown -= 1;
                                 }
                             }
 
-                            // speed buffs affect weapon speed.
-                            if (who.addedSpeed != 0)
-                            {
-                                //Log.Debug($"SpeedBuff = {who.addedSpeed}");
-                                screen.TickCountdown -= 1;
-                            }
-
-                            if (screen.TickCountdown <= 0)
-                                screen.TickCountdown = 1;
                         }
+
+                        // speed buffs affect weapon speed.
+                        if (who.addedSpeed >= 1)
+                        {
+                            //Log.Debug($"SpeedBuff = {who.addedSpeed}");
+                            screen.TickCountdown -= 1;
+                        }
+
+                        if (screen.TickCountdown <= 0)
+                            screen.TickCountdown = 1;
+
+                        //Log.Debug($"TickCountdown = {screen.TickCountdown}");
                     }
                 }
 
@@ -557,6 +569,8 @@ namespace CombatControlsRedux
                                 who.FireTool();
                                 //PerformFireTool.Invoke();
                                 screen.TickCountdown = Config.CountdownRepeat;
+                                if (screen.ReallyFastDagger)
+                                    screen.TickCountdown = 1;
                             }
                         }
                     }
