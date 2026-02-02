@@ -17,7 +17,7 @@ namespace EasierMonsterEradication
     public class ModEntry : Mod
     {
         public const float MinPercent = 0.2f;
-        public const float MaxPercent = 1.5f;
+        public float MaxPercent = 2.0f;
 
         public static ModConfig Config;
 
@@ -58,6 +58,11 @@ namespace EasierMonsterEradication
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
         {
             Config = MyHelper.ReadConfig<ModConfig>();
+
+            MaxPercent = Config.MonsterUpperLimit;
+            if (MaxPercent < 2.0f)
+                MaxPercent = 2.0f;
+
             if (Config.MonsterPercentage < MinPercent)
                 Config.MonsterPercentage = MinPercent;
             else if (Config.MonsterPercentage > MaxPercent)

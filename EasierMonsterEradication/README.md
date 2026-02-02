@@ -65,3 +65,6 @@ v1.0.0:
 
  v1.2.1
  Fixed a bug where and in game change to the config MonsterPercent did not take effect. The games cache is invalidated.
+
+ v1.2.2
+ Adjusted the upper limit of the monster percent range. I also, added an undocumented(?) config variable that would allow you to raise the upper limit range even higher. Youi have to manually edit the config to change its value.
