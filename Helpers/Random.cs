@@ -63,9 +63,9 @@ namespace NormanPCN.Utils
             //no overflow or range checking
             unchecked
             {
-                seed = XorShift64(seed) + (ulong)Environment.TickCount64;
-                seed = XorShift64(seed) + (ulong)Environment.CurrentManagedThreadId;
                 seed = XorShift64(seed) + (ulong)Environment.ProcessId;
+                seed = XorShift64(seed) + (ulong)Environment.CurrentManagedThreadId;
+                seed = XorShift64(seed) + (ulong)Environment.TickCount64;
                 //seed += System.Threading.Thread.CurrentThread.ManagedThreadId;
                 //seed += System.Diagnostics.Process.GetCurrentProcess().Id;
                 return (uint)(XorShift64(seed) >> 8);//take middle bits
