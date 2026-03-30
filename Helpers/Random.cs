@@ -6,7 +6,7 @@ namespace NormanPCN.Utils
     public class RandomNumbers
     {
         public const uint XorShiftWow = 0;
-        public const uint XorShiftPlus = 1;
+        public const uint Xoshiro = 1;
         public const uint NR_Ranq1 = 2;
         public const uint NR_Ran = 3;
         public const uint DefaultRNG = XorShiftWow;
@@ -23,8 +23,10 @@ namespace NormanPCN.Utils
         private ulong ran_u;
         private ulong ran_v;
         private ulong ran_w;
-        private ulong xorp_0;
-        private ulong xorp_1;
+        private ulong xoshiro_0;
+        private ulong xoshiro_1;
+        private ulong xoshiro_2;
+        private ulong xoshiro_3;
 
         private const double uintToDouble = 2.32830643653869629E-10;// 1.0 / 2*32
         private const double ulongToDouble = 5.42101086242752217E-20;// 1.0 / 2**64
@@ -88,8 +90,8 @@ namespace NormanPCN.Utils
             //    case XorShiftWow:
             //        this.randFunc = xorwow;
             //        break;
-            //    case XorShiftPlus:
-            //        this.randFunc = xorp;
+            //    case Xoshiro:
+            //        this.randFunc = xoshiro;
             //        break;
             //    case NR_Ranq1:
             //        this.randFunc = Ranq1;
@@ -131,21 +133,32 @@ namespace NormanPCN.Utils
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private ulong xorp()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ulong rotl(ulong x, int k)
         {
-            ulong t = xorp_0;
-            ulong s = xorp_1;
+	        return (x << k) | (x >> (64 - k));
+        }
 
+        // xoshiro256** implementation
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private ulong xoshiro()
+        {
             unchecked
             {
-                xorp_0 = s;
-                t ^= t << 23;
-                t ^= t >> 18;
-                t ^= s ^ (s >> 5);
-                xorp_1 = t;
+                ulong r = rotl(xoshiro_1 * 5, 7) * 9;
 
-                return t + s;
+                ulong t = xoshiro_1 << 17;
+
+                xoshiro_2 ^= xoshiro_0;
+                xoshiro_3 ^= xoshiro_1;
+                xoshiro_1 ^= xoshiro_2;
+                xoshiro_0 ^= xoshiro_3;
+
+                xoshiro_2 ^= t;
+
+                xoshiro_3 = rotl(xoshiro_3, 45);
+
+                return r;
             }
         }
 
@@ -214,9 +227,11 @@ namespace NormanPCN.Utils
                     seed = XorShift32(seed);
                     xorw_v = seed;
                     return;
-                case XorShiftPlus:
-                    xorp_0 = XorShift64((ulong)seed ^ 4101842887655102017);
-                    xorp_1 = XorShift64(xorp_0);
+                case Xoshiro:
+                    xoshiro_0 = (ulong)seed ^ 4101842887655102017;
+                    xoshiro_1 = XorShift64(xoshiro_0);
+                    xoshiro_2 = XorShift64(xoshiro_1);
+                    xoshiro_3 = XorShift64(xoshiro_2);
                     return;
                 case NR_Ranq1:
                     ran_v = (ulong)(seed) ^ 4101842887655102017;
@@ -250,8 +265,8 @@ namespace NormanPCN.Utils
                 // double only has 52 explicit bits in mantissa. thus low bits of a long are unused.
                 case XorShiftWow:
                     return (double)xorwow() * uintToDouble;
-                case XorShiftPlus:
-                    return (double)xorp() * ulongToDouble;
+                case Xoshiro:
+                    return (double)xoshiro() * ulongToDouble;
                 case NR_Ranq1:
                     return (double)Ranq1() * ulongToDouble;
                 case NR_Ran:
@@ -274,8 +289,8 @@ namespace NormanPCN.Utils
                 // take middle bits of long results.
                 case XorShiftWow:
                     return (int)(xorwow() & 0x7fffffff);
-                case XorShiftPlus:
-                    return (int)((xorp() >> 8) & 0x7fffffff);
+                case Xoshiro:
+                    return (int)((xoshiro() >> 8) & 0x7fffffff);
                 case NR_Ranq1:
                     return (int)((Ranq1() >> 8) & 0x7fffffff);
                 case NR_Ran:
@@ -303,11 +318,11 @@ namespace NormanPCN.Utils
             {
                 return (int)(((ulong)xorwow() * (ulong)range) >> 32);
             }
-            else if (genType == XorShiftPlus)
+            else if (genType == Xoshiro)
             {
-                return (int)((double)xorp() * ulongToDouble * (double)range);
-                //return (int)(((ulong)((uint)(xorp() >> 8)) * (ulong)range) >> 32);
-                //return (int)(xorp() % (ulong)range);
+                return (int)((double)xoshiro() * ulongToDouble * (double)range);
+                //return (int)(((ulong)((uint)(xoshiro() >> 8)) * (ulong)range) >> 32);
+                //return (int)(xoshiro() % (ulong)range);
             }
             else if (genType == NR_Ranq1)
             {
@@ -458,9 +473,9 @@ namespace NormanPCN.Utils
                 {
                     case XorShiftWow:
                         return unbiasedRange32((uint)maxValue, xorwow);
-                    case XorShiftPlus:
-                        return unbiasedRange64((uint)maxValue, xorp);
-                        //return unbiasedRange32((uint)maxValue, () => (uint)(xorp() >> 8));
+                    case Xoshiro:
+                        return unbiasedRange64((uint)maxValue, xoshiro);
+                        //return unbiasedRange32((uint)maxValue, () => (uint)(xoshiro() >> 8));
                     case NR_Ranq1:
                         return unbiasedRange64((uint)maxValue, Ranq1);
                         //return unbiasedRange32((uint)maxValue, () => (uint)(Ranq1() >> 8));
@@ -499,9 +514,9 @@ namespace NormanPCN.Utils
                     {
                         case XorShiftWow:
                             return unbiasedRange32(range, xorwow) + minValue;
-                        case XorShiftPlus:
-                            return unbiasedRange64(range, xorp) + minValue;
-                            //return unbiasedRange32(range, () => (uint)(xorp() >> 8)) + minValue;
+                        case Xoshiro:
+                            return unbiasedRange64(range, xoshiro) + minValue;
+                            //return unbiasedRange32(range, () => (uint)(xoshiro() >> 8)) + minValue;
                         case NR_Ranq1:
                             return unbiasedRange64(range, Ranq1) + minValue;
                             //return unbiasedRange32(range, () => (uint)(Ranq1() >> 8)) + minValue;
@@ -539,8 +554,8 @@ namespace NormanPCN.Utils
                         d = xorwow();
                         b = 4;
                         break;
-                    case XorShiftPlus:
-                        d = xorp();
+                    case Xoshiro:
+                        d = xoshiro();
                         break;
                     case NR_Ranq1:
                         d = Ranq1();

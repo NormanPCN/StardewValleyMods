@@ -5,7 +5,7 @@ using NormanPCN.Utils;
 
 Console.WriteLine("Hello Random Numbers!\n");
 
-string[] RndGenNames = { "XorShiftWow", "XorShiftPlus", "NR_Ranq1", "NR_Ran" };
+string[] RndGenNames = { "XorShiftWow", "Xoshiro", "NR_Ranq1", "NR_Ran" };
 
 void timing(uint seed32)
 {
@@ -521,7 +521,7 @@ uint seed32 = RandomNumbers.GetRandomSeed();
 //seed32 = 0x12345678;
 
 timing(seed32);
-var p = new PatternCheck(seed32, RandomNumbers.DefaultRNG);
+var p = new PatternCheck(seed32, RandomNumbers.Xoshiro);
 p.run();
 ShortSequence(seed32);
 Density(seed32);
