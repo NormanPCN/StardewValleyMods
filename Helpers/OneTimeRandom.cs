@@ -31,13 +31,13 @@ namespace NormanPCN.Utils
             unchecked
             {
                 uint v = (seed * 1372383749) + 1289706101; // I1
-                v ^= v << 13; // G1
-                v ^= v >> 17;
-                v ^= v << 5;
-                v *= 1597334677; //J1
                 v ^= v >> 9; //G3
                 v ^= v << 17;
                 v ^= v >> 6;
+                v *= 1597334677; //J1
+                v ^= v << 13; // G1
+                v ^= v >> 17;
+                v ^= v << 5;
                 return v;
             }
         }
