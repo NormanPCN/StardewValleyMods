@@ -5,7 +5,7 @@ using NormanPCN.Utils;
 
 Console.WriteLine("Hello Random Numbers!\n");
 
-string[] RndGenNames = { "XorShiftWow", "Xoshiro", "NR_Ranq1", "NR_Ran" };
+string[] RndGenNames = { "XorShiftWow", "Xoshiro", "NR_Ran" };
 
 void timing(uint seed32)
 {
