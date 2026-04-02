@@ -7,8 +7,7 @@ namespace NormanPCN.Utils
     {
         public const uint XorShiftWow = 0;
         public const uint Xoshiro = 1;
-        public const uint NR_Ranq1 = 2;
-        public const uint NR_Ran = 3;
+        public const uint NR_Ran = 2;
         public const uint DefaultRNG = XorShiftWow;
 
         private uint genType;
@@ -93,9 +92,6 @@ namespace NormanPCN.Utils
             //    case Xoshiro:
             //        this.randFunc = xoshiro;
             //        break;
-            //    case NR_Ranq1:
-            //        this.randFunc = Ranq1;
-            //        break;
             //    case NR_Ran:
             //        this.randFunc = Ran;
             //        break;
@@ -162,20 +158,20 @@ namespace NormanPCN.Utils
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private ulong Ranq1()
-        {
-            // a so called XorShift64* algorithm
-            ulong v = ran_v;
-            unchecked
-            {
-                v ^= v >> 21;
-                v ^= v << 35;
-                v ^= v >> 4;
-                ran_v = v;
-                return v * 2685821657736338717;
-            }
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //private ulong Ranq1()
+        //{
+        //    // a so called XorShift64* algorithm
+        //    ulong v = ran_v;
+        //    unchecked
+        //    {
+        //        v ^= v >> 21;
+        //        v ^= v << 35;
+        //        v ^= v >> 4;
+        //        ran_v = v;
+        //        return v * 2685821657736338717;
+        //    }
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private ulong Ran()
@@ -216,7 +212,6 @@ namespace NormanPCN.Utils
             {
                 case XorShiftWow:
                     incr = 6615241;
-                    seed = XorShift32(seed);
                     xorw_x = seed;
                     seed = XorShift32(seed);
                     xorw_y = seed;
@@ -233,10 +228,10 @@ namespace NormanPCN.Utils
                     xoshiro_2 = XorShift64(xoshiro_1);
                     xoshiro_3 = XorShift64(xoshiro_2);
                     return;
-                case NR_Ranq1:
-                    ran_v = (ulong)(seed) ^ 4101842887655102017;
-                    ran_v = Ranq1();
-                    return;
+                //case NR_Ranq1:
+                //    ran_v = (ulong)(seed) ^ 4101842887655102017;
+                //    ran_v = Ranq1();
+                //    return;
                 case NR_Ran:
                     ran_v = 4101842887655102017;
                     ran_w = 1;
@@ -267,8 +262,8 @@ namespace NormanPCN.Utils
                     return (double)xorwow() * uintToDouble;
                 case Xoshiro:
                     return (double)xoshiro() * ulongToDouble;
-                case NR_Ranq1:
-                    return (double)Ranq1() * ulongToDouble;
+                //case NR_Ranq1:
+                //    return (double)Ranq1() * ulongToDouble;
                 case NR_Ran:
                     return (double)Ran() * ulongToDouble;
                 default:
@@ -291,8 +286,8 @@ namespace NormanPCN.Utils
                     return (int)(xorwow() & 0x7fffffff);
                 case Xoshiro:
                     return (int)((xoshiro() >> 8) & 0x7fffffff);
-                case NR_Ranq1:
-                    return (int)((Ranq1() >> 8) & 0x7fffffff);
+                //case NR_Ranq1:
+                //    return (int)((Ranq1() >> 8) & 0x7fffffff);
                 case NR_Ran:
                     return (int)((Ran() >> 8) & 0x7fffffff);
                 default:
@@ -324,12 +319,12 @@ namespace NormanPCN.Utils
                 //return (int)(((ulong)((uint)(xoshiro() >> 8)) * (ulong)range) >> 32);
                 //return (int)(xoshiro() % (ulong)range);
             }
-            else if (genType == NR_Ranq1)
-            {
-                return (int)((double)Ranq1() * ulongToDouble * (double)range);
-                //return (int)(((ulong)((uint)(Ranq1() >> 8)) * (ulong)range) >> 32);
-                //return (int)(Ranq1() % (ulong)range);
-            }
+            //else if (genType == NR_Ranq1)
+            //{
+            //    return (int)((double)Ranq1() * ulongToDouble * (double)range);
+            //    //return (int)(((ulong)((uint)(Ranq1() >> 8)) * (ulong)range) >> 32);
+            //    //return (int)(Ranq1() % (ulong)range);
+            //}
             else// if (genType == NR_Ran)
             {
                 return (int)((double)Ran() * ulongToDouble * (double)range);
@@ -476,9 +471,9 @@ namespace NormanPCN.Utils
                     case Xoshiro:
                         return unbiasedRange64((uint)maxValue, xoshiro);
                         //return unbiasedRange32((uint)maxValue, () => (uint)(xoshiro() >> 8));
-                    case NR_Ranq1:
-                        return unbiasedRange64((uint)maxValue, Ranq1);
-                        //return unbiasedRange32((uint)maxValue, () => (uint)(Ranq1() >> 8));
+                    //case NR_Ranq1:
+                    //    return unbiasedRange64((uint)maxValue, Ranq1);
+                    //    //return unbiasedRange32((uint)maxValue, () => (uint)(Ranq1() >> 8));
                     case NR_Ran:
                         return unbiasedRange64((uint)maxValue, Ran);
                         //return unbiasedRange32((uint)maxValue, () => (uint)(Ran() >> 8));
@@ -517,9 +512,9 @@ namespace NormanPCN.Utils
                         case Xoshiro:
                             return unbiasedRange64(range, xoshiro) + minValue;
                             //return unbiasedRange32(range, () => (uint)(xoshiro() >> 8)) + minValue;
-                        case NR_Ranq1:
-                            return unbiasedRange64(range, Ranq1) + minValue;
-                            //return unbiasedRange32(range, () => (uint)(Ranq1() >> 8)) + minValue;
+                        //case NR_Ranq1:
+                        //    return unbiasedRange64(range, Ranq1) + minValue;
+                        //    //return unbiasedRange32(range, () => (uint)(Ranq1() >> 8)) + minValue;
                         case NR_Ran:
                             return unbiasedRange64(range, Ran) + minValue;
                             //return unbiasedRange32(range, () => (uint)(Ran() >> 8)) + minValue;
@@ -557,9 +552,9 @@ namespace NormanPCN.Utils
                     case Xoshiro:
                         d = xoshiro();
                         break;
-                    case NR_Ranq1:
-                        d = Ranq1();
-                        break;
+                    //case NR_Ranq1:
+                    //    d = Ranq1();
+                    //    break;
                     case NR_Ran:
                         d = Ran();
                         break;
