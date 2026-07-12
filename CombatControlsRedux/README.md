@@ -82,6 +82,9 @@ For swords and clubs.
 > The movement velocity for special attack slick moves. Swords and clubs. Controls the speed and distance of the slide.
 
 ## Changlog
+v1.4.3
+* Fix bug with Club Spam attack GMCM config setting.
+
 v1.4.2
 * Additional fixes for dagger autoswing for *really* fast daggers.
 

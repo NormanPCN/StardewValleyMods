@@ -66,7 +66,7 @@ namespace CombatControlsRedux
         internal IModHelper MyHelper;
         private IReflectedMethod PerformFireTool;
 
-        internal const int ClubSpamCountdown = 3;
+        internal const int ClubSpamCountdown = 4;
 
         internal Logger Log;
 
@@ -154,7 +154,7 @@ namespace CombatControlsRedux
                                    () => I18nGet("autoSwingDagger.Label"),
                                    () => I18nGet("autoSwingDagger.tooltip"));
                 gmcm.AddBoolOption(ModManifest,
-                                   () => Config.MouseFix,
+                                   () => Config.ClubSpecialSpamAttack,
                                    (bool value) => Config.ClubSpecialSpamAttack = value,
                                    () => I18nGet("clubSpamAttack.Label"),
                                    () => I18nGet("clubSpamAttack.tooltip"));
@@ -507,7 +507,7 @@ namespace CombatControlsRedux
 
                     if ((tool.type.Value == MeleeWeapon.club) && (screen.ClubSpamAttack > 0))
                     {
-                        //Log.Debug($"UpdateTicking: countdown={screen.TickCountdown}, isOnSpecial={tool.isOnSpecial}, spamAttack={screen.ClubSpamAttack}");
+                        //Log.Debug($"UpdateTicking: TickCountdown={screen.TickCountdown}, isOnSpecial={tool.isOnSpecial}, spamAttack={screen.ClubSpamAttack}");
 
                         if (tool.isOnSpecial)
                         {
