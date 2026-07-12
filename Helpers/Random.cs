@@ -132,7 +132,10 @@ namespace NormanPCN.Utils
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ulong rotl(ulong x, int k)
         {
-	        return (x << k) | (x >> (64 - k));
+            unchecked
+            {
+                return (x << k) | (x >> (64 - k));
+            }
         }
 
         // xoshiro256** implementation
