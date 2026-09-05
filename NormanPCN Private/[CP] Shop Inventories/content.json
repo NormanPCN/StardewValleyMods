@@ -22,12 +22,19 @@
                   "Price": "250",// 5x year 2 wood price
                   "AvailableStock" : "25",
                   "Condition": "YEAR 2, PLAYER_FORAGING_LEVEL Current 7"
+               },
+               "{{ModId}}.RobinSellsMoss": {
+                  "Id": "{{ModId}}.RobinSellsMoss",
+                  "ItemId": "(O)Moss",
+                  "Price": "50",
+                  "AvailableStock": "50"
                }
      	   },
          "MoveEntries":
          [
-            { "Id": "{{ModId}}.RobinSellsClay", "AfterID": "(O)390"},
-            { "Id": "{{ModId}}.RobinSellsHardwood", "AfterID":  "{{ModId}}.RobinSellsClay"}
+            {"Id": "{{ModId}}.RobinSellsClay", "AfterID": "(O)390"},
+            {"Id": "{{ModId}}.RobinSellsMoss", "AfterID": "{{ModId}}.RobinSellsClay"},
+            {"Id": "{{ModId}}.RobinSellsHardwood", "AfterID":  "{{ModId}}.RobinSellsMoss"}
          ]
       },
       {
@@ -45,12 +52,17 @@
             "{{ModId}}.MarnieSellsEggs": {
                "Id": "{{ModId}}.MarnieSellsEggs",
                "ItemId": "(O)176",
-               "Price": "100", // 2x sell price
+               "Price": "100" // 2x sell price
             },
             "{{ModId}}.MarnieSellsMilk": {
                "Id": "{{ModId}}.MarnieSellsMilk",
                "ItemId": "(O)184",
-               "Price": "250", // 2x sell price
+               "Price": "250" // 2x sell price
+            },
+            "{{ModId}}.MarnieSellsCheese": {
+               "Id": "{{ModId}}.MarnieSellsCheese",
+               "ItemId": "(O)424",
+               "Price": "460" // 2x sell price
             },
             "{{ModId}}.MarnieSellsWool": {
                "Id": "{{ModId}}.MarnieSellsCloth",
@@ -64,7 +76,8 @@
             {"Id": "{{ModId}}.MarnieSellsAutoPetter", "AfterID": "(BC)165"}, //auto grabber
             {"Id": "{{ModId}}.MarnieSellsEggs", "AfterID": "(BC)45" },//Ornamental Hay bale
             {"Id": "{{ModId}}.MarnieSellsMilk", "AfterID": "{{ModId}}.MarnieSellsEggs"},
-            {"Id": "{{ModId}}.MarnieSellsCloth", "AfterID": "{{ModId}}.MarnieSellsMilk"}
+            {"Id": "{{ModId}}.MarnieSellsCheese",  "AfterID": "{{ModId}}.MarnieSellsMilk"},
+            {"Id": "{{ModId}}.MarnieSellsCloth", "AfterID": "{{ModId}}.MarnieSellsCheese"}
          ]
       },
       {
